@@ -1,0 +1,14 @@
+Changes for 3.6.0:
+===================
+* AFFLIB now compiles with mingw so this directory is no longer needed.  Only the afflib.mak
+  file is provided for historical purposes (and in case somebody really, really wants to compile
+  udner Microsoft VC++)
+
+
+Changes from 2.0:
+=================
+* AFFLIB now uses OpenSSL, rather than the Microsoft Crypto API.
+* Upgrade from libewf-20070512 to libewf-20080501
+* Full support for AFFLIB 3.0 encryption
+* Distribution includes executables and libraries
+

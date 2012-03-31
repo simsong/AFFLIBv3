@@ -1,0 +1,30 @@
+==================================
+PyAFF - Python bindings for AFFLIB
+==================================
+
+These bindings currently support a read-only file-like interface to AFFLIB and
+basic metadata accessor functions. The binding is not currently complete.
+
+--------
+BUILDING
+--------
+
+python setup.py build
+python setup.py install
+
+-----
+USAGE
+-----
+
+Basic usage example:
+
+  #/usr/bin/python
+  import pyaff
+
+  fd = pyaff("diskimage.aff")
+  data = fd.read(1000)
+  fd.seek(0, SEEK_SET)
+
+  print fd.get_seg_names()
+  print fd.get_seg("afflib_version")
+

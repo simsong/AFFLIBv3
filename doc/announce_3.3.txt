@@ -1,0 +1,53 @@
+			ANNOUNCING AFFLIB 3.3
+
+I'm happy to announce the release of AFFLIB 3.3. You can download it
+from the standard location at http://www.afflib.org/
+
+Version 3.0 is a significant upgrade to AFFLIB which introduces the
+following features:
+
+	  * SUPPORT FOR VMWARE, PARALLELS, APPLE DMG DISK IMAGES
+
+	  * SIGNIFICANTLY IMPROVED PERFORMANCE
+
+================================================================
+SUPPORT FOR VMWARE DISK IMAGES
+
+AFFLIB 3.3 incorporates the disk image subsystem from the open-source
+QEMU processor virtualization project. Although most of QEMU is
+distributed under the GPL license, the disk subsystem is distributed
+under a less restrictive license that allows any use. 
+
+As a result, forensic programs linked with AFFLIB can now
+transparently access disk images stored in any of the following
+formats; currently the format is specified with the indicated extension.
+
+So far we have only tested with VMWare .vmdk images:
+
+	* VMWare VMDK (.vmdk)             (tested)
+
+We also have the ability to add additional file types, including:
+	* Bochs Virtual HD Image
+	* cloop
+	* cow
+	* DMG
+	* qcow
+	* qcow2
+	* VFAT 
+	* Parallels 
+	* Connectix Virtual PC 
+
+Support for these will be enabled if requested.
+================================================================
+SIGNIFICANTLY IMPROVED PERFORMANCE
+
+Now that the feature set for AFFLIB is largely complete, we are
+beginning to pay attention to performance issues. In particular, we
+found a significant problem in versions 3.0 through 3.2 that would
+significantly degrade performance of disk images larger than 1GB. This
+has now been addressed.
+
+================================================================
+
+
+

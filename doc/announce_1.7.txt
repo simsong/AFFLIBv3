@@ -1,0 +1,126 @@
+			ANNOUNCING AFFLIB 1.7
+
+I'm happy to announce the release of AFFLIB 1.7. You can download it
+from the standard location at http://www.afflib.org/
+
+Version 1.7 represents a major advance over previous versions.
+Upgrading is recommended for all users.
+
+Key improvements in Version 1.7 include:
+
+    * Dramatically smaller image size in almost all cases.
+
+    * Significantly improved performance 
+    
+    * Improved tools!
+
+
+DRAMATICALLY SMALLER IMAGES
+---------------------------
+
+AFFLIB has always supported pluggable compression algorithms, but previous
+versions featured just a single compression algorithm --- zlib (the
+same algorithm used in gzip). 
+
+Version 1.7 introduces two new compressors:
+
+	LZMA - This is the compressor developed by Igor Pavlov and
+	       popularized by the 7-Zip compression system. LZMA uses
+	       a very large dictionary to achive compression that is
+	       30-70% better, on average, than zlib. 
+
+	NULL - This compressor checks to see if a page is 16MB of NULLs. If it is,
+	       this fact is simply noted. The result is considerable savings on many
+	       drives, since many drives have large regions that are all NULLs.
+
+
+The result of these two compression algorithms together is
+significant. My library of images from 1000 disks purchased on the
+secondary market now takes roughly 1/2 the space that it prevously
+did. And it is faster to work with these highly-compressed images than
+with raw images or impages compressed with zlib, since decompression
+is I/O bound, not CPU-bound.
+
+
+
+SIGNIFICANTLY IMPROVED PERFORMANCE
+----------------------------------
+
+Forensic programs like The Sleuth Kit will run significantly faster
+with Version 1.7 than with previous versions. Instead of a single page
+cache, Version 1.7 can cache multiple pages.  The number of pages
+cached is determined by the environment variable AFFLIB_CACHE_PAGES;
+the default value is 2 which gives good performance with TSK --- one
+page for the inode table, one page for the data.
+
+Remember, each page is typically 16MB, so you can quickly overwhelm
+your memory if you set the value too large. Don't page the cache out
+to the hard drive --- it's faster to throw away the pages, re-read the
+originally compressed page and decompress it, than it is to write out
+the uncompressed page and read it back.
+
+One of the problems with using compressed images is that you can't
+memory-map the file directly into the memory space of a 64-bit
+processor. (You can't do it with a 32-bit processor, of course, if the
+image is larger than 1GB or so.) Setting AFFLIB_CACHE_PAGES to a large
+value gives you even better performance than memory-mapping a raw
+file.
+
+
+
+IMPROVED TOOLS
+--------------
+
+The AFFLIB Tools have been expanded and refined. The toolset now
+consists of 10 programs to assist in working with libraries of AFF
+images.
+
+Current tools include:
+
+afcat     - Outputs the contents of an AFF file stdout.
+
+afcompare - Compares two AFF files, or an AFF file and a non-AFF file.
+	    Can also report on the success of "preening"
+	  
+afconvert - Converts a non-AFF file to an AFF file.
+
+afcopy	  - Makes a verified copy of an AFF file to another location.
+	    Accepts multiple destinations and minimizes reads (ie:
+	    reads each segment once and then does the copies.) Future 
+	    version might do writes simultaneously if they are to
+	    different devices.
+
+	    -p option causes files to be recompressed with LZMA when
+            they are copied. This can be done without invalidating
+            digital signatures.
+	    
+affix	  - If an AFF file ends with an incomplete segment, this
+            program removes it.
+
+afinfo	  - Reports information about an AFF file.
+
+afsegment - Allows an individual segment to be read or
+            written. Typically used to allow shell-script access to metadata.
+
+afstats   - Prints statistics from a single AFF file or multiple
+            files. Prints reports.
+
+afxml     - Outputs the AFF medata in XML, for all of you XML fans.
+
+
+and, of course:
+
+aimage	  - The advanced disk imager. Now images to LZMA (but it's slow...)
+
+
+
+WHAT'S NEXT?
+------------
+
+And here is what's on the agenda for the next major release of AFF:
+
+ + Support for Amazon's S3. 
+ + Labeling of "bad" and redacted sectors in the metadata (rather than
+   relying on high-entropy tokens in the data.)
+ + Support for NSRL bloom filters.
+

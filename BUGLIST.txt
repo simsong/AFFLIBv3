@@ -1,0 +1,75 @@
+AFFLIB Buglist and roadmap.
+
+
+PERFORMANCE IMPROVEMENTS:
+* afconvert should calculate MD5, SHA256 and SHA1
+* Store TOC sorted and find entries with binary search.
+  (A 1TB TOC has 62,500 pages or 100K segments; with fixed size records that would be 8,000,000, which is not much.)
+* aff_write_seg() shouldn't be calling af_rewind_seg after every call
+* af_write() shouldn't be calling lseek() and write() so many times.
+  - move to scatter/gather writing.
+  - look at the TOC to know how much space is available. 
+  - Make the TOC always used. Trust the TOC.
+
+BUGS:
+* Test all programs with file://-style URLs. You can't test for existence of a file with
+  access(). This is an issue for -z in afcopy.
+* image_size not set for AFM files; does it need to be set, or is it generated on the fly?
+* afcrypto should note if a file can't be decrypted.
+* library doesn't automatically write SHA1s and SHA256s; need to be selectable.
+* combine affix and afrecover into a single executable.
+* combine afconvert and afcopy into a single executable.
+* better error handling in aimage?
+* Graacefully handle expat not installed?
+* improve performance of 
+   - cache memory selection size - * Automatically increase cache to use 1/2 of physical RAM?
+   - cache algorithm
+
+FEATURES:
+
+library:
+* Add support for http://mingw.org/
+* badflag needs to be reimplemented as a bitfield.
+* Since we have the TOC, is there EVER a case in which we need to scan the whole file?
+  If not, perhaps we can take out those scan routines.
+* Keep track of sectors that have been touched and output.
+* Some kind of sector map array. (Bit array? Byte array?)  
+* A 1TB disk has 2 billion sectors and 62,500 AFF pages; do we need to store this in a better
+  data structure than an unsorted linear list?
+
+aimage:
+ * Have aimage update more often
+ * Final report on bytes written is wrong.
+ * Fix imaging over the network
+ * Keep a log of everything imaged, # of bad blocks, MD5, etc.
+ * Image from an SSL tcp connection.
+ * notify user of kernel error messages; write them to segment
+ * Report if drive is wiped
+ * -A mode needs some work; it sometimes compresses too much.
+ * Digitally sign the AFFs
+
+afcat:
+ * option - BADFLAG or BLANK errors
+ * Option to output a specific sector or a range of sectors
+ * Multiple ranges of bytes
+
+afcompare:
+ * Make SIGINFO work
+ * -d - just compare data
+ * -s3 - just check to see if the named segments got written.
+       - Just compare MD5s!
+
+afcopy:
+ * don't copy the file if it won't fit.
+ * preserve timestamps
+ * have the file names .aff.new, and rename to .aff after complete.
+ * if there are _md5/_sha1/_sha256 segments, read all of those segments first and verify them.
+ * if AFFLIB_PASSPHRASE is set and a file is copied, the resultant file is broken.
+
+afconvert:
+ * This didn't work: afconvert -q -o /project3/1028.raw /project2/p3/1028.aff  
+
+afupload:
+ * Uploading shouldn't decrypt first.
+
+

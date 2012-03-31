@@ -1,0 +1,78 @@
+Name: afflib
+Version: @VERSION@
+Release: 1
+Summary: Library to support the Advanced Forensic Format
+Group: System Environment/Libraries
+License: BSD with advertising
+Source: %{name}-%{version}.tar.gz
+URL: http://www.afflib.org/
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires: curl-devel expat-devel ncurses-devel openssl-devel zlib-devel
+
+%description
+afflib is library for support of the Advanced Forensic Format (AFF).
+AFF(R) is an open and extensible file format designed to store disk images and
+associated metadata.
+
+%package devel
+Summary: Header files and libraries for developing applications for afflib
+Group: Development/Libraries
+Requires: afflib = %{version}-%{release}
+
+%description devel
+Header files and libraries for developing applications for afflib.
+
+%package tools
+Summary: Several tools for reading and writing AFF files
+Group: Applications/System
+Requires: openssl afflib = %{version}-%{release}
+BuildRequires: openssl-devel
+
+%description tools
+Several tools for reading and writing AFF files.
+
+%prep
+%setup -q
+
+%build
+%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} 
+make %{?_smp_mflags}
+
+%install
+rm -rf ${RPM_BUILD_ROOT}
+make DESTDIR=${RPM_BUILD_ROOT} install
+
+%clean
+rm -rf ${RPM_BUILD_ROOT}
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(644,root,root,755)
+%doc AUTHORS BUGLIST.txt ChangeLog COPYING NEWS README README_Linux.txt
+%attr(755,root,root) %{_libdir}/*.so.*
+
+%files devel
+%defattr(644,root,root,755)
+%doc AUTHORS BUGLIST.txt ChangeLog COPYING NEWS README README_Linux.txt
+%doc doc/crypto_design.txt doc/crypto_doc.txt
+%{_libdir}/*.a
+%{_libdir}/*.la
+%{_libdir}/*.so
+%{_includedir}/afflib/afflib.h
+%{_includedir}/afflib/afflib_i.h
+%{_includedir}/afflib/afflib_sha256.h
+%{_includedir}/afflib/aftimer.h
+%{_includedir}/afflib/utils.h
+
+%files tools
+%defattr(644,root,root,755)
+%doc AUTHORS BUGLIST.txt ChangeLog COPYING NEWS README README_Linux.txt
+%attr(755,root,root) %{_bindir}/*
+
+%changelog
+* Sun Dec 9 2007 Joachim Metz <forensics@hoffmannbv.nl> 3.0.4-1
+- Initial version
+

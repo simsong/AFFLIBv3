@@ -1,0 +1,23 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+Plans for making AFFLIB multi-threaded:
+
+Low hanging fruit:
+* Compress in background
+* Calculate hashes in background
+
+Easy implementation strategy:
+* mutext for:
+  - the entire cache
+  - each page of the cache
+  - the TOC (should this be re-implemented as a C++ vector?)
+
+Both compressing and hashing needs access to the page cache in another thread:
+ - Needs to lock the page cache so no other process will write to it.
+ - Or needs to make a copy of it.
+ - Then needs to write it out.
+
+
+Test program:
+ - Can we write a method that computes hash in another thread?

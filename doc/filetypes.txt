@@ -1,0 +1,29 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+AFF: 
+  Setting maxsize with AFF files will have no effect, because AFF
+  files are by definition not split.  If you want a split AFF file,
+  you must use AFD files (AFD is a directory with a .afd extension
+  that holds multiple AFF files). 
+
+AFM:
+  The size of AFM split files is stored in af->maxsize (also ap->sr->maxsize).
+  
+  This value is determined by multiplying the AF_PAGESIZE (which defaults to 
+  AFF_DEFAULT_PAGESIZ, currently 1024*1024*16) by AF_PAGES_PER_RAW_IMAGE_FILE.
+
+  By default, AF_PAGES_PER_RAW_IMAGE_FILE is not set. This means that, by default, 
+  AFM files are not split but consist of a single raw file and a single AFM file 
+  (which holds the metadata for the raw file).
+
+  You can set AF_PAGES_PER_RAW image like this:
+
+    int64_t pages_per_file = 128;
+    af_update_segq (af, AF_PAGES_PER_RAW_IMAGE_FILE, pages_per_file);
+
+  AFM files that are created by aimage do have this value set,
+  however: it is set to 2^31.
+
+
+

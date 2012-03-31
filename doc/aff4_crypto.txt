@@ -1,0 +1,192 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+Hi Guys,
+  As discussed I finally finished implementing the AFF4 encryption
+scheme based on the RDF dataType. A Cipher is an RDF dataType which
+takes care of encrypting blocks. Each implementation is responsible
+for serialising itself and parsing itself from the RDF serialization.
+
+This is how the API works:
+
+## Make the volume
+volume = oracle.create(pyaff4.AFF4_ZIP_VOLUME)
+volume.set(pyaff4.AFF4_STORED, url)
+volume = volume.finish()
+volume_urn = volume.urn
+volume.cache_return()
+
+## Make the image
+image = oracle.create(pyaff4.AFF4_IMAGE)
+image.set(pyaff4.AFF4_STORED, volume_urn)
+image = image.finish()
+image_urn = image.urn
+image.cache_return()
+
+# Make the encrypted stream
+encrypted = oracle.create(pyaff4.AFF4_ENCRYTED)
+encrypted.urn.set(volume_urn.value)
+encrypted.urn.add(SOURCE)
+
+encrypted.set(pyaff4.AFF4_STORED, volume_urn)
+encrypted.set(pyaff4.AFF4_TARGET, image_urn)
+
+## Set the certificate:
+cipher = oracle.new_rdfvalue(pyaff4.AFF4_AES256_X509)
+cert_urn = pyaff4.RDFURN()
+cert_urn.set(CERT_LOCATION)
+cipher.set_authority(cert_urn)
+
+## Add the cert cipher to the encrypted stream
+encrypted.add(pyaff4.AFF4_CIPHER, cipher)
+
+## Now just for fun we also want a password cipher:
+cipher = oracle.new_rdfvalue(pyaff4.AFF4_AES256_PASSWORD)
+encrypted.add(pyaff4.AFF4_CIPHER, cipher)
+
+## Ok done with the encrypted stream
+encrypted = encrypted.finish()
+encrypted_urn = encrypted.urn
+
+## Copy the source to the encrypted stream.
+infd = open(SOURCE)
+while 1:
+   data = infd.read(2**24)
+   if not data: break
+
+   encrypted.write(data)
+
+## Close everything down now
+encrypted.close()
+
+image = oracle.open(image_urn, "w")
+image.close()
+
+volume = oracle.open(volume_urn, 'w')
+volume.close()
+
+
+Basically the general pattern for creating any object entails the
+general pattern:
+
+1) Create a new object via oracle.create(TYPE_OF_OBJECT)
+2) Set various attributes on the object via object.set() or object.add()
+3) Finish the creation of the object via object.finish().
+4) Use the object however you want
+5) Return the object to the cache via object.cache_return()
+
+For most objects we dont need to use them directly but we need to have
+their URNs which we keep around in order to set other attributes on
+other objects. Once we returned the object to the cache we do not own
+it any more and can not touch it. So to close the objects we need to
+call oracle.open() to receive it by URN. (there is a locking semantic
+here in which the object is locked to our thread between the
+create/open call and the cache_return() - thats why we can not touch
+it outside these calls).
+
+The resulting RDF from the above is:
+@base <aff4://a1f70e3d-46cf-497e-9537-fb4aa937e827> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix aff4: <http://afflib.org/2009/aff4#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<aff4://4b16f71b-def7-499a-8051-8cf3725583ca/00000000>
+   aff4:index "0,32784,65568,"^^aff4:integer_array_inline .
+
+</bin/ls>
+   aff4:cipher
+"9XBDFCIRlIhE/HL9xHvIEbixsbUr6CbVkfnFUKhErnlS6h41yTh8qY7Fk+7Oq8zn4kkSnKyTE5eIx4xTYl1yGg=="^^aff4:aes256-password,
+"file:///home/mic/projects/aff4/python2.6/tests/sign.key#9XBDFCIRlIhE/HL9xHvIEZ0JM9Hjn6c+EV1OeFa9ZclztWwtdN1Bd191N2kAA4ksOl/sLm2b/r/1GaPAQZNty+QI/mqg61r8OCWkGelhU2OuWImVD6moGZQuVmvkJUHbDdawSsaSh8f7gn5FYPwBbkR665FhklzWEXkaYhLEs1ugUqRk4sKS20FZtrt0yEOPFgfZylf/6hB6SlIPyVoVGBSdHRSg82AcTN48HJU1Q8KYElBaMT5S54Nm7JOCijAqeDsI4NmB2QYy/aaAOWgXKA=="^^aff4:aes256-x509
+;
+   aff4:size 96216 ;
+   aff4:stored <> ;
+   aff4:target <aff4://4b16f71b-def7-499a-8051-8cf3725583ca> ;
+   aff4:timestamp "2010-03-12T12:11:23.000000+00:00"^^xsd:dateTime ;
+   a aff4:encrypted .
+
+<aff4://4b16f71b-def7-499a-8051-8cf3725583ca>
+   aff4:chunk_size 32768 ;
+   aff4:chunks_in_segment 500 ;
+   aff4:compression 8 ;
+   aff4:size 98304 ;
+   aff4:stored <> ;
+   aff4:timestamp "2010-03-12T12:11:23.000000+00:00"^^xsd:dateTime ;
+   a aff4:image .
+
+Note how there are 2 cipher objects now - a password and an x509
+cipher. We just need to find one that works and it will unlock the
+master key.
+
+AFF4 doesnt care about key management or cert management or anything
+of the sort - this is not our problem and we dont really care about
+it.  The old AFFLIB does a lot of key management approaches:
+
+1) It uses environment variables
+2) It can accept passwords or certs via the API
+
+These approaches are clearly inadequate for a large scale library
+implementation because the library may be part of a large application
+which can not provide passwords or certs in advance. Imagine a GUI
+application with the user selecting an AFF4 stream to open - the
+application will need to know in advance if the object we need to open
+is encrypted so it can prompt the user. Further the application will
+need to know how its encrypted so it can prompt  for password or a
+cert or whatever other way.  At least in the AFF4 universe its pretty
+much impossible to know in advance if encryption will be required
+because you might be opening a map which dereferences another map
+which finally dereferences a stream which happens to be stored in an
+encrypted volume.
+
+Another problem is that applications generally have different ways to
+manage certs and private keys. For example you can imaging a windows
+based application might want to use the OS secure storage facility for
+private keys, or ldap for certificates. We can not predict how they
+want to use our library.
+
+For these reasons the AFF4 library has a concept of a
+SecurityProvider. This is an object which is registered by the user
+with various methods. There is a default object which just grabs stuff
+from the environment. The user can install a new security manager
+implementation to implement whatever crazy key management protocols
+they want. We dont care about the sepecifics:
+
+class SecurityProvider:
+   """ This is a demonstration security provider object which will be
+   called by the AFF4 library to get keying material for different
+   streams.
+   """
+   def passphrase(self, cipher, subject):
+       print "Setting passphrase for subject %s" % subject.value
+       return "Hello"
+
+   def x509_private_key(self, cert_name, subject):
+       """ Returns the private key (in pem format) for the
+certificate name provided. """
+       print "Certificate for %s" % cert_name
+       return open(CERT_LOCATION).read()
+
+## This registers the security provider
+oracle.register_security_provider(pyaff4.ProxiedSecurityProvider(SecurityProvider()))
+
+Now we get the following behaviour:
+1) Whenever the library hits an encrypted stream, it will try to
+decode the cipher RDF dataType. Depending on the type of the
+aff4:cipher property, calls will be made to the security provider to
+retrieve the passphrase or key or whaterver for the subject.
+2) The application can then do whatever it needs to do to satisfy the
+call. For example it might look it up on ldap or pop a gui or do a db
+query whatever is needed.
+3) If the required passphrase is not provided, we try to decode the
+next cipher attributes. So the user might get asked for a password,
+then a certificate private key etc.
+
+The nice thing about it is that it only happens when its needed - the
+user doesnt need prior knowledge about the encryption status of the
+volumes and pre-seed the keys before they start. This facilitates the
+library's use in a more complex application rather than a single shot
+app.
+
+I will now add this encryption to the tools. I am now looking at
+signatures which I think can be made using the same approach.
+
+Michael.

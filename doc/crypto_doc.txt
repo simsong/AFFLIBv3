@@ -1,0 +1,168 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+AFF Encryption
+=============
+
+Release 2.4 of AFFLIB implements AFF pass-phrase encryption. 
+
+Encryption is based on a 256-bit randomly-generated AES key (called
+the AFF key). This key is itself encrypted with an AFF passphrase and
+stored in its own segment. This strategy allows an AFF image
+encryption passphrase to be changed without re-encrypting the entire
+disk image.
+
+AFF PASSPHRASE ENCRYPTION
+=========================
+
+The AFF passphrase may be specified either as part of the filename or,
+in some cases, as an optional argument for some of the AFF commands.
+AFF uses RFC 1630 URI syntax to specify encryption
+passphrases. Specifically, RFC 1630 allows the file myfile.aff to be
+specified as a URI:
+
+	afinfo file:///myfile.aff
+
+The passphrase 'mypassphrase' can be added to this URL:
+
+	afinfo file://:mypassphrase@/myfile.aff
+
+If you wish to refer to myfile.aff in the root directory, use this
+syntax:
+
+	afinfo file:////myfile.aff
+
+Because windows interperts the forward and back slashes in the same
+manner, this will refer to the file c:\myfile.aff
+
+	afinfo file:///c:/myfile.aff
+
+You can also save the passphrase in an environment variable called AFFPASSPHRASE:
+
+	setenv AFFLIB_PASSPHRASE "mypassphrase"		    (csh)
+	export AFFLIB_PASSPHRASE="mypassphrase"		    (bash)
+	set AFFLIB_PASSPHRASE="mypassphrase"		    (windows)
+	afinfo myfile.aff
+
+You can store the passphrase in a file and specify that file with the AFFLIB_PASSPHRASE_FILE variable.
+	setenv AFFLIB_PASSPHRASE_FILE "/tmp/myfile"
+	echo "mypassphrase" > /tmp/myfile        
+	afinfo myfile.aff 
+
+
+A passphrase can also be read from a file descriptor by putting the file descriptor number in
+the environment variable AFFLIB_PASSPHRASE_FD:
+	setenv AFFLIB_PASSPHRASE_FD "5"
+	echo "mypassphrase" > /tmp/myfile        
+	afinfo myfile.aff 5</etc/myfile
+
+
+MAC USERS NOTE: SHA-256 IS REQUIRED
+
+If you are compiling on a Macintosh, you must download the most recent
+developer tools from developer.apple.com in order to obtain the
+SHA-256 libraries. Otherwise you cannot compile the cryptographic code. 
+
+
+HOW AFF USES THE PASSPHRASE FOR ENCRYPTION
+
+AFF encryption works segment-by-segment. Segments are encrypted with
+the AFFKEY, a randomly generated 256-bit AES key. After the AFFKEY is
+set, all segments that are written are first encrypted with the AES256
+cipher operating in CBC mode. (The segment name is used as the
+initialization vector.) When a segment is read, AFF will return either
+the unencrypted segment or, if there is an encrypted segment, it will
+decrypt that segment and return it. (The internal design of AFF
+prevents there from being both an encrypted and unencrypted segment by
+the same name in the same file.)
+
+The first time an AFF file is written with a passphrase the AFF
+library creates a random key, encrypts that key with the SHA-256 of
+the passphrase, and stores the resulting encrypted key in a special
+segment. Thus, the AFF passphrase can be changed by simply reading
+this segment, decrypting it with the old phrase and re-encrypting it with
+the new phrase. The afcrypto command does this automatically.
+
+If a passphrase is set both in the file:// URL and in the environment
+variable, the URL passphrase takes precedence. 
+
+
+EXAMPLES
+
+To encrypt the AFF file disk.aff, you might use this command:
+
+	afcopy disk.aff  file://:mypassphrase@/disk-encrypted.aff
+
+To image directly to an encrypted AFF file, you might use aimage like
+this:
+
+	aimage /dev/hda  file://:mypassphrase@/disk-encrypted.aff
+
+
+If you want to see the encrypted segments, use this command:
+
+	afinfo -a disk-encrypted.aff
+
+If you want to see the decrypted segments, use this command:
+
+	afinfo -a file://:mypassphrase@/disk-encrypted.aff      
+
+You can mount an encrypted image with affuse:
+
+	mkdir /mnt/aff    
+	affuse file://:mypassphrase@/disk-encrypted.aff /mnt/aff
+
+You can change the passphrase on a file using the afcrypto command:
+
+	afcrypto -c disk-encrypted.aff    
+	Enter old passphrase: mypassphrase
+	Enter new passphrase: newpassphrase
+
+	change passphrase
+	passphrase successfully changed.
+
+
+
+AFF PUBLIC KEY SIGNING AND ENCRYPTION
+=====================================
+AFF can use public key cryptography for both signing acqired images
+and encrypting the images so that they can only be read by the
+intended recepient. 
+
+To use public key encryption you will need to make a pair of
+keys---one key for signing, the other key for encrypting. These keys
+can both be made with the "makekeys.bat" script that is located in the
+tools directory.
+
+There are two ways to sign AFF file:
+
+* You can sign the file when it is acquired with the aimage
+  program by specifying your signing key on the command line:
+	
+* You can sign the file after-the-fact using the "afcrypto"
+  command:
+
+Signatures can be verified using the afcrypto command; the afcrypto
+command will print the fingerprint of the key used to sign the file,
+will print any segments that do not verify, and will print any
+segments that are NOT SIGNED. 
+
+We imagine that most users will wish to have digitally signed AFF
+files.
+
+AFF can also use public key cryptography to encrypt the contents of an
+AFF file. In this case a public key is used to encrypt a file that is
+created with either the aimage or afcopy commands. Once a file is
+encrypted it can only be accessed with a corresponding private
+key. The primary purpose of public key cryptography here is to prevent
+images that are acquired in the field from being readable by anyone
+other than a particular analysis laboratory. This might be useful when
+images are acquired in or transported through a potentially hostile
+area. 
+
+
+================================================================
+Please let me know what you think! 
+
+Simson Garfinkel
+August 27, 2007

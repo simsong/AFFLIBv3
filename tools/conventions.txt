@@ -1,0 +1,9 @@
+conventions for options:
+
+-h = Help
+-v = print the version number and exit
+
+-k = specify private key for signing
+-c = specify the certificate for signing (if it is not in the keyfile)
+-K = speicfy the private key for encrypting
+-C = specifying the certificate for encrypting (if it is not in the keyfile)

@@ -1,0 +1,142 @@
+AFFLIB is covered under two copyright regimes.
+
+Items that were created in 2005 and 2006 are covered under the
+four-part Berkeley copyright license. The advertising clause is
+intentional included and can only be removed with the permission of
+Basis Technology Corp. In the past Basis has been willing to waive the
+advertising requirement when requested:
+
+/*
+ * AFFLIB(tm)
+ *
+ * Copyright (c) 2005-2006 Simson L. Garfinkel and Basis Technology Corp.
+ * All rights reserved.
+ *
+ * This code is derived from software contributed by
+ * Simson L. Garfinkel
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    This product includes software developed by Simson L. Garfinkel
+ *    and Basis Technology Corp.
+ * 4. Neither the name of Simson L. Garfinkel, Basis Technology, or other
+ *    contributors to this program may be used to endorse or promote
+ *    products derived from this software without specific prior written
+ *    permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY SIMSON L. GARFINKEL, BASIS TECHNOLOGY,
+ * AND CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL SIMSON L. GARFINKEL, BASIS TECHNOLOGY,
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.  
+ *
+ * AFF and AFFLIB is a trademark of Simson Garfinkel and Basis Technology Corp.
+ */
+
+AFFLIB 2.0a14, dated December 8, 2006, was the last version of AFFLIB
+to be exclusively licensed under the four-part Berkeley license.
+
+On December 24, 2006, Simson Garfinkel became a full-time employee of
+the US Government. Works of US Government employees developed as part
+of their employment are not subject to copyright. Therefore all
+files contributed to AFFLIB after December 24, 2006 developed by
+Simson Garfinkel, any copyright notice notwithstanding, are not
+covered under US copyright law and are in the public domain.
+
+The files in AFFLIB 2.0a14 that are covered under the four-part
+Berkeley license are:
+
+        714 Dec  8  2006 .
+      29821 Dec  1  2006 ./aimage/aimage.cpp
+       2319 Nov 18  2006 ./aimage/aimage.h
+      14399 Oct 20  2006 ./aimage/aimage_os.cpp
+      13961 Nov 21  2006 ./aimage/gui.cpp
+        231 Oct 20  2006 ./aimage/gui.h
+       8087 Nov 15  2006 ./aimage/ident.cpp
+       1719 Oct 20  2006 ./aimage/ident.h
+      23327 Nov 25  2006 ./aimage/imager.cpp
+       3729 Nov 25  2006 ./aimage/imager.h
+        301 Nov  8  2006 ./aimage/Makefile.am
+      13466 Dec  8  2006 ./aimage/Makefile.in
+        461 Dec  8  2006 ./AUTHORS
+      26608 Nov 28  2006 ./ChangeLog
+       7765 Dec  8  2006 ./config.h.in
+     427990 Dec  8  2006 ./configure
+       5351 Dec  8  2006 ./configure.ac
+       1909 Oct 19  2006 ./COPYING
+      15205 Oct 20  2006 ./depcomp
+        152 Oct 22  2006 ./INSTALL
+       9212 Oct 20  2006 ./install-sh
+       1292 Dec  8  2006 ./lib
+       4831 Nov 15  2006 ./lib/aff_db.cpp
+        105 Oct 19  2006 ./lib/aff_db.h
+       2517 Nov 15  2006 ./lib/aff_toc.cpp
+      12907 Nov 25  2006 ./lib/afflib.cpp
+      17363 Nov 25  2006 ./lib/afflib.h
+      11721 Nov 25  2006 ./lib/afflib_i.h
+       3932 Dec  1  2006 ./lib/afflib_os.cpp
+      18713 Nov 25  2006 ./lib/afflib_pages.cpp
+       9462 Nov 25  2006 ./lib/afflib_stream.cpp
+       5725 Nov 15  2006 ./lib/afflib_util.cpp
+       1925 Nov 15  2006 ./lib/aftimer.cpp
+        836 Oct 31  2006 ./lib/aftimer.h
+      10819 Oct 20  2006 ./lib/base64.cpp
+        692 Oct 19  2006 ./lib/base64.h
+       4652 Nov 15  2006 ./lib/lzma_glue.cpp
+       1978 Nov  1  2006 ./lib/Makefile.am
+      73313 Dec  8  2006 ./lib/Makefile.in
+      12649 Dec  8  2006 ./lib/s3.cpp
+      19190 Dec  7  2006 ./lib/s3_glue.cpp
+       3841 Dec  1  2006 ./lib/s3_glue.h
+      14470 Nov 27  2006 ./lib/vnode_afd.cpp
+         98 Oct 19  2006 ./lib/vnode_afd.h
+      17078 Nov 21  2006 ./lib/vnode_aff.cpp
+      13654 Dec  6  2006 ./lib/vnode_afm.cpp
+         76 Oct 19  2006 ./lib/vnode_afm.h
+       7305 Nov 15  2006 ./lib/vnode_evd.cpp
+         54 Oct 19  2006 ./lib/vnode_evd.h
+      47317 Nov 15  2006 ./lib/vnode_evf.cpp
+       8156 Oct 19  2006 ./lib/vnode_evf.h
+       7301 Nov 15  2006 ./lib/vnode_raw.cpp
+        156 Oct 19  2006 ./lib/vnode_raw.h
+       8371 Nov 25  2006 ./lib/vnode_s3.cpp
+         52 Oct 19  2006 ./lib/vnode_s3.h
+      17982 Dec  6  2006 ./lib/vnode_split_raw.cpp
+         84 Oct 19  2006 ./lib/vnode_split_raw.h
+        690 Nov 27  2006 ./Makefile.am
+      18908 Dec  8  2006 ./Makefile.in
+      10678 Oct 20  2006 ./missing
+        333 Nov 18  2006 ./NEWS
+       9977 Oct 19  2006 ./README
+        578 Dec  8  2006 ./tools
+       9067 Nov 28  2006 ./tools/afcat.cpp
+      22564 Nov 28  2006 ./tools/afcompare.cpp
+      19102 Nov 28  2006 ./tools/afconvert.cpp
+      14755 Nov 28  2006 ./tools/afcopy.cpp
+       4216 Nov 28  2006 ./tools/affix.cpp
+      16266 Nov 28  2006 ./tools/afinfo.cpp
+       7498 Nov 28  2006 ./tools/afsegment.cpp
+       5044 Nov 28  2006 ./tools/afstats.cpp
+       6573 Nov 28  2006 ./tools/afxml.cpp
+        502 Nov 14  2006 ./tools/Makefile.am
+      17176 Dec  8  2006 ./tools/Makefile.in
+        382 Oct 20  2006 ./tools/quads.cpp
+        116 Oct 20  2006 ./tools/quads.h
+        541 Nov 21  2006 ./tools/utils.cpp
+       1004 Nov 14  2006 ./tools/utils.h

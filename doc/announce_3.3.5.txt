@@ -1,0 +1,38 @@
+Announcing AFFLIB version 3.5.5.
+
+AFFLIB 3.5.5 is a robust forensic file format for storing computer forensic information. AFFLIB offers:
+  * Transparent access to AFF, EnCase (E01), Raw, and split-raw disk images.
+  * Transparent integration to Amazon's S3 storage system.
+  * True encryption of disk images, using either pass phrases or PKI.
+  * True digital signatures of disk images.
+  * Support for MD5, SHA-1, and SHA-256
+  * Support for recovery through the use of parity files.
+
+AFFLIB 3 is in maintenance phase while AFFLIB 4.0 is developed and integrated into our forensic tools. This means that AFFLIB will not have any new features introduced, but we will continue to fix bugs and improve performance.
+
+AFFLIB 3.5.5 has been tested on:
+ * MacOS 10.6
+ * Debian Linux
+ * Fedora Core 12 Linux
+
+A windows version is also available.
+
+AFFLIB 3.5.5 can be downloaded from http://afflib.org/
+
+===========
+We have also created a new release of the following tools that you may find interesting:
+
+* bulk_extractor, a tool that will find email addresses and URLs in disk images. This program is now written in both Java and C++ (two versions, twice the fun)
+
+* frag_find, a tool that will take a set of TARGET files and a disk image and tell you if the files, or pieces of the files, are on the disk. It does this by comparing every sector of every file to every sector of the disk. Ideal for finding exfiltrated corporate documents.
+
+* fiwalk, a tool that turns the metadata information on a disk image into a block of XML, and a python module that makes it easy to do disk processing. See http://simson.net/xml_forensics.pdf for details.
+
+* ATA Raw, a system for constructing ATA commands at the user level and sending them to an ATA device. Ideal for testing write blockers.
+
+Details on all of this and more can be found at our new website:
+	https://domex.nps.edu/deep/
+
+
+
+

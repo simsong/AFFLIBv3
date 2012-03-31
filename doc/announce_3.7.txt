@@ -1,0 +1,67 @@
+			ANNOUNCING AFFLIB 3.7
+
+I'm happy to announce the release of AFFLIB 3.7. Significant
+highlights of the release include the following:
+
+- Copyright Clarification.  AFFLIB was originally a collaboration
+  between Simson L. Garfinkel and Basis Technology and under the terms
+  of that collaboration the copyright was jointly held. The original
+  library was licensed under the 4-part Berkeley license.
+
+  Work done on AFFLIB by Simson Garfinkel after December 26, 2006 was
+  done within the context of my employment with the US Government and,
+  as such, is not subject to copyright.
+
+  All of the files in the current release have been examined to
+  determine whether they are licensed under the four-part license or
+  if they are in the public domain.
+
+- Move to github.org.  As I am now largely working on other projects,
+  I am moving AFFLIB from afflib.org to github.org.  This will make it
+  easier for others to perform maintenance on this release as
+  necessary for the eventual transition to AFFv4.
+  
+There are no other significant changes in this release from release
+3.6.15.
+
+
+
+RELEASE ENGINEERING
+
+Although it is possible to do releases on github using the git tag[1]
+interface, I will still be making digitally signed releases and
+putting them in the github downloads[2] section.
+
+[1] http://gitref.org/branching/#tag
+[2] https://github.com/blog/742-new-uploader-downloads-screen
+
+
+
+USING GIT
+
+The move to git makes it easier for potential AFFLIB developers and
+users to directly access the AFFLIB development tree. For those of you
+who are new to git, here are some simple commands that you can use:
+
+You can check out a copy of the source code with:
+
+    $ git clone git://github.com/simsong/AFFLIBv3.git
+
+You can then keep your copy of AFFLIB up-to-date with:
+
+    $ get pull
+
+If you are working in the repository, you will need to make your own
+configure script. Do that with these commands:
+
+    $ sh bootstrap.sh
+    $ ./configure
+    $ make
+
+
+Other kit commands that may be useful:
+ 
+    $ git add [-f] filename              (adds a file)
+    $ git commit                         (commits to local repo)
+    $ git push                           (push back to clone)
+

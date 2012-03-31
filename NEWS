@@ -1,0 +1,104 @@
+April 18, 2010
+Version 3.6.0 
+
+I am pleased to announce the release of AFFLIB 3.6.0.
+
+With this release, AFFLIB now compiles under "mingw" allowing us to
+directly produce statically linked executables on Windows. The AFFLIB
+release has been significantly shurnk as it no longer needs to include
+libewf, openssl, and zlib.
+
+You can now create your own AFFLIB Windows release on a Macintosh using
+mingw and the script in bootstrap_mingw.sh. Or you can download our 
+precompiled Windows version from http://afflib.org/download/afflib_windows.zip
+ 
+
+
+
+
+September 30, 2009
+Version 3.5.0 Released.
+Major features:
+      - Simultaneous release of AFFLIB, Bloom, and bulk_extractor for MacOS, Linux and Windows
+      - bulk_extractor ported to Java.
+      - Single ZIP file for Windows Release
+
+May 20, 2008
+Version 3.2.1: Cleanup release of 3.2.0; important new features:
+	- Detects truncated files and does not allow them to be opened. 
+	- affix now fixes truncated files
+	- afcrypto will only encrypt AFF and AFD file types.
+	- AFFLIB will no longer open a .afd directory containing no AFF files.
+
+April 14, 2008
+Version 3.1.6 released. Corrects bug in handling of raw files larger than 4GB.
+
+================================================================
+November 26, 2007
+
+AFFLIB 3.0.2 is withdrawn
+AFFLIB 3.0.3 is released
+
+Dear AFF Users:
+
+AFFLIB 3.0.3 has been released. This version fixes a bug in the AFF
+encryption routines that was inadvertantly introduced between 
+AFFLIB 3.0.1 and AFFLIB 3.0.2.  As a result, AFFLIB 3.0.2 has been withdrawn.
+
+The bug in AFFLIB 3.0.2 resulted from a bug in a version of SHA256
+that was bundled into AFFLIB between version 3.0.1 and 3.0.2. Both
+SHA256 and AES256 are required for AFF encryption. Unfortunately, the
+version of SHA256 that was bundled had a data-dependent bug. This bug
+only affected systems which did not have a system-installed SHA256
+implementation.
+
+As a result of this bug, all private implementations of cryptographic
+functions have been stripped from AFFLIB. If you do not have an
+OpenSSL library that has SHA256, you will not be able to use AFF
+encryption.
+
+The practical result is that some users will not be able to use AFF
+encryption without first updating their openssl library. 
+
+ATTENTION MACINTOSH USERS: APPLE'S 10.4 and 10.5 OPERATING SYSTEMS
+SHIP WITH A VERSION OF OPENSSL THAT IS OUT-OF-DATE AND DOES NOT
+INCLUDE SHA256. If you are using a Macintosh, you must download a copy
+of OpenSSL that has SHA256 to use AFF encryption. You can easily
+download a modern OpenSSL implementation using the Macports or fink
+system.
+
+I apologize for this problem. To prevent it from happening, we've
+improved the validation of AFFLIB that runs both when AFFLIB is built
+and each time it runs.
+
+
+
+
+
+================================================================
+August 18, 2007
+AFFLIB Release 2.4.0
+
+I'm pleased to announce the general availability of AFFLIB Release
+2.4.0. This release 
+
+
+
+================================================================
+OLD NEWS FOLLOWS
+================================================================
+November 1, 2006
+
+AFFLIB Maintenance Release 2.0.1
+* Fixes a number of errors when AFFLIB was being run under Cygwin or Borland C++.
+
+AFFLIB Release 2.0
+
+Key features of this release include:
+
+*  Now uses the GNU build tools (autoconf & automake)
+   - Will probe for readline and other features
+   - Special addition to search for libraries in multiple locations
+
+* aimage2.0 released
+   - -L now enables LZMA compression; use -G for logfile output

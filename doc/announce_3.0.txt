@@ -1,0 +1,181 @@
+			ANNOUNCING AFFLIB 3.0
+
+I'm happy to announce the release of AFFLIB 3.0. You can download it
+from the standard location at http://www.afflib.org/
+
+Version 3.0 is a significant upgrade to AFFLIB which introduces the
+following features:
+
+	  * STRONG ENCRYPTION FOR AFF FILES.	  
+	  * STRONG DIGITAL SIGNATURES WITH X.509 CERTIFICATES
+	  * SIGNED BILL-OF-MATERIALS AND CHAIN OF CUSTODY
+	  * SIGNED ISO FILES
+	  * PARITY PAGES ALLOW RECONSTRUCTION OF DAMAGED DISK IMAGES
+
+* STRONG ENCRYPTION FOR AFF FILES.
+
+  With Version 3.0 we are introducing the ability to encrypt AFF
+  evidence files with the AES-256 algorithm, the strongest encryption
+  algorithm available today.
+
+  Each AFF 3.0 file can be encrypted with a unique AES-256 key. This key is
+  can then itself be encrypted using a passphrase provided by the
+  user, or using an X.509 public key.  Because of this two-step
+  process, the passphraseor public key can be changed in just a few
+  seconds without having to decrypt and re-encrypt the entire disk
+  image.
+
+  Whereas some other forensic programs provide the ability to put a
+  "password" on an evidence file, those passwords can be disregarded
+  by non-conformant programs. (For example, GetData claims that it's
+  MountImage Pro program can "open EnCase password protected image
+  files without the password.)  AFF 3.0 uses true encryption: if you
+  do not know the correct decryption key, the only way to access the
+  evidence is to brute-force the encryption passphrase (if there is
+  one). THERE IS NO BACK DOOR.
+
+
+* STRONG DIGITAL SIGNATURES WITH X.509 CERTIFICATES
+
+  Version 3.0 introduces strong digital signatures (SHA-256) signed
+  with X.509 certificates. 
+
+  Digital signatures represents a significant improvement for evidence
+  integrity over today's standard practice of recording the MD5 or
+  SHA-1 of an imaged disk in an investigator's notebook. 
+
+  AFF Digital Signatures, signatures are written for the entire disk 
+  image, all of the disk's metadata, and every 16-megabyte AFF "page."
+
+  Because digital signatures are written after each "page" is
+  acquired, the integrity of these pages can be established in court
+  even if the entire disk cannot be images (for example, because the
+  device is fault, or because there is insufficient time).
+
+  AFF Digital Signatures complement existing integrity
+  measures. Because the signature is stored in its own metadata
+  segment, the signature does not change the content of the acquired
+  disk image.
+
+  Signatures can be written with either self-signed certificates or
+  with X.509 certificates that are issued as part of an organization's
+  PKI.  Using X.509 certificates means that AFF can support RSA or DSA
+  algorithms with 1024, 2048 or larger keys.
+
+
+* SIGNED BILL-OF-MATERIALS AND CHAIN OF CUSTODY
+
+  Version 3.0 introduces a special XML structure that contains a list
+  of every AFF segment in the file, a signature for each segment, a
+  set of "notes," and a public key. This structure is called an "AFF
+  Bill Of Materials" (AFFBOM).
+
+  When an AFF image is created with AIMAGE, the AFFBOM is created and
+  signed with the private key belonging to the person who did the
+  acquisiton. Thereafter, each time a signed AFF file is copied, a new
+  AFFBOM can be created which includes a new AFFBOM which covers all
+  of the original segments and all of the previous AFFBOMs. In this
+  manner the sequence of signed bill-of-materials becomes a custody
+  chain, showing who has copied the image and verifying that no
+  evidentuary segments have been added, deleted, or modified.
+
+
+* SIGNED ISO FILES
+
+  AFF's "AFM" format allows a disk image to be stored in an uncompressed
+  raw file (eg "file.iso") and the associated metadata to be stored in a
+  ".afm" file. The AFM format can also handle raw data stored as a
+  series of "split" raw files (eg "file.001", "file.002", "file.003"
+  etc.)
+
+  Beacuse AFF tools operating on named segments that are independent
+  of the underlying storage container, the AFM format allows any
+  ISO-file to be signed using the "afsign" command. When filename.iso
+  is signed, the afsign create a new file called filename.afm which
+  contains the signatures, the signed bill of materials, and other
+  metadata.
+
+  Although it is also possible sign ISO files using existing tools
+  such as PGP with detached signatures, afsign has several advantages:
+
+  - afsign will sign every 16-megabytes chunk of the ISO file. In this
+    way, if the file is corrupted, you will be able to pinpoint what
+    data is invalid and what data is still good. 
+
+  - Unlike PGP, afsign allows you to add arbitrary metadata and
+    maintain chain-of-custody information.
+
+  - You can sign with X.509 certificates
+
+
+* PARITY PAGES ALLOW RECONSTRUCTION OF DAMAGED DISK IMAGES
+
+  Because every 16-megabyte chunk of an AFF or AFM file is signed,
+  it is easy to detect when a page has been modified or accidently
+  corrupted. The BoM allows missing pages to be detected.
+
+  Similar to RAID5 on hard drives, an AFF parity page makes possible
+  to reconstruct damaged or missing AFF data segments. Once repaired
+  or reconstructed, the signature (which is stored in a differnet
+  location) can be used to determine if the reconstruction is correct. 
+
+  Partiy Pages are automatically created when an image is signed with 
+  afsign. The rewritten aimage that will be part of AFFLIB 3.1 will 
+  create parity pages as the drive is imaged.
+
+================================================================
+AVAILABILITY
+
+AFFLIB 3.0.0 is available now. 
+
+
+================================================================
+NEW AND MODIFIED TOOLS IN AFF 3.0:
+
+The following tools have been aded for AFF 3.0:
+
+* afsign - signs an AFF file.
+
+* afverify - verifies the signature and chain-of-custody segments of
+  an AFF file.  
+
+* afcrypto - manipulates the cryptographic properties of an AFF file. 
+  - Can change the passphrase
+
+The following tools have been modified:
+
+* afcopy - If you provide a signing key, a signed bill-of-materials
+  will be added to extend the chain-of-custody.
+
+
+Other changes in AFF3.0:
+
+* A few bugs have been fixed which caused difficulties in testing. (No
+  users reported problems with them.)
+
+================================================================
+COMING IN AFFLIB 3.1:
+
+I've pushed out Version 3.0 so that people can start to experiment
+with it now. Meanwhile, I'm now working on the following features
+which, I'm hoping, will make it into Version 3.1:
+
+* Public key encryption (so agents in the field can encrypt to a
+  public key, and the images can only be decrypted in the lab.)
+
+* Dramatically improved performance when opening AFF files with signed
+  bill-of-materials. (The BOM will be used as a table-of-contents so
+  that large AFF files do not need to be scanned from end-to-end.)
+
+* A rewrite of aimage:
+
+  - The ability to image raw and AFF files at the same time will be
+    removed (since AFF can now write raw files directly).
+
+  - page-at-a-time imaging, resulting in more compact AFF files (less
+    wasted space) and easier implementation of novel data recovery
+    algorithms. 
+
+  - Calculation of parity pages while the image is written, rather
+    than afterwards.
+

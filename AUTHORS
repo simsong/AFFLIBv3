@@ -1,0 +1,30 @@
+The primary author of AFF is:
+
+Simson L. Garfinkel <simsong@acm.org>
+
+Special thanks also to those who have contributed bug reports and fixes:
+
+Jean-Francois Beckers 
+Sebastien Coutaz 
+Eric C. 
+Timothy Lyons
+Nicolas (kwizart)
+Joachim Metz
+David Collett (PyFlag), for the PyAFF integration
+Phillip Hellewell (AccessData) for port to VC2008 and catching a few bugs.
+
+The AFF Project received substantial financial support in 2005 and
+2006 from Basis Technology Corporation. For that reason some of the
+some of the files (as indicated) have the 4-part Berkeley Copyright
+License.  
+
+We would also like to thank the following organizations for their
+interest and support:
+
+- Naval Postgraduate School
+- National Institutes of Standards and Technology
+- I.D.E.A.L. Technology Corporation 
+- US Department of Defense
+- AccessData
+
+

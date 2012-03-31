@@ -1,0 +1,77 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+Upload protocol.
+
+Goals:
+1. Anybody who is approved can upload. 
+2. Omipodent.
+3. Stateless server.
+4. Automatic integration into the library.
+
+
+Database change:
+ * Add nonce to drives table.
+ * Add a new table for uploaders
+       uploaders
+
+uploaders:
+ * ID - my ID (8 digits hex)
+ * Country - my ISO Country Code
+ * Sequence - Sequence number for this uploader
+
+RPC command ping:
+ * args: a dictionary with
+   * uid:uploaderID
+ * Returns OK if this user is authorized
+ * Raises exception if user is not.
+
+RPC check command:
+ * args: a dictionary with
+   * image_gid_hex:image_gid
+   * uid:uploaderID
+   * seg_name: segment name being uploaded
+ * Reports if the segment has been uploaded or not.
+
+RPC upload command:
+ * args: check dictionary with additions:
+   * seg_arg: argument 
+   * seg_len: length
+   * seg_md5: md5 of data
+   * seg_data: the data
+ * Calls check. If we can upload, does upload
+
+RPC command: seglist
+ * args: dictionary with 
+ * runs ping
+
+Upload returns:
+ * OK
+ * HAVE (already have)
+ * FAIL
+ * Permission Denied (GID already exists with different random number)
+
+Algorithm on upload:
+ * Check uploader id; if it is not valid, return
+ * Get country & sequence numbers from ID
+ *
+ * If image_gid is not in the database
+   - add it to the database
+   - add the nonce to the database
+   - allocate a new AFF filename given the appropriate country code.
+
+ * If image_gid is in the database
+   - If nonce does not matche the nonce in the database, generate an error
+
+ * If command is seglist:
+  - return a list of the segments in the file
+ 
+ * If command is check:
+  - return TRUE if the segent is in the file, otherwise return FALSE
+
+ * If the command is upload:
+  - add the segment to the file
+
+ * server maps image_gid to a filename. Server remembers random number.
+ * If random number is different, no more upload is provided.
+

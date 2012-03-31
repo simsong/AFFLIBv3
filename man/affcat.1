@@ -1,0 +1,48 @@
+.\" Process this file with
+.\" groff -man -Tascii foo.1
+.\"
+.TH AFCAT 1 "OCT 2008" "User Manuals"
+.SH NAME
+afcat \- Output contents of an image file to stdout.
+.SH SYNOPSIS
+.B afcat [options] 
+.I image [images] 
+.SH DESCRIPTION
+.B affcat
+outputs the contents of an image file to stdout.  Image files that are not raw but are recognized
+by AFF will be output in raw format. Missing pages will not be padded, but the fact that they are missing
+will be noted on STDERR.
+
+The options are as follows:
+.IP "-s name"
+Output the named segment, instead of the image data. This is a way to output metadata.
+.IP "-p nnn"
+Just output page number 
+.B nnn
+.IP "-S nnn"
+Just output data sector number 
+.B nnn.
+Sector #0 is the first sector.
+.IP "-q" 
+Quiet mode. Don't print to STDERR if a page is skipped because it is not present.
+.IP "-n"
+Noisy mode. Tell when pages are skipped.
+.IP "-l" 
+List all the segment names, rather than outputing data.
+.IP "-L"
+List Long. Prints segment names, lengths, and args.
+.IP "-d" 
+Debug mode. Print the page numbers to stderr as data goes to stdout.
+.IP "-b"
+Output BADFALG for bad blocks (default is to output NULLs).
+.IP "-v"
+Just print the version number and exit.
+.IP "-r offset:count"
+Seek to the given byte offset and output count characters in each file; may be repeated.
+.SH HISTORY
+.BR "afcat" " first appeared in " "AFFLIB" " v1.00."
+.SH AUTHOR
+Simson Garfinkel <simsong@acm.org>
+.SH COPYRIGHT
+This file is a work of a US government employee and as such is in the Public domain.
+

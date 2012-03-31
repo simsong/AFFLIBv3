@@ -1,0 +1,2587 @@
+2012-03-31  Simson Garfinkel  <simsong@imac3.home>
+
+	* configure.ac: increased version number to 3.7.0
+
+	* ALL FILES: Audited for copyright.
+
+	* COPYING: Clarified that Basis copyright only applies to 
+
+	* .gitignore: created file in preparation for move to github
+
+2012-03-04  Simson Garfinkel  <simsong@imac3.home>
+
+	* configure.ac: increased version number to 3.6.16
+
+	* Changed license from BSD with advertising to BSD without advertising.
+
+2011-12-02  Simson Garfinkel  <simsong@alphonse-mucha>
+
+	* configure.ac: increased version number to 3.6.15
+
+2011-11-26  Simson Garfinkel  <simsong@it151636.ern.nps.edu>
+
+	* configure.ac: incorporated Greg Freemyer's patch to address some
+	ncurses problems.
+
+2011-11-24  Simson Garfinkel  <slgarfin@submit-0.local>
+
+	* lib/utils.h: created virtual destructore
+
+2011-11-21  Simson Garfinkel  <simsong@Alphonse-Mucha.local>
+
+	* configure.ac: added AC_PROG_CXX
+
+2011-11-18  Simson Garfinkel  <simsong@FC15>
+
+	* tools/affxml.cpp (main): removed unused bflag variable
+
+	* lib/vnode_afd.cpp: max() is now always defined, even on windows.
+
+2011-11-01  Simson Garfinkel  <simsong@it150660.ern.nps.edu>
+
+	* lib/aftimer.h (aftimer::eta_time): added std:: before string
+
+	* configure.ac: updated version counter to 3.6.14
+
+2011-11-01  Simson Garfinkel  <slgarfin@submit-0.local>
+
+	* lib/utils.h: added virtual destructor for seginfo
+
+2011-09-28  Simson Garfinkel  <simsong@arlington-8-30-77-137.ncr.vt.edu>
+
+	* configure.ac: incremented version counter to 3.6.13
+
+	* lib/afflib_pages.cpp (af_get_pagesize): having af_page_size() as
+	a macro was causing problems, so now there is both af_page_size
+	and af_get_pagesize, both of which do the same. Please use af_get_pagesize.
+
+2011-09-27  Simson Garfinkel  <simsong@Alphonse-Mucha.local>
+
+	* aftimer.h (timestamp): updated aftimer for higher resolution on win32
+
+2011-09-18  Simson Garfinkel  <simsong@imac3.home>
+
+	* lib/afflib.cpp (af_get_pagesize): created af_get_pagesize, which
+	for some reason was missing.
+
+	* lib/afflib.h: added int af_get_pagesize(AFFILE *af);
+
+
+2011-05-04  Simson Garfinkel  <simsong@alphonse-mucha.home>
+
+	* configure.ac: increased version number to 3.6.11, overcomes recent problems.
+
+2011-05-02  Simson Garfinkel  <simsong@alphonse-mucha.home>
+
+	* configure.ac: added back libcrypto (needed on MacOS)
+
+	* tools/affinfo.cpp (color): explicity tests for tigetstr(), putp() and tparm()
+
+2011-04-27  Simson Garfinkel  <simsong@t>
+
+	* configure.ac: removed dependency on libcrypto (as we have
+	libssl-dev dependency)
+
+2011-04-25  Simson Garfinkel  <simsong@msimsonnet.local>
+
+	* lib/Makefile.am (EXTRA_PROGRAMS): java re-added to distribution;
+	bulk_extractor.jar is now listed as an EXTRA program so it doesn't
+	always get built.
+
+2011-04-14  Simson Garfinkel  <simsong@Magneto.local>
+
+	* configure.ac: increased version to 3.6.10
+
+	* lib/vnode_split_raw.cpp (split_raw_increment_fname): revised
+	splitraw so that it goes 000 to 999 then A00 through ZZ9 (that is,
+	the first and second character are base 36, the third remains base
+	10)
+
+2011-04-06  Simson Garfinkel  <simsong@t>
+
+	* configure.ac: incremented to version 3.6.9
+
+	* lib/aftest.cpp (bugs_test): added tests
+
+	* lib/vnode_split_raw.cpp (split_raw_identify_file): now 
+	returns 1 for filename.000 or filename.001 or filename.AAA or filename.aaa.
+
+	* (split_raw_close): Now only closes files that are open.
+
+	* (increment_fname) changed to vnode_split_raw_increment_fname so it
+	can be externally tested.
+
+2011-03-20  Simson Garfinkel  <simsong@imac3.home>
+
+	* configure.ac: increased version number to 3.6.8
+
+2011-03-18  Simson Garfinkel  <simsong@Silver.local>
+
+	* configure.ac: version number incremented to 3.6.7
+
+	* lib/afflib_i.h: removed typedefs for uint and int64 and uint32_t
+
+
+2011-03-17  Simson Garfinkel  <simsong@silver.westell.com>
+
+	* ALL OF AFFLIB: All "unsigned long" changed to uint32_t *.
+
+2011-02-16  Simson Garfinkel  <simsong@imac3.home>
+
+	* lib/afflib_i.h: removed all u_int, etc. for Cstandard uint8_t,
+	uint32_t, etc.
+
+2011-01-29  Simson Garfinkel  <simsong@imac3.home>
+
+	* tools/affsegment.cpp ("C"): added extern "C" around regex.h include
+
+	* lib/utils.h: changed all u_int to "unsigned int".
+	(aff): changed u_long to unsigned long
+
+	* lib/afflib.h: changed all u_int to "unsigned int" and all
+	"u_char" to unsigned char to ease compiling in certain environments.
+
+2011-01-14  Simson Garfinkel  <simsong@imac3.home>
+
+	* lib/afflib.cpp (af_make_badflag): changed int to unsigned int to
+	avoid compiler warning.
+
+	* configure.ac: removed AC_MSG_NOTICE([LIBEWF:             ${enable_libewf} (requires uuid-dev on Linux)])
+
+2011-01-12  Simson Garfinkel  <simsong@imac3.home>
+
+	* aftimer.h (aftimer::hms): fixed plural for days.
+
+2011-01-01  Simson Garfinkel  <simsong@imac3.home>
+
+	* Makefile.am (pkginclude_HEADERS): removed threaded_hash.h from package.
+
+	* lib/vnode_aff.cpp: incorporated kernel modifications from kernel mounter.
+
+2010-12-22  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/affverify.cpp (hash_verify): changed aftimer to return string
+
+	* aftimer.h (class aftimer): modified to return string rather than
+	deal with silly buffers.
+
+2010-12-16  Simson Garfinkel  <simsong@247.sub-69-99-140.myvzw.com>
+
+	* configure.ac: removed IN_AFFLIB. I wonder what it was used for.
+
+2010-12-16  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: version number increased to 3.6.6
+
+	* lib/Makefile.am (AFFLIB_SOURCES): threaded_hash.h removed from
+	afflib distribution.
+
+2010-12-04  Simson Garfinkel  <simsong@imac3.home>
+
+	* lib/afflib_i.h: only define ENOTSUP if it is not already defined
+
+	* configure.ac: version number increased to 3.6.5
+
+2010-12-04  Simson Garfinkel  <simsong@imac3.local>
+
+	* configure.ac: disable qemu with Msys
+	
+	* configure.ac: ssl3_new in AC_CHECK_LIB changed to SSL_library_init
+
+2010-11-10  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/affdiskprint.cpp: changed HAVE_EXPAT to HAVE_LIBEXPAT
+
+2010-10-25  Simson Garfinkel  <simsong@imac3.home>
+
+	* tools/affxml.cpp (xml_info): was adding a NULL to data instead
+	of b64size.
+
+2010-10-14  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib.cpp (af_open): added a warning that support for E01
+	was removed.
+
+2010-10-08  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: increased to 3.6.3
+
+	* lib/vnode_split_raw.cpp (split_raw_get_seg): added ability to
+	query AF_PAGESIZE, AF_IMAGESIZE, AF_SECTORSIZE and AF_DEVICE_SECTORS
+
+	* lib/vnode_raw.cpp (raw_get_seg): fixed AF_DEVICE_SECTORS to make
+	sure that there are 8 bytes available for the data (previously was 0)
+
+	* lib/afflib_pages.cpp (af_get_page): wasn't setting *bytes if a
+	page was requested and data was null. Now it does. This caused
+	mis-reporting in the size of split_raw files.
+
+	* lib/vnode_split_raw.cpp (split_raw_open_internal): replaced
+	fprintf with call to stderr.
+
+2010-08-09  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* make_mingw.sh: renamed bootstrap_mingw.sh to make_mingw.sh for consistency.
+
+2010-08-01  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: increased version to 3.6.2
+
+	* lib/vnode_afd.cpp (afd_identify_file): added file:// logic to
+	afd_identify_file from aff_identify_file
+
+	* lib/vnode_split_raw.cpp (split_raw_write_internal2): when
+	storing data in AFM-files the mode set by af_open is only used for
+	the AFM-file, but not for the .000 which contains the raw data. In
+	case of mode 0600 for af_open,  the mode for the .000 raw-data
+	file is set to 0644, which enables read-access for everyone. This
+	is a possible security risk on multi-user systems. To correct
+	this, mode in open() is now taken from af->openmode, and not
+	hard-coded to be 0644.
+	
+
+2010-07-29  Simson Garfinkel  <simsong@imac2.home>
+
+	* win32/afflib.mak (LINK_OPTS): updated for AFFLIB3.6 naming scheme
+
+	* lib/afflib.h: added #ifdef for stdint.h
+
+	* BUGLIST.txt: removed note about afd encryption not working.
+
+2010-07-20  Simson Garfinkel  <simsong@45.sub-75-206-247.myvzw.com>
+
+2010-07-15  Simson Garfinkel  <simsong@shorty.local>
+
+	* lib/vnode_afd.cpp (vnode_afd): removed AF_VNODE_NO_SEALING from vnode_afd->flags.
+	(afd_add_file): ap->num_afs>0 changed to ap->num_afs>1 for copying
+	over the metadata for the second file.
+
+2010-07-10  Simson L. Garfinkel  <simsong@imac2.home>
+
+	* lib/afflib.h (struct af_vnode_info): changed imagesize in
+	af_vnode_info structure from int64_t to uint64_t.
+
+2010-07-10  Simson L. Garfinkel  <simsong@imac2.local>
+
+	* tools/Makefile.am: all commands now begin aff rather than af.
+
+	* lib/vnode_ewf.cpp (ewf_vstat): removed EWF support from AFF
+
+2010-07-06  Simson L. Garfinkel  <simsong@imac2.home>
+
+	* lib/vnode_aff.cpp (aff_get_seg): fixed assertion in ret.
+
+2010-06-28  Simson Garfinkel  <simsong@silver-surfer.home>
+
+	* configure.ac: increased version number to 3.5.13.
+
+	* tools/Makefile.am (bin_PROGRAMS): renamed afconvert to
+	affconvert because of name collission with MacOS
+
+2010-06-27  Simson Garfinkel  <simsong@silver-surfer.home>
+
+	* lib/Makefile.am (EXTRA_PROGRAMS): I read on a debian complaint
+	list that "aftest" and "s3" shouldn't be installed, but nobody
+	thought to drop me a note explaining this or telling me how to do
+	it. So after about 15 minutes with the automake manual I moved
+	aftest and s3 from bin_PROGRAMS to EXTRA_PROGRAMS and now they
+	shouldn't get installed. It would be really nice if those Debian
+	folks to send their comments back to package authors.
+
+2010-04-25  Simson L. Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: version increased to 3.5.12
+
+	* Makefile.am (EXTRA_DIST): misc expat distribution removed.
+
+2010-04-25  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: version increased to 3.5.11
+
+2010-04-18  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* substantial modifications to compile under mingw
+	
+	* tools/afcrypto.cpp (check_file): replaced index() with strchr()
+	for WIN32
+
+	* lzma443/C/Common/Alloc.cpp: removed MidAlloc(), MidFree(),
+	SetLargePageSize(), BigAlloc() and BigFree() when compiling under mingw
+
+2010-04-17  Simson Garfinkel  <simsong@96.sub-75-226-243.myvzw.com>
+
+	* configure.ac: patched for conditional inclusion of the win32
+	directory.
+
+2010-04-14  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* debian/ directory removed at the request of the debian project.
+
+2010-04-12  Ryan Mayer  <mrsolo@mayer-precision>
+
+	* lib/aftest.cpp (xmltest): now compiles without threaded_hash.h
+	(simson apparently forgot to add threaded_hash.h to the subversion repository....)
+
+	* tools/afinfo.cpp (print_info): now checks to see if fwrite() doesn't
+	write all the characters.
+
+	* tools/afcat.cpp (afcat): now checks to see if fwrite() doesn't
+	write all the characters.
+
+	* tools/afcrypto.cpp (usage): changed -d (debug) to -D. Added -e
+	option (decrypt.)
+
+2010-04-10  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* applied 03-bashism.patch, fixes a so-called bashism in a test script.
+	* applied 04-fix-afdiskprint.patch, fixes a grave bug which prevents
+	afdiskprint from starting at all.
+
+
+2010-04-09  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/affuse.c (main): added explicit instructions to install fuse-devl
+
+2010-03-19  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: updated version to 3.5.10
+
+	* tools/aff_bom.h: removed non-PD terms in copyright statement.
+
+	* tools/aff_bom.cpp: removed non-PD terms in copyright statement.
+
+	* tools/aff_bom.cpp: corrected spelling of postgraduate
+
+2010-03-14  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: increased version number to 3.5.9
+
+	* lib/vnode_raw.cpp: now sets af->imagesectorsize when
+	AF_SECTORSIZE is requested. 
+	
+	* (raw_filesize): moved added support for af_figure_media to
+	raw_filesize().
+
+	* (raw_open): modified to call raw_filesize() to figure size of
+	the media
+
+	* bulk_extractor should now work with raw devices.
+
+2010-02-23  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: increased version to 3.5.8
+	
+	* tools/test_signing.sh (echo): removed ./ from command names.
+
+	* tools/afconvert.cpp (main): removed TERM dependency from
+	afconvert. 
+
+2010-01-17  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* lib/afflib_pages.cpp: removed 'shouldfree' comment, because the
+	variable is gone.
+
+2010-01-16  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: updated version to 3.5.6
+
+2010-01-15  simsong  <simsong@domex.nps.edu>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): ewf_get_seg had segnum as an uint64_t; should have been a uint_64_t.
+
+2010-01-03  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: now properly handles linux systems that have
+	libewf installed but not uuid-dev
+
+2009-12-24  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: incremented version to 3.5.5
+	
+	* tools/afverify.cpp (process): modified to only complain of an
+	unsigned file if the unsigned segments are data segments.
+
+	* tools/afverify.cpp (verify_bom_signature): fixed bug in
+	verification of XML signatures. I have no idea why this was
+	here. Added better error checking.
+
+2009-12-24  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* tools/test_*.sh: modified to use mkstemp to create proper
+	temporary files.
+	
+	* lib/afflib_pages.cpp (af_read_sizes): corrected to properly
+	calculate the size of the last page
+
+2009-12-23  simsong  <simsong@domex.nps.edu>
+
+	* lib/afflib.cpp (af_get_imagesize): added memset(&vni,0,...) to af_get_imagesize()
+
+2009-12-20  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* lib/afflib.cpp (af_invalidate_vni_cache): created new function,
+	since invalidation was happening in more than one place
+
+2009-12-19  simsong  <simsong@domex.nps.edu>
+
+	* tools/afcrypto.cpp (main): added -E option which just prints the number of segments that would be encrypted.
+
+2009-12-16  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib.cpp (af_open_with): modified so that a valid AFFILE
+	is returned even if the passphrase is invalid
+
+2009-12-14  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/vnode_aff.cpp (aff_vstat): wasn't setting cannot_decrypt:1; fixed.
+
+	* tools/afconvert.cpp (convert): fixed so that it handles file:// notation.
+
+2009-12-13  Simson L. Garfinkel  <simsong@Silver-SSD.local>
+
+	* configure.ac: upgraded version count to 3.5.4
+	
+	* tools/afverify.cpp (main): added OpenSSL_add_all_digests().
+	(usage): added debug to print if SHA256 isn't working.
+
+2009-12-13  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/test_recovery.sh (PATH): now stores tempfiles in /tmp
+
+	* tools/test_afsegment.sh (echo): now stores tempfiles in /tmp/
+
+	* tools/test_passphrase.sh: now stores tempfiles in /tmp, rather
+	than in the current directory.
+
+	* tools/afconvert.cpp (convert): fixed utimes() so that it is
+	applied to the af_output_filename.
+
+	* tools/afcrypto.cpp (main): added option -j to print total number
+	of encrypted segments and -J to print total number of unencrypted segments.
+
+2009-12-05  Simson Garfinkel  <simsong@23.sub-75-210-229.myvzw.com>
+
+	* lib/vnode_aff.cpp (aff_close): forgot to close aff_toc_free,
+	causing memory leak. Fixed.
+
+2009-12-05  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): same bug as below
+
+	* lib/vnode_qemu.cpp (qemu_get_seg): bug in qemu_get_seg should
+	have set *datalen to 8 when called with *datalen=0. Fixed.
+
+	* tools/afcompare.cpp (compare_aff_aff): fixed handling when
+	images have different pagesize but same sectorsize.
+
+	* lib/vnode_raw.cpp (raw_get_seg): added check for seek beyond end
+	of file
+
+2009-11-26  Simson Garfinkel  <simsong@t>
+
+	* MASSIVE UPDATE: fixed many compiler warnings from signness and
+	bad printf formats.
+
+	* lib/afflib.h: af_read now returns ssize_t
+
+2009-11-26  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/afcrypto.cpp: now reports the number of encrypted pages
+
+	* lib/vnode_aff.cpp (aff_vstat): now calculates the number of
+	encrypted pages.
+
+	* lib/afflib.cpp (af_seek): reworked so that there would be no
+	sign problems
+
+	* configure.ac (AFFUSE_BIN): turned on -Wall. enabled
+	_FORTIFY_SOURCE=2 in the Makefiles. What happened to that?
+
+2009-11-25  Simson Garfinkel  <simsong@205.2.242.10.in-addr.arpa>
+
+	* configure.ac: updated to version 3.5.3
+
+2009-11-25  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/crypto.cpp (af_get_affkey_using_keyfile): fixed swapped
+	memset arguments.
+
+	* lib/vnode_s3.cpp (s3_get_next_seg): fixed swapped memset arguments.
+
+	* lib/s3_glue.cpp (encode): fixed swapped memset arguments.
+
+2009-11-01  Simson L. Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: also checks ${prefix} for installed libraries
+
+2009-10-22  Simson Garfinkel  <simsong@142.sub-75-226-173.myvzw.com>
+
+	* configure.ac: updated to version 3.5.2
+
+2009-10-20  Simson Garfinkel  <simsong@Silver-Surver.local>
+
+	* win32/Makefile.am (the_release): added libeay32.dll to zipfile
+
+2009-10-09  Simson Garfinkel  <simsong@domex.nps.edu>
+
+	* Removed AFF_SIGS since it is now determined on the fly.
+	
+	
+	* configure.ac: remove SHA256 detection from configure script; this is now done at runtime.
+
+	* lib/afflib_pages.cpp (af_update_page): modified write_sha256 block to use the EVP system.
+
+	* lib/afflib.cpp (af_initialize): removed SHA256 validation vectors from af_initialize() because AFFLIB now uses the EVP system for SHA256.
+
+2009-10-04  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* tools/afinfo.cpp (print_info): fixed bug in which auto_decrypt
+	was being set even if it was not previously set.
+
+	* lib/afflib.cpp (af_set_option): now returns the previous version
+	of the option that is set. 
+
+2009-10-03  Simson Garfinkel  <simsong@Silver-Surver.local>
+
+	* tools/afdiskprint.cpp: added O_BINARY define for Windows.
+
+2009-09-30  Simson Garfinkel  <simsong@t>
+
+	* configure.ac: updated version number to 3.4.2
+
+	* tools/afdiskprint.cpp: added #include <algorithm> because STL
+	isn't very S on Linux.
+
+2009-09-22  Simson Garfinkel  <slgarfin@hamming.uc.nps.edu>
+
+	* lib/vnode_aff.cpp (aff_open): failure to obtain exclusive lock
+	now generates warning rather than error.
+
+	* tools/afdiskprint.cpp (main): added #ifdef HAVE_SRANDOMDEV for
+	compilation on linux
+
+2009-09-17  Simson Garfinkel  <simsong@Silver-Surver.local>
+
+	* configure.ac: increased version number to 3.4.0
+
+	* tools/afdiskprint.cpp (diskprint_verify): added diskprint.
+
+2009-08-22  Simson Garfinkel  <simsong@79.sub-70-198-200.myvzw.com>
+
+	* configure.ac: increased version number to 3.3.8
+
+2009-08-20  Simson Garfinkel  <simsong@65.sub-75-195-141.myvzw.com>
+
+	* lib/*.cpp and tools/*.cpp (info_file): warnings removed for GCC 4.2.1
+	* Updated many format strings to handle GCC 4.2.1
+
+2009-08-08  Simson Garfinkel  <simsong@imac2.local>
+
+	* tools/affix.cpp (fix): changed truncate() to ftruncate(), as we
+	have a valid win32 cover for ftruncate.
+
+	* tools/afconvert.cpp (convert): made call to utimes() conditional
+	because we don't always have it.
+
+	* lib/Makefile.am (AFFLIB_SOURCES): removed aftimer.cpp, since the
+	class is now entirely defined in the aftimer.h
+
+2009-07-22  Simson Garfinkel  <simsong@Snow3-2.local>
+
+	* configure.ac: now specifically tells the user to install an up-to-date version of OpenSSL if SHA256 is missing.
+
+	Version number upped to 3.3.7
+
+2009-05-19  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* configure.ac: upped version number to 3.3.6
+
+	* Fixed bug in handling of fixed-size AFD files.
+
+2009-05-03  Simson Garfinkel  <simsong@imac2.local>
+
+	* changed version number to 3.3.5
+
+	* Modified configure.ac so lack of SHA256 is no longer fatal
+
+2009-03-17  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afxml.cpp (xml_info): changed name= to image_filename= in affinfo attribute.
+
+2009-03-05  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+2009-02-21  Simson Garfinkel  <simsong@t>
+
+	* configure.ac: added AC_CHECK_LIB([rt],[aio_error64]) to configure.ac
+
+2009-02-11  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: support added for VMDK and DMG files.
+	Version number will be incremented to to 3.4 when they are stable.
+
+2009-02-10  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib.cpp (af_open_with): Now, if it can't allocate
+	AFFLIB_CACHE_PAGES_DEFAULT, try to allocate just 2 pages.
+
+	* lib/afflib.h (AFFLIB_CACHE_PAGES_DEFAULT): Default page cache
+	size increased from 2 pages to 32, increasing memory requirements
+	from 32MB to 512MB. This will make AFFLIB run dramatically faster
+	in most situations. It will, however, require lowering when AFF is
+	running in reduced memory configurations.
+
+2009-01-27  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib.cpp: created function to set acquisition date in a
+	standardized way.
+
+	* tools/afconvert.cpp (usage): removed -Z option from usage
+	because it was never implemented.
+
+2008-12-30  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/Makefile.am (AFFLIB_SOURCES): moved display_as_quad to
+	af_display_as_quad() and added to library.
+
+2008-10-28  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* lib/afflib_stream.cpp (af_read): if reading through a short page, return (0) for attempts to read additional bytes. (Previously generated a crash...) What's the correct behavior? SHould we advance to the beginning of the next page? I don't know.
+
+2008-10-12  Simson Garfinkel  <simsong@137.sub-75-221-230.myvzw.com>
+
+	* man/Makefile.am: created man page for afcat
+
+2008-09-29  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* configure.ac: incremented version counter to 3.3.4
+
+	* pyaff/pyaff.c: changed #include from afflib/afflib.h to lib/afflib.h
+
+2008-09-23  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib_i.h (struct af_figure_media_buf): incremented
+	max_read_blocks from 4 bytes to 8 bytes because that's what Apple returns!!!
+
+2008-09-10  Simson Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: upped version counter to 3.3.3
+
+	* Added include <cstring> to all CPP files that had include <string>
+
+2008-09-04  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac (AFFUSE_BIN): removed printing of modified cflags
+
+	* lib/s3.cpp (s3_df): removed af_commas, as it was already in afflib_utils.cpp
+	(s3_ls): changed af_commas to PRId64
+
+2008-09-03  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* configure.ac: fixed support for QEMU under Linux (added -lrt ---
+	what a weird place to put it), and also fixed autoconf problem of
+	qemu support being required even when it was turned off.
+
+2008-08-25  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* lib/afflib.h (struct af_vnode_info): 
+
+	* lib/afflib.cpp (af_get_imagesize): updated for new af_vnode_info name
+
+	* lib/afflib.h (struct af_vnode_info): encrypted_count and
+	signed_count changed to segment_count_encrypted and
+	segment_count_signed; page_count_total and segment_count_total added.
+
+2008-08-26  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* configure.ac: removed QEMU support by default; it needs more work.
+
+2008-08-17  Simson Garfinkel  <simsong@199.122.224.10.in-addr.arpa>
+
+	* configure.ac: made OpenSSL error on Mac fatal.
+
+	* lib/Makefile.am (libafflib_la_SOURCES): s3_glue is now not included
+	in AFFLIB SOURCES if MAYBE_S3 is false.
+
+2008-08-17  Simson Garfinkel  <simsong@94.24.242.10.in-addr.arpa>
+
+	* lib/afflib_stream.cpp (af_set_maxsize): changed call from
+	af_get_imagesize() to access of af->image_size.
+
+	* lib/afflib.cpp (af_seek): changed called to af_get_imagesize()
+	to af->image_size
+	(af_get_imagesize): removed locking, as the individual elements of
+	the af structure are not accessed.
+
+2008-08-17  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib.cpp (af_update_segf): modified to clear af->vni_cache
+
+	* lib/afflib.cpp (af_vstat): added support for caching results.
+	
+	* lib/afflib_stream.cpp (af_write): modified to clear af->vni_cache
+	
+	* lib/afflib_stream.cpp (af_read): modified to use af->image_size
+	rather than a calculated image_size.
+
+2008-08-13  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): now takes imagesize from
+	af->image_size, since it was already set.
+	(ewf_bytes_per_sector): refactored all libewf_get_bytes_per_sector
+	into this function.
+
+2008-08-11  Simson Garfinkel  <simsong@0.sub-70-211-150.myvzw.com>
+
+	* configure.ac: increased version number to 3.2.7
+
+	* lib/s3.cpp: changed include err.h to include afflib_i.h for
+	cases where users want s3 but don't have err.h (like Solaris)
+
+2008-08-07  Simson Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: version increased to 3.2.6
+
+	* lib/vnode_ewf.cpp (ewf_close): modified to use the second
+	argument for libewf if LIBEWF_VERSION>=20080501
+	
+2008-07-22  Simson Garfinkel  <simsong@112.sub-75-199-16.myvzw.com>
+
+	* configure.ac: upped version to 3.2.5, as 3.2.4 wouldn't compile
+	on machines without EVP_SHA256.
+
+2008-07-20  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib.cpp (af_make_gid): returns -1 if an error, 0 if GID
+	exists, and if one is made.
+
+	* lib/crypto.cpp: (af_sign_all_unsigned_segments): Now returns the
+	number of unsigned segments that were signed.
+
+	* tools/afsign.cpp (afsign): 
+
+	* lib/crypto.cpp (af_is_signature_segment): af_is_signed_segment
+	changed to af_is_signature_segment because that's what it is doing.
+
+2008-07-18  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): fixed case of data==0 and
+	datalen==0 generating an error.
+	(ewf_get_seg): fixed requesting of invalid pages
+
+2008-07-18  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* tools/afcopy.cpp (main): changed -s option to -k for consistency
+	with afsign.
+
+2008-07-16  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/vnode_aff.cpp (aff_vstat): removed has_encrypted and
+	has_signed from the vni information; use the encrypted_count and
+	signed_count. Sorry about breaking backward compatibility with the
+	binary API; nobody is using this yet.
+
+	* tools/afsign.cpp (afsign): bug in signing of signature pages fixed.
+
+2008-07-15  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* configure.ac: increased version number to 3.2.4
+
+2008-07-14  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/vnode_aff.cpp (aff_open): added flock to vnode_aff, so that
+	multiple writers to an AFF file will now block rather
+	than corrupt the file
+
+2008-07-10  Simson Garfinkel  <simsong@copy.ern.nps.edu>
+
+	* tools/afinfo.cpp (figure_media): added -A option to print XML
+	output of media params.
+
+2008-07-09  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afxml.cpp: suppreses XML output of encrypted segments
+
+	* tools/afinfo.cpp (info_file): color was too hard to do; we just use bold now for decrypted data
+
+2008-07-08  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afxml.cpp (xml_info): fixed bug in afxml where last 2 chars of md5_hex were not reported because not large enough buffer was allocated
+
+	* lib/afflib_util.cpp (af_hexbuf): 
+
+2008-07-07  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* tools/afsegment.cpp (main): added -x to print segment as hex string
+
+2008-07-05  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/Makefile.am (#aftest_LDFLAGS): lib/s3 binary no longer made
+	if S3 is not enabled.
+
+2008-07-03  Simson Garfinkel  <simsong@image.ern.nps.edu>
+
+	* tools/afsegment.cpp (process): better error messages when
+	segment doesn't exist
+
+2008-07-03  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afinfo.cpp (info_file): fixed printing so color is left as
+	red, not black
+	(info_file): only reports missing pages can't be computed if -d
+	flag is present.
+
+2008-07-02  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* lib/afflib_i.h (AF_VNODE_NO_SEALING): added flags for
+	AF_VNODE_NO_SIGNING and AF_VNODE_NO_SEALING so that AFF
+	implementations that do not support encryption can declare
+	this. Added appropriate macros for checking these variables. 
+
+2008-06-29  Simson Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: incremented version to 3.2.3
+
+	* tools/afconvert.cpp (convert): fixed bug in which  converting .aff file
+	to a .afd file caused crash
+
+2008-06-27  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/afflib.cpp: added locking to all of the functions; still
+	need to add it to afflib_streams.
+
+	* lib/afflib_util.cpp: moved eff, af_err, errx, warn and warnx to
+	this file.
+
+2008-06-24  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* tools/affix.cpp (fix): adds an AF_IMAGE_GID if one doesn't exist.
+	(fix): fixed error in which O_RDWR flag was being passed as a mode
+	to af_open_with(). This prevented the -y option from operating
+	properly. 
+
+	* tools/afconvert.cpp (convert): adds an AF_IMAGE_GID if one doesn't exist.
+
+	* tools/afcopy.cpp (afcopy): adds an AF_IMAGE_GID if one doesn't exist.
+
+
+	* lib/afflib.cpp (af_make_gid): added af_make_gid (removed from aimage)
+
+2008-06-20  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* configure.ac: incremented version number to 3.2.2
+
+2008-06-18  Simson Garfinkel  <simsong@Silver-Surfer.local>
+
+	* Makefile.am: added threaded_hash.h to the list of installed .h files
+
+2008-06-10  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/aff_toc.cpp: simplified to make toc mandatory.
+
+2008-06-02  Simson Garfinkel  <simsong@copy.ern.nps.edu>
+
+	* lib/afflib.cpp (af_open_with): fixed error in wiping password
+	when open mode is read-only and password is provided. (If no
+	encryption segment is present, do not use a password.)
+
+2008-05-28  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afinfo.cpp (info_file): now states that bold is something that was decrypted
+
+2008-05-30  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/afinfo.cpp (info_file): decrypted data now shows in red
+	and bold
+
+	* lib/afflib_i.h (struct _AFFILE): fixed definition of struct
+	_AFFILE to be compatible with C (was just compatible with C++).
+
+2008-05-29  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): modifid once again to work with
+	wide char
+
+2008-05-21  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_afd.cpp (afd_open): now refuses to open a .afd
+	directory with no aff files.
+
+	* tools/afcrypto.cpp (main): AFCRYPTO will now only encrypt AFD
+	and AFM files.
+
+2008-05-20  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/*.cpp (recover): changed err() to af_err() after every af_open().
+
+	* lib/vnode_aff.cpp (aff_get_next_seg): detects truncated files
+	and will not allowed them to be opened.
+
+2008-05-19  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/affix.cpp (usage): removed -b option; wasn't using it.
+
+2008-05-17  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/afflib.cpp (af_update_segf): changed padding to 01 for 1 pad
+	byte, 02 02 for two pad bytes, etc., in keeping with PKCS7.
+
+	* lib/afflib.h (AFFLIB_TRACEFILE): changed AFFLIB_TRACE to AFFLIB_TRACEFILE 
+
+2008-05-13  Simson L. Garfinkel  <simsong@domex.nps.edu>
+
+	* tools/afxml.cpp (xml_info): for some reason, XML sometimes had a ^C at the end. Changed malloc to calloc to zero buffer and avoid the problem.
+
+2008-05-12  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/aftest.cpp (lzma_test): changed more char *'s to const char *.
+
+	* lib/afflib_i.h (struct af_vnode): changed char *name to const
+	char *name; wonder why I didn't see this before.
+
+2008-05-08  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* configure.ac: fixed script so that setting the environment
+	variable AFF_NOOPT to any value will prevent optimization
+
+2008-05-07  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/crypto.cpp (af_get_aes_key_from_passphrase): fixed error in
+	kversion checking; additional work on encryption compatibility
+	between Mac and Linux
+
+2008-04-28  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/afinfo.cpp: updated copyright notice.
+
+	* tools/aff_bom.cpp: added public domain disclaimer
+
+	* tools/aff_bom.h: added public domain disclaimer
+
+	* tools/afcrypto.cpp: corrected copyright notice 
+
+	* tools/afcompare.cpp: updated copyright notice
+
+	* tools/afconvert.cpp: updated copyright notice.
+
+2008-04-26  Simson Garfinkel  <simsong@imac2.local>
+
+	* tools/afcopy.cpp (afcopy): removed debugging.
+
+2008-04-25  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib.h (AF_XML_AFFBOM): AF_XML_CUSTODY_CHAIN renamed
+	AF_XML_AFFBOM and changed from "custody_chain" to "affbom"
+
+2008-04-23  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/crypto.cpp (af_get_aes_key_from_passphrase): added code to
+	fix compiler problem on Linux/GCC 4.0/64-bit machines in which
+	unsigned long foo:32 took up 8 bytes (instead of 4).
+
+	* Added to code to handle reading incorrectly-generated 56-byte affkey segments 
+
+2008-04-21  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): changes made to support the
+	circa 2007 version of libewf
+
+	* tools/afcrypto.cpp (main): changed output to make easier to parse and more useful.
+
+	* lib/vnode_aff.cpp (aff_vstat): added signed_count and encrypted_count.
+
+2008-04-14  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_raw.cpp (raw_read): replaced fseek() with fseeko().
+
+	* lib/vnode_aff.cpp (af_truncate_blank): replaced fseek() with
+	fseeko()
+	
+	* lib/vnode_aff.cpp  (aff_update_seg): replaced fseek() with fseeko(). (Shouldn't
+	matter here, but it might).
+
+	* lib/vnode_raw.cpp (raw_write): changed fseek() to fseeko().
+
+2008-03-27  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* Added debian system provided by Joachim Metz
+	
+	* configure.ac: incremented version counter to 3.1.5
+
+	* lib/afflib.cpp (af_get_imagesize): now sets errno=1 if it can't
+	determine imagesize because of encryption.
+	
+	* afflib.pc.in (prefix): added file
+
+2008-03-24  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_ewf.cpp (ewf_get_seg): updated to handle with libewf
+	returning -1 for error and 1 for success.
+
+2008-03-12  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* afflib.spec.in (BuildRequires): fixed subdirectory problem in specfile.
+
+2008-03-09  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* configure.ac: 
+
+2008-03-09  Simson Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: updated to AFFLIB-3.1.3
+
+2008-03-09  System Administrator  <simsong@Obsidian.lan>
+
+	* lib/Makefile.am (install-exec-hook): fixed shell script syntax error
+
+2008-03-05  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/vnode_ewf.cpp: updated for libewf 20080305
+
+2008-03-02  Simson Garfinkel  <simsong@imac2.local>
+
+	* afflib.spec.in (BuildRequires): added missing include files
+
+	* Makefile.am (pkginclude_HEADERS): removed duplicate afflib_sha256.h
+
+2008-02-28  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afrecover.cpp (recover): fixed bug in printf statement.
+
+2008-02-26  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* Here's how to turn on executable property in the SVN repository:
+	svn propset svn:executable ON test_tools.sh 
+	More at http://svnbook.red-bean.com/en/1.0/re23.html
+
+2008-02-26  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib.cpp (af_update_segf): fixed annoying bug which caused
+	signing of encrypted data being written to generate segmentation
+	errors under some conditions.
+
+	* configure.ac: better reporting of dependencies for aff signatures
+
+2008-02-26  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afsegment.cpp (usage): usage fixed, removing space after
+	-s and -p options (apparently getopt on Linux can't handle it.)
+
+	* lib/crypto.cpp (af_sig_verify_seg): #ifdef USE_AFFSGIS changed
+	to #ifdef USE_AFFSIGS
+
+	* lib/utils.cpp: C++ utilities moved into the aff namespace.
+
+	* tools/afverify.cpp (main): version flag changed from -v to -V
+	for consistency with other tools.
+
+	* lib/afflib_os.cpp (af_figure_media): fixed another int64 reference
+
+2008-02-26  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* tools/afverify.cpp (usage): corrected usage.
+
+2008-02-25  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* configure.ac: now properly handles libexpat once again
+
+	* lib/afflib_i.h: removed lots of the #ifdefs for openssl/*.h and replaced if #ifdef HAVE_LIBSSL
+
+	* lib & tools:  moved utils.cpp from tools directory to lib directory
+
+	* Makefile.am (pkginclude_HEADERS): added lib/aftimer.h to the list of installed headers
+
+2008-02-24  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib.cpp (af_get_imagesize): changed int64 to int64_t and
+	uint64 to uint64_t for compliance with C99 standard.
+
+	* aimage removed for AFF; it is now going to be its own distribution
+
+2008-02-12  SImson L. Garfinkel  <simsong@copy.ern.nps.edu>
+
+	* aimage/gui.cpp (my_refresh): changed screen update so it now happens every 128K bytes.
+
+2008-02-10  SImson L. Garfinkel  <simsong@copy.ern.nps.edu>
+
+	* tools/afcat.cpp (sig_info): added SIGINFO (^t) to afcat to print current page
+
+2008-02-10  Charlie Root  <simsong@copy.ern.nps.edu>
+
+	* lib/vnode_raw.cpp (raw_open): modified raw so that it will write as well
+
+2008-02-20  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/afflib_i.h ("C"): put everything inside an extern "C".; removed legacy uint64 and int64 types.
+
+	* tools/Makefile.am (bin_PROGRAMS): added test_tools to being to get some more automated testing.
+
+	* tools/afsign.cpp (afsign): improved error message when certificate file cannot be loaded
+
+	* tools/afsegment.cpp (usage): fixed usage so that version number is -V (as the option was implemented)
+
+2008-02-13  Simson Garfinkel  <simsong@imac2.local>
+
+	* configure.ac: revamped to allow you to specify where expat is located
+
+2008-02-08  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afcat.cpp (afcat): now warns if it can't cat because it
+	doesn't have the encryption keyx
+
+	* lib/afflib.h: moved af_vstat() into afflib.h.
+	* lib/afflib.h: moved actually AFFILE definition into afflib_i.h
+
+2008-02-06  SImson L. Garfinkel  <simsong@copy.ern.nps.edu>
+
+	* aimage/gui.cpp (my_refresh): Now prints names of input and
+	output files on display.
+
+	* aimage/aimage.cpp: You can now specify "%d" or "%02d" or any
+	%...d format in the output filename; %d is incremented until the
+	file doesn't exist.
+
+2008-01-29  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/aftest.cpp (main): made default to run all tests
+	(main): now erases the test files after creating them.
+
+	* Makefile.am (prerelease): added "make distcheck" to prelease target
+
+2008-01-28  Simson Garfinkel
+	* Released 3.0.5 - doesn't compile due to noinst_ issue in
+	Makefile.am
+	* Released 3.0.6, which is the same as 3.0.5 but doesn't install
+	libraries.
+	
+2007-12-24  Simson Garfinkel  <simsong@imac2.local>
+
+	* afflib.spec.in (Name): Joachim Metz contributed this file.
+
+2007-12-18  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_afd.h (AFD_DEFAULT_MAXSIZE): Changed from 600 to 608
+	(so that it is now a multiple of 16; not strictly needed, but it
+	makes things a bit cleaner.)
+
+	* lib/afflib.cpp (af_update_segf): fixed crasher on update when
+	af->crypto->encrypt was not present.
+
+	* tools/affuse.c (main): improved error messages for when affuse
+	can't run.
+
+2007-12-14  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* configure.ac: changed config.h to affconfig.h to minimize
+	name space collisions. 
+
+	* lib/Makefile.am (lib_LTLIBRARIES): libafflib.la is now an
+	installed library.
+
+2007-11-27  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afxml.cpp (okay_to_print): added ', ", and & to the list
+	of characters that cannot be output in XML
+
+	* lib/afflib.cpp (af_open_with): opening a read-only AFF file that
+	has no encryption works, even if you specify an encryption password.
+
+	* tools/afinfo.cpp (display_as_hex): displayed image GID in hex
+
+2007-11-26  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* REMOVED lib/sha256.c --- the implementation had bugs. (That's
+	what I get for including a non-validated crypto algorithm.) AFF
+	now requires SHA256 but it should compile without it
+
+	* tools/afsegment.cpp (main): now handles case when optarg==0
+	(which happened with afsegment -d seg instead of affsegment -dseg)
+	(usage): added : to "d" in getopt.
+
+2007-11-24  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/crypto.cpp: refactored AFF compilation error message
+
+2007-11-16  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/vnode_aff.cpp (aff_identify_file): fixed parsing of file:// URLs.
+
+2007-11-14  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/afflib.h: af_is_badsector now takes const unsigned char
+	*buf; taking non-const was an error
+
+2007-11-13  Simson L. Garfinkel  <simsong@domex.local>
+
+	* lib/afflib_sha256.h: minor tweaks to deal with the problem with
+	SHA256() and EVP_sha256() are present but not in the #include file.
+
+2007-11-07  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afsegment.cpp (main): -q renamed to be -Q (because -q
+	should be quiet)
+	(main): only prints filename if there is more than one file
+	(main): only prints segname if there is more than one seg
+
+2007-10-31  Simson Garfinkel  <simsong@imac2.local>
+
+	* tools/utils.cpp: added #ifdef AFF_SIGS so that bom class won't
+	be compiled if not compiling with AFFSIGS
+	added #include <afflib_i.h> to get #ifdef AFF_SIGS
+
+2007-10-29  Simson Garfinkel  <simsong@imac2.local>
+
+	* tools/afinfo.cpp (info_file): aes_segs now initialized to
+	0. (Strangely, the uninitialized value was causing problems when
+	running with MSC.)
+
+	* lib/vnode_s3.cpp (s3_cantopen): added "return -1" to s3_cantopen()
+
+	* lib/vnode_aff.cpp (aff_get_next_seg): ENOBUFS error on
+	incomplete reads changed to E2BIG, since there is no ENOBUFS on windows.
+
+2007-10-23  Simson Garfinkel  <simsong@m-ern-nps-edu.local>
+
+	* tools/afverify.cpp: moved #include "expat.h" to after the #ifdef USE_AFFSIGS
+
+2007-10-25  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib_pages.cpp (af_update_page): lots of code that
+	required signatures made #ifdef USE_AFFSIGS for compiling under
+	Windows without OpenSSL
+
+	* lib/afflib_util.cpp (af_parse_url): index() changed to strchr()
+	for Win32.
+
+2007-10-24  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/afflib.h: significant changes for compiling under win32. 
+	- added u_int and others for compiling under win32.
+	- affkey_aes256 structure had an element with the same name;
+	structure renamed to affkey.
+
+2007-10-20  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/vnode_afm.cpp (afm_split_raw_setup): modified so that
+	ap->aff->image_size only needs to equal ap->sr->image_size if
+	ap->aff->image_size has already been set
+
+2007-10-18  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/vnode_split_raw.cpp (split_raw_get_seg): fixed bug in that
+	*datalen was not set properly if it was smaller than the size of
+	the segment, even if data==0. Fixed.
+
+2007-10-16  Simson Garfinkel  <simsong@imac2.local>
+
+	* lib/vnode_split_raw.cpp (split_raw_update_seg): was returning
+	the number of bytes written; now returns 0 if write is successful,
+	-1 if it is not.
+
+2007-10-14  Simson Garfinkel  <simsong@imac2.local>
+
+        * aimage/aimage.cpp (usage): --sign and -s now used to specify
+	private and public key used for signing.
+	
+	* aimage/aimage.cpp (usage): --setseg used to be -s; changed to -g
+	so that we can use -s for signing.
+
+2007-09-25  Simson Garfinkel  <simsong@m-ern-nps-edu.local>
+
+	* tools/utils.cpp (get_seglist): fixed uninitialized variables in
+	get_seglist which was causing indeterminate behavior in get_seglist.
+
+2007-09-16  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* BUGLIST.txt (library): removed need to check for af->writing,
+	because it's gone.
+
+2007-09-15  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/afflib.h: removed af->writing, because it wasn't good for
+	POSIX compatibility. 
+
+2007-09-14  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* tools/afcopy.cpp (main): -c option (verify compression) removed
+	from usage because it was never implemented. New -c will specify
+	an X.509 certificate.
+
+2007-09-12  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* MULTIPLE FILES: changed most "const void *" pointers on update
+	and write routines to "const u_char *".
+
+2007-09-02  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+
+	* lib/aff_toc.cpp (aff_toc_del): fixed double-del problem; thanks
+	to Jason Shiffer for bringing this to our attention.
+
+2007-08-29  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/Makefile.am, tools/Makefile.am, configure.ac (affuse_LDADD):
+	first steps for using libtool and shared libraries
+
+	* lib/afflib.cpp (af_open_with): added support for AFFLIB_PASSPHRASE
+
+2007-08-27  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* aimage/aimage.cpp (process_option): made opt_maxsize an int64;
+	added support for dvd and dvddl from luca at palazzo.name.
+
+2007-08-20  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/aftest.cpp (aestest): now sets page size in test files.
+
+	* lib/afflib.cpp (af_update_seg): af_update_seg() didn't check to
+	make sure that writing was enabled. Now it does.
+
+2007-08-20  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/afflib_stream.cpp (af_write): Now sets pagesize to
+	AFF_DEFAULT_PAGESIZE (1024*1024*16) if a write is attempted
+	without a pagesize being previously set.
+
+2007-08-18  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* configure.ac: increased version to 2.4.0
+
+	* lib/aff_db.cpp (af_backspace): af_backspace will no longer
+	backspace from the first segment in the file.
+
+	* lib/vnode_aff.cpp (aff_write_ignore): BUG --- if first segment
+	was deleted, entire file got wiped. Whoops! fixed this.
+
+	* tools/afcopy.cpp (afcopy): bugfix - removed af_close(out.af);
+	when zapping; file wasn't open.
+
+2007-08-17  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_s3.cpp (s3_open): revised for URL parsing in afflib.cpp
+
+	* lib/vnode_aff.cpp (aff_create): moved af_make_badflag to afflib.cpp
+	(aff_get_next_seg): now sets errno to ENOBUFS if buffer isn't
+	large enough to hold requested data. 
+
+2007-08-16  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* lib/vnode_aff.cpp (aff_open): changed all occurances of af_toc
+	to aff_toc since the TOC is an AFF-file specific thing.
+
+	* tools/afinfo.cpp (usage): changed -p option (validate the hash
+	of each page) to -v 
+
+2007-08-12  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/afinfo.cpp (print_info): added two spaces to the "data
+	length" printout. 
+
+2007-08-11  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/afinfo.cpp (info_file): fixed printing of missing pages
+	with -a when there was no device sector size.
+
+	* lib/afflib.cpp: added support for openssl/fips_sha.h
+
+	* S3 support is now disabled by default. 
+
+2007-08-11  Simson Garfinkel  <simsong@m.ern.nps.edu>
+
+	* lib/s3_glue.cpp: removed main() if USE_S3 was not defined. What
+	was I thinking?
+
+2007-07-29  Simson Garfinkel  <simsong@Obsidian.local>
+
+	* tools/afcopy.cpp (main): Removed -p option; now just has -X1
+	through -X9 and -L for recompressing; these are the same flags as aimage.
+
+	* lib/afflib.cpp (af_open): attempts to open a file for writing
+	with an invalid name now sets EINVAL.
+
+
+2007-07-26  Simson Garfinkel  <simsong>
+
+	* tools/afxml.cpp (xml_info): removed use of af_backspace() so
+	this will now work with S3.
+	(xml_info): hex is now printed with coding='base16', decimal
+	numbers now printed coding='base10'
+	(xml_info): printable data now just printed, rather than encoded
+
+2007-07-25  Simson Garfinkel  <simsong>
+
+	* lib/afflib_stream.cpp (af_write): added check for valid
+	image_pagesize in af_write if the write bypass is not used. 
+
+	* lib/vnode_aff.cpp (aff_update_seg): removed stale "append" comment.
+
+2007-07-19  Simson Garfinkel  <simsong>
+
+	* lib/afflib.cpp (af_seek): af_seek w/ SEEK_CUR didn't work. It
+	was doing SEEK_CUR as SEEK_SET. This is now fixed. SEEK_END was
+	working. 
+	(af_seek): added automatic detection of random access, which now
+	changes the af_update_seg algorithm.
+
+	* lib/vnode_aff.cpp (aff_write_ignore): modified so that if an
+	IGNORE segment is written before another IGNORE, they are
+	combined. Likewise, if one is written after an IGNORE, they are
+	combined.
+	(aff_update_seg): modified so that new objects smaller than 4096
+	will not be dropped into deleted segments larger than 4096 bytes
+	to prevent fragmentation.
+
+2007-07-18  Simson Garfinkel  <simsong>
+
+	* lib/vnode_aff.cpp (aff_update_seg): if the last segment is NULL,
+	it is now erased before writing.
+	
+	(aff_del_seg): now we use this on Windows, since _chsize_s() is a
+	good analog for ftruncate()
+
+	* lib/aftest.cpp (reverse_test): reverse test now reads data to
+	verify it is correct
+
+2007-07-17  Simson Garfinkel  <simsong>
+
+	* lib/s3.cpp: applied patches from Ted Romer.  The 'cat' and 'cp'
+	commands in s3.cpp had a bug where they neglect to skip over the
+	command name in argv, with the result that cat always tries to
+	look for the key 'cat' and 'cp' always tries to copy the file
+	'cp'.
+
+	This patch fixes that, and also modifies cat and rmdir to accept
+	multiple arguments.
+	
+2007-07-16  Simson L. Garfinkel  <simsong@t.eecs.harvard.edu>
+
+	* lib/aftest.cpp (sparse_test): added read-at-end and
+	read-beyond-end of sparse file tests to aftest -6
+
+	* lib/afflib_stream.cpp (af_read): removed break so that reads on
+	pages that don't exist return NULs rather than errors.
+
+2007-07-14  Simson L. Garfinkel  <simsong>
+
+	* lib/vnode_s3.cpp: changed AF_IDENTIFY_AFD to AF_IDENTIFY_S3
+	Modified system so that if s3 support is not compiled in, s3:///
+	names generate an error.
+
+	* lib/afflib_i.h: changed from int64 to int64_t and from uint64 to uint64_t.
+
+2007-07-13  Simson L. Garfinkel  <simsong>
+
+	* Removed #define UNIX. Now we have #ifdef HAVE_POPEN (which is
+	what we really wanted, anyway)
+
+	* Added support for uint64_t; uint64 now is a typedef for it.
+	* Added support for int64_t; int64 now is a typedef for it.
+
+2007-07-11  Simson L. Garfinkel  <simsong>
+
+	* tools/afcopy.cpp (afcopy): cleaned up printing a bit
+	(afcopy): fixed -y option, which apparently didn't work
+
+	* lib/afflib_pages.cpp (af_read_sizes): removed &arg from
+	af_get_next_seg call. This change makes af_read_sizes()
+	dramatically faster on s3 because the calls can be satisfied by
+	reading the directory, rather than the need to read every
+	individual segment.
+
+
+2007-07-10  Simson L. Garfinkel  <simsong>
+
+	* configure.ac: S3 support is now disabled by default.
+
+	* lib/afflib.cpp (af_version): added af_version()
+
+	* lib/afflib.h: moved #include <inttypes.h> to its own major
+	block, as prelude to moving over to C99 standards.
+
+2007-07-04  Simson Garfinkel  <simsong>
+
+	* configure.ac: added isatty()
+
+	* lib/afflib_i.h: moved af_identify_file_type() and
+	af_identify_file_name() from afflib.h to afflib_i.h so that people
+	wouldn't be tempted to call them .
+
+2007-07-01  Simson Garfinkel  <simsong>
+
+	* tools/afinfo.cpp (info_file): changed %qd to %"I64d" for Win32 compat.
+
+	* tools/afstats.cpp (main): changed final return() to exit() for
+	Microsoft happieness.
+
+	* tools/affix.cpp (main): added final exit().
+
+	* tools/afconvert.cpp: changed final return() to exit() for
+	microsoft happiness
+
+	* tools/afcopy.cpp (afcopy): changed final return to exit() for
+	Microsoft happieness.
+
+	* win32/openssl/sha.c: replaced sha1 implementation with
+	pass-through to Microsoft CryptoAPI.
+
+	* win32/openssl/md5.c: replaced md5 implementation with
+	pass-through to Microsoft CryptoAPI.
+
+2007-06-29  Simson L. Garfinkel  <simsong>
+
+	* aimage/gui.cpp (gui_startup): corrected bug of 
+	#ifdef HAVE_LIBCURSES; should have been 
+	#ifdef HAVE_LIBNCURSES
+
+	* aimage/imager.cpp, aimage/gui.cpp, aimage/aimage.cpp: added support for SHA256
+
+	* lib/afflib.h (AF_SHA256): added AF_SHA256
+
+2007-06-26  Simson L. Garfinkel  <simsong>
+
+	* Makefile.am (SUBDIRS): added win32 back to the configure.ac and
+	Makefile, so that the win32 stuff would be included in the distribution
+
+2007-06-21  Simson L. Garfinkel  <simsong>
+
+	* aimage/gui.cpp (comma_printw): modifications to gui.cpp and
+	aimage.cpp so that it will compile and run in batch if ncurses and
+	termcap are not installed.
+
+2007-06-10  U-AMD64\Simson Garfinkel  <Simson Garfinkel>
+
+	* aimage/imager.cpp (start_recover_scan): added #ifdef for 
+	HAVE_SRANDOMDEV to allow for complication under Cygwin (and other
+	systems that don't have srandomdev()
+
+2007-05-30  Simson L. Garfinkel  <simsong>
+
+	* configure.ac: added -D_FILE_OFFSET_BITS=64 to CPPFLAGS when FUSE
+	is enabled. fixed compilation for AFFUSE
+
+2007-05-30  Simson Garfinkel  <simsong>
+
+	* lib/vnode_aff.cpp (aff_get_seg): no longer scans the whole file
+	looking for a segment. If it is not in the ToC, it doesn't
+	exist. Not that this means that we can't have simultaneous access
+	to a single AFF file by a writer and a reader anymore.
+
+	* tools/afinfo.cpp (print_info): added -X flag to print segment names without data contents.
+
+	* lib/afflib_pages.cpp (af_get_page): only fills buffer with "bad flag" if a buffer is provided.
+
+2007-05-29  Simson Garfinkel  <simsong>
+
+	* aimage/imager.cpp (start_imaging): only writes out AF_IMAGE_GID if segment doesn't exist.
+	Appends to AF_ACQUISITION_DATE segment if it already exists.
+	Added \n to AF_ACQUISITION_DATE segment contents.
+
+2007-05-25  Simson L. Garfinkel  <simsong>
+
+	* tools/afinfo.cpp (info_file): fixed rounding error in
+	calculation of missing pages
+
+2007-05-23  Simson L. Garfinkel  <simsong>
+
+	* tools/afinfo.cpp (info_file): added Missing Pages to printout
+
+2007-05-14  Simson L. Garfinkel  <simsong>
+
+	* tools/afsegment.cpp (main): modified output format so that it
+	prints filename:segname and then the contents on every line
+
+2007-05-11  Simson L. Garfinkel  <simsong>
+
+	* tools/afsegment.cpp (usage): changed afcat to afsegment in usage()
+	(main): added -q option which prints value as 64-bit quad
+
+2007-05-02  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib.h: changed af_ext_is to return "int" instead of bool.
+
+2007-04-30  Simson L. Garfinkel  <simsong>
+
+	* lib/s3.cpp (s3_bandwidth): removed s3_debug call from s3
+	bandwidth test
+
+2007-04-29  Simson L. Garfinkel  <simsong>
+
+	* aimage/aimage.cpp: minor update to getlock(), although this code
+	is still not being called.
+
+2007-04-29  Simson L. Garfinkel  <simsong>
+
+	* lib/vnode_raw.cpp (raw_popen): moved hasmeta() to af_hasmeta()
+	and put in afflib_util.cpp.
+
+2007-04-29  Simson Garfinkel  <simsong>
+
+	* tools/afcopy.cpp (afcopy): command string parameter fname no
+	longer used as format string in warn().
+
+	* tools/afxml.cpp (xml_info): command string no longer used as
+	format string in warn().
+
+	* aimage/aimage.cpp (getlock): command line parameter no longer
+	used as format string in err()
+
+	* tools/afinfo.cpp (main): command line parameter no longer used
+	as format string in err().
+
+	* lib/aftest.cpp (figure): err(1,fn) changed to err(1,"%s",fn) in
+	multiple places
+
+	* lib/s3.cpp (s3_cp): fixed * Format String Injection in s3 *
+	reported by V3Security
+
+	* lib/vnode_raw.cpp (raw_popen): added metacharacter testing here
+	as well
+
+2007-04-25  Simson L. Garfinkel  <simsong>
+
+	* configure.ac: version 2.2.8
+
+	* aimage/aimage_os.cpp (ident): fixed minor compile-under-linux problems
+
+2007-04-17  Simson Garfinkel  <simsong>
+
+	* aimage/imager.cpp (write_data): doesn't seek if we don't know offset
+
+	* tests/verify.py (runtest): modified test to put file in /tmp
+
+	* aimage/ident.cpp (get_params): added metacharacter checking
+	filename before popen.
+
+	* tools/afconvert.cpp (convert): added meta character filtering
+	per VSecurity.
+
+2007-04-16  Simson Garfinkel  <simsong>
+
+	* tools/afxml.cpp (xml_info): added name sanitization to AFF XML
+	names per VSecurity report
+
+	* aimage/imager.cpp (image_loop): fixed important bug when imaging
+	from /dev/random (or presumably a network connection) which caused
+	page 0 to be repeatedly rewritten.
+
+	* lib/vnode_raw.cpp: added |AF_VNODE_TYPE_RELIABLE to vnode type
+
+	* lib/vnode_aff.cpp: added |AF_VNODE_TYPE_RELIABLE to vnode type
+
+	* lib/vnode_afd.cpp: added |AF_VNODE_TYPE_RELIABLE to vnode type
+
+	* lib/vnode_split_raw.cpp: added
+	|AF_VNODE_TYPE_RELIABLE|AF_VNODE_MAXSIZE_MULTIPLE to vnode type
+
+	* lib/vnode_afm.cpp: added
+	|AF_VNODE_TYPE_RELIABLE|AF_VNODE_MAXSIZE_MULTIPLE to vnode type
+
+	* configure.ac: cleaned up enable_fuse so that it doesn't generate
+	errors on Macintosh; removed OPENSSL alert
+
+2007-04-11  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib.h: prototypes for af_read() and the like changes from
+	"unsigned count" to "size_t count"
+
+	* lib/s3_glue.cpp (quote_plus): added quoting of '%'
+
+2007-04-04  Simson L. Garfinkel  <simsong>
+
+	* aimage/ident.cpp (get_params): fixed strlcat() & strlcpy() order
+
+2007-04-03  Simson L. Garfinkel  <simsong>
+
+	* lib/s3.cpp (strlcat): added strlcpy and strlcat to s3.cpp
+
+2007-04-02  Simson Garfinkel  <simsong>
+
+	* aimage/ident.cpp (get_params): changed occurances of strcpy() to
+	strlcpy() and strcat() to strlcat() per VSecurity report.
+
+	* lib/vnode_ewf.cpp (ewf_open): Now checks to make sure that there
+	are at least 4 characters available in the fname buffer after the
+	trailing '.', per VSecurity report.
+
+	* lib/s3.cpp (s3_bandwidth): all occurances of sprintf() changed
+	to snprintf per VSecurity report.
+
+	* tools/afinfo.cpp (main): changed err(1,infile) to
+	err(1,"%s",infile) to defend against string format vulnerability
+	per VSecurity report. 
+
+	* tools/afcopy.cpp (afcopy): changed err(1,infile) to
+	err(1,"%s",infile) to defend against string format vulnerability
+	per VSecurity report. 
+
+	* tools/afconvert.cpp (convert): changed err(1,infile) to
+	err(1,"%s",infile) to defend against string format vulnerability
+	per VSecurity report. 
+
+	* tools/afcompare.cpp (main): replaced all occurances of sprintf()
+	with snprintf(), all occurances of strcpy() with strlcpy(), and
+	all occurances of strcat() with strlcat().
+
+	* lib/vnode_ewf.cpp (ewf_get_next_seg): replaced both strcpy()
+	calls with strlcpy() per VSecurity report
+
+	* lib/vnode_s3.cpp (s3_open): added maximal size to both memcpy()
+	calls, per VSecurity report.
+
+	* lib/s3.cpp (s3_ls): replaced strcpy() with strlcpy() per
+	VSecurity report.
+
+2007-03-28  Simson L. Garfinkel  <simsong>
+
+	* aimage/aimage.cpp: added option "skip" / -k to the longopts[]
+	array. It wasn't there before, and it should have been.
+
+	* lib/afflib_pages.cpp (af_update_page): moved acbi.compressed=1
+	out of the if statement in the event that the compress2() call fails.
+
+2007-03-20    <simsong>
+
+	* lib/s3.cpp (s3_bandwidth): s3 bandwidth test now verifies MD5 returned 
+
+2007-03-07  Simson L. Garfinkel  <simsong>
+
+	* tools/affuse.cpp (main): Olivier Castan provided a fuse
+	implementation for us. Thanks! We also have changes of his in
+	configure.ac, Makefile.am.
+
+2007-03-01  Simson L. Garfinkel  <simsong>
+
+	* configure.ac: Now compiles under stock MacOS without expat installed
+
+2007-02-05  Simson L. Garfinkel  <simsong>
+
+	* tools/afcopy.cpp (usage): fixed formatting
+
+2007-02-05  Simson Garfinkel  <simsong>
+
+	* aimage/imager.cpp: patches to aimage to fix imaging over a
+	network provided by Suessmilch Bernd
+
+2007-02-01  Simson Garfinkel  <simsong>
+
+	* fixed bugs in the caching system; caching now works.
+
+2007-01-24  Simson Garfinkel  <simsong>
+
+	* lib/afflib.h: moved #include <sys/types.h> from afflib_i.h to afflib.h
+
+	* lib/afflib.h: Moved #ifndef PACKAGE_TARNAME from afflib.h to afflib_i.h
+
+	* lib/afflib.cpp (af_eof): uses results from af_vstat() instead of
+	calling af_imagesize() again (which would be another call to vstat)
+
+2007-01-23  Simson Garfinkel  <simsong>
+
+	* lib/aff_toc.cpp (af_toc_build): changed malloc(0) to
+	malloc(sizeof(af_toc_mem)) as on Borland C++, malloc(0) returns a
+	NULL pointer.
+
+	* lib/afflib.cpp (af_open_with): fixed memory leak in error condition.
+
+	* lib/vnode_aff.cpp (aff_open): added "b" to opens for running
+	under windows.
+
+	* lib/vnode_raw.cpp (raw_get_seg): added support for phantom
+	segments AF_PAGESIZE and AF_IMAGESIZE. This fixes the bug with
+	afconvert that had been previously reported. 
+
+2007-01-11  Simson L. Garfinkel  <simsong>
+
+	* lib/vnode_afd.cpp: moved definitions of F_OK and R_OK to this file.
+
+	* lib/afflib_pages.cpp: added #include to malloc.h for
+	valloc. Perhaps it should go in afflib_i.h?
+
+	* aimage/aimage_os.cpp (ident): fixed handling if ident is not defined
+
+	* tools/unix4win32.cpp: removed this file because it shouldn't be
+	needed anymore; warn, warnx, err and errx are now provided by
+	afflib. 
+
+	* lib/afflib_i.h: created proper configure macros for HAVE_ERR,
+	HAVE_ERRX, HAVE_WARN and HAVE_WARNX to handle the presence of
+	absence of these on multiple platforms. 
+
+2006-12-27  Simson L. Garfinkel  <simsong>
+
+	* lib/s3_glue.cpp (request): Added CURLOPT_TIMEOUT 60*60 (1 hour)
+	to S3 transactions.
+
+2006-12-14  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib_pages.cpp (af_read_sizes): modified af_read_sizes so
+	that if an image file doesn't have an IMAGESIZE segment, the
+	imagesize is determined by reading all of the segments
+
+2006-11-28  Simson L. Garfinkel  <simsong>
+
+2006-11-27  Simson L. Garfinkel  <simsong>
+
+	* lib/s3_glue.cpp (canonical_string): added support for BAD_STL,
+	so that on pair, where STL is out-of-date, we can still compile
+
+	* lib/vnode_afd.cpp (afd_add_file): wasn't setting sectorsize on
+	AFD subfiles. This caused problems with files that had sector
+	sizes of 1024 bytes...
+	
+	* (afd_add_file): files now added to array before new file is set up.
+
+2006-11-25  Simson L. Garfinkel  <simsong>
+
+	* lib/vnode_afd.cpp (afd_update_seg): corrected multiple
+	definitions of AFFILE *af2, which might cause compiling problems
+	under Windows
+
+	* lib/afflib_i.h: Added AFFLIB_TRACE environment variable; right
+	now it just traces seek and read
+
+	* lib/afflib.h: retyped af_seek to take an int64 instead of a uint64
+
+	* lib/vnode_s3.cpp (s3_open): All S3 environment variables are now
+	defined in s3_glue.h
+
+2006-11-18  Simson L. Garfinkel  <simsong>
+
+	* aimage/aimage.cpp (debug_list): changed -L option (Log file) to
+	-G so that -L could be used for LZMA compression.
+
+2006-10-31  Simson L. Garfinkel  <simsong>
+
+	* lib/s3_glue.cpp (request): changed CURLOPT_INFILESIZE_LARGE to
+	CURLOPT_INFILESIZE. This limits maximum requests to 2GB in length,
+	but I don't think that this will be a significant problem, and the
+	LARGE was causing problems on Linux.
+
+2006-10-27  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib_pages.cpp (af_set_pagesize): no longer complains if
+	pagesize it being set to what it already is
+
+	* tools/afcopy.cpp: added -z (opt_zap) to overwrite existing files.
+
+2006-10-26  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib_pages.cpp: fixed bytes==0 bug in af_get_page. Now if
+	bytes==0, it probes for the page existence and then returns.
+
+	* lib/s3_glue.cpp (request): Added up to 3 retries for S3 "500"
+	internal errors.
+
+2006-10-22  Simson L. Garfinkel  <simsong>
+
+	* lib/afflib.cpp (af_identify_type): Added flag to allow user to
+	specify if file must exist or not. 
+
+	* lib/vnode_s3.cpp (s3_get_seg): Now uses "HEAD" to probe length
+	of segment without downloading segment. Note that the
+	Content-Length: header needs to be decoded.
+
+2006-10-21  Simson L. Garfinkel  <simsong>
+
+	* aimage/aimage.cpp (process_config_questions): Now has conditional detection
+	of readline; if it isn't present, defaults to fgets()
+
+
+2006-10-20  Simson L. Garfinkel  <simsong>
+
+	* Moved AFFLIB to gnu build environment (autoconf, automake,
+	configure, etc.). Apparently I can now edit this file by doing a
+	C-x 4 a. How cool! More information at:
+	http://gnu.j1b.org/software/emacs/manual/html_node/Change-Log.html
+
+Release 1.8.0:
+- Added support for storing files on Amazon S3. 
+  Set Environment variable AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.
+  Set variable AWS_DEFAULT_BUCKET.
+  Filename syntax is s3://bucket/filename.aff
+  or:
+  s3:///foo/bar/baz/filename.aff
+
+  Bucket is getenv("AWS_DEFAULT_BUCKET") unless otherwise specified. 
+  Buckets are automatically created if they do not exist (and if nobody else has created
+  that bucket yet.)
+
+  Remember, there is a limit of 100 buckets per customer.
+
+- Moved af_read_sizes(af) from each open to af_open(). This means that I need
+  to re-validate all of the various implementations.
+
+- API simplification: The "append" flag has been dropped from af_update_seg() and
+  af_update_segq(). None of my code ever had append==0, and to make S3 handle it
+  sensibly would have required a second round-trip to the server.
+
+- Removed errors from LZMA routines
+
+Release 1.7.1:
+- Fixed isdigit() call, which isn't available under Linux
+
+
+Release 1.7.0:
+
+- Moved AFFINFO mailing list to Google Groups. Actualy, to two groups
+  on Google Groups: aff-users and aff-announce. Everybody on AFFINFO
+  has been subscribed to aff-announce. 
+
+- Added a new compression algorithm, AF_PAGE_COMP_ALG_ZERO. This algorithm 
+  detects a page of all 0s and simply notes that fact, rather than passing
+  the sectors through zlib.
+
+- Added a new comparession algorithm, AF_PAGE_COMP_ALG_LZMA, which implements
+  the LZMA compression algorithm. Validated LZMA against a terrabyte of compressed
+  page images and found no errors in decompression. LZMA averages are,
+  on average, 1/3 to 1/10th the size of the ZLIB-compressed images. 
+
+library:
+- AFFLIB now maintains a two-page cache for every open AFFILE; this
+  can be expanded at runtime to any number by setting
+  AFFLIB_CACHE_PAGES environment variable to the number of pages that
+  you want to keep in memory. Since pages are typically 16MB, setting
+  this variable to 16 will dedicate 256MB to each open AFF file
+  (assuming that you are reading the file through the page system; the
+  memory only gets dedicated when the bytes actually get read.)
+
+- You can also set the AFFLIB_CACHE_STATS environment variable to 1,
+  which will put on STDERR the cache information every time you close
+  a file.
+  
+- Renamed "af_is_badblock" to "af_is_badsector".
+
+- Removed logfile from AFFILE structure. It was just being used for
+  debugging, and not in a particularly effective way. (af_seek and
+  af_write no longer reference it. )
+
+- Fixed linking under MacOS for strlcpy problem.
+
+- Integrated LZMA library
+
+- Got AFFLIB (but not the tools) to compile under MS VC6++. Because the Microsoft
+  compiler is pretty picky about some things, a whole bunch of signed/unsigned errors
+  were found and fixed. (not that they would have ever mattered, but...)
+  LZMA is not included in the Windows release currently
+    
+afcopy:
+- Created new tool, afcopy, which copies an AFF file segment-by-segment,
+  and verifies each segment after it is copied by reading the resulting file.
+  afcopy thus validates all writes and has the side-effect of compressing files, 
+  so the resulting file may be smaller than the original.
+
+- Added "-p" option to afcopy to preen (recompress with LZMA).
+
+afcompare:
+- Added -p option to report on preening
+- Added -r option to compare directories recurisvely
+- Added -j option to just do the data
+
+
+Release 1.6.33:
+- Fixed to compile under Kubuntu 6.0.6
+
+Release 1.6.32:
+- pages in AFFILES now have MD5s stored automatically as well. So when
+"page3" is written, "page3_md5" is also written. 
+- afinfo 
+     - when it sees any segment with "md5" in its name that is 16-bytes long, the segment is printed
+       in hex. Likewise when a segment has "sha1" in its name and is 20-bytes long.
+     - New "-p" option checks the hash for every page.
+- aimage: MacOS 10.4 demsg now requires root to run; aimage no longer sends dmesg error to stderr. 
+  Instead, errors go to /dev/null, and if there is no dmesg output, no dmesg segment is created.
+
+Release 1.6.31:
+Make release now clearly requires gmake and errors if Berkeley Make is used
+
+Release 1.6.30:
+Removed dependency on #include <warn.h> from building the library.
+
+Release 1.6.29:
+Fixed "reverse" option (-V) on aimage so that it actually works.
+
+Release 1.6.28:
+Typedef for "u64" defined under linux so that afflib will compile under Slackware
+
+Release 1.6.27:
+- Compiles under Cygwin
+- Aimage now has a -Y (--batch) option which prints 
+  line-by-line output, so that the program can be easily
+  incorporated into other programs.
+
+Release 1.6.24:
+AFFLIB no longer assumes that <warnx.h> is installed on cygwin.
+
+Release 1.6.24:
+Library and some of the tools now compiles under CYGWIN. 
+Programs that rely on termcap don't compile. This includes
+aimage and afconvert.
+
+
+Release 1.6.22:
+afxml now displays the same values without base64 encoding as afinfo
+
+Release 1.6.20:
+Library should now compile on NetBSD and OpenBSD. Let me know if it doesn't
+
+Release 1.6.19:
+Library (but nothing else) now compiles on solaris with GCC
+
+Release 1.6.18:
+Now compiles with either Berkeley make or gmake
+
+Release 1.6.17:
+af_read:
+- returns 0 if attempt made to read a file with no bytes.
+- returns -1 if attempt made to read a file with no pagesize defined.
+
+aimage:
+- Erases screen junk of amount of freespace on disk goes from 1000MB to 999MB
+
+Release 1.6.16:
+aimage:
+- Fixed a bug in report printing without going back into \r\l mode.
+- fixed error handling when disk fills up. 
+
+Release 1.6.15:
+- Removed aff file in tools directory. Sorry about that.
+
+Release 1.6.14:
+afxml:
+ - metadata segments that just had an arg and no data are now reported as
+   <segname>###</segname>, rather than <segname arg=### />
+aimage:
+ - minor cosmetic improvements
+
+
+Release 1.6.13:
+lib:
+ - error message on split_raw_setup clarified
+ - af_open now returns 0 if it can't open the file
+
+aimage:
+ - now has flags to suppress inclusion of dmesg and ethernet address in AFF file.
+ - scaled_atoi now checks its parameters better.
+ - cleaned up display on 25x80 display
+ - cleaned up display when imaging multiple drives
+ - --setseg now works
+ - now handles improperly-mastered CDROMs
+
+
+Release 1.6.12:
+lib:
+  - fixed badflag handling (badflags were only 4 bytes due to 
+    variable sector size changes.)
+
+Release 1.6.11:
+vnode_afm:
+  af_callback now gets propigated from afm layer to split_raw layer
+  on af_write.
+lib:
+  AFFLIB now has a "parent" pointer which is set for AFM and AFD.
+  callback now uses the parent instead of self if parent is set
+aimage:
+  -v now prints the version number and exits.
+  -V now scans in reverse.
+
+
+Release 1.6.9:
+aimage:
+- Whoops. Broke update logic in 1.6.8. Fixed
+
+Release 1.6.8:
+aimage:
+- remove foo.000 and foo.afm from release
+
+Release 1.6.7:
+lib:
+- Fixed release system so that release X can't be made if release X is already on the server
+- Fixed bug in vnode_raw implementation resulting from move to 64-bit math
+
+aimage:
+- modified aimage so that it only updates the screen (and queries the timer)
+  every million bytes read
+- by default, no log file is written
+
+afinfo:
+- prints hex digits as DDDD EEEE FFFF now
+- fixed behavior of sha1 printing --- it breaks by two lines by default
+
+
+Release 1.6.6:
+lib:
+- moved check on change of imagesize on close from aff_close to af_close.
+  Now check is done for AFM files in addition to AFF files. This fixes the
+  bug of the AF_IMAGESIZE segment not being written by aimage with AFM files.
+- renamed af->image_size_orig to af->image_size_in_file to make it more clear what it does
+- created new segment type "aff_file_type" which holds AFF for AFF files, AFM for AFM files,
+  and AFD for AFD files. 
+- created aff_create() and afm_create() functions which are automatically
+  called by the corresponding _open() functions when a file is created.
+- removed af_set_maxsize64; af_set_maxsize now requires a 64-bit argument
+- created new function, af_set_sectorsize()
+- sectorsize no longer hard-coded to be 512.
+- removed af_demand_sizes; sizes are now assumed read when the file is opened
+- no longer calls err() in af_open
+- Virus hiding claim removed from FAQ
+
+TOOLS:
+- all tools take "-v" to print their version number. Tools that were using
+  -v for "verbose' have been changed
+
+afcat:
+- checks for -1 return from af_read
+
+afconvert:
+- all math involving pages changed to 64-bits
+- now honors opt_quiet
+
+afinfo:
+- -d command now returns pagesize in addition to page number
+- -w command now implemented properly
+
+aimage:
+- error message with -E omitted no longer misleading
+- Checks for ifconfig in path before running ifconfig
+
+afcompare:
+- -v no longer is verbose
+- -a prints things that are the same
+- -b prints sector numbers that were different
+- -c prints contents of sectors that are different.
+
+
+Release 1.6.5:
+afconvert:
+- 'm' and 'k' changed back to mod 1024, not mod 1000
+- imagesize segment now written when converting from raw to afm
+
+aimage:
+- SIGINFO #ifdefed so that it only is included if SIGINFO is defined.
+
+
+Release 1.6.4:
+- afconvert and afinfo fixed to handle 0 read bytes from af_read()
+
+Release 1.6.3:
+- af_set_sizes() call removed.
+- fixed bug in af_cat
+- several bugs in AFM implementation fixed.
+
+
+Release 1.6.2
+- fixed bug in af_imagesize which was affecting afcat
+- fixed bug in parsing of -M option in afconvert
+- fixed af_eof() for AFF implementation.
+
+Release 1.6.1:
+vnode_afd:
+- Support for AFD was inadvertantly broken in 1.6.0; it's fixed in 1.6.1
+
+Release 1.6.0:
+vnode_split_raw.cpp:
+- integrated code from Joel Weber with these significant changes:
+- Removed dependency on AFF/AFD/AFM implementation
+- changed implementation to use lseek() to write empty files, rather than repeated writes of buffers...
+- modified split_raw_get_seg so that it called af_segname_page_number() rather than parsing by hand.
+- created afm_update_seg() so that we could remove call to afm_identify_file in split_raw_update_seg
+- fixed a bug whereby 256K of raw files were created if maxsize was smaller than ZERO_BUFFER_SIZE,
+  which was hard-coded to 256K
+- removed raw_file_size from split_raw_private, as it was redundent with maxfilesize in the AFFILE structure.
+
+vnode_afm.cpp:
+- integrated code form Joel Weber with these significant changes:
+- Opens two sub-files, one for the AFM metadata (through a coerced aff_open()), and one 
+  for the split_raw implementation.
+- Note: there is still a bug that AFM files can't be opened for extending; 
+
+lib:
+- added af_has_pages() to allow higher-level programs to know if the underlying
+  vnode implementation supports pages or not.
+- af_vnode_info: added has_pages flag so that an implementation can tell the higher
+  layers if it supports pages or not.
+- vnode_raw: made it so that af_popen() now tells the higher layers that pages are not
+  supported.
+- af_vnode_info: added use_eof and at_eof flags, to support EOF reporting on af_popen.
+- awaiting af_read() & af_write() bypass, pending code from nemo
+
+afcat:
+- Outputs NULs for bad blocks unless -b is given. 
+
+afconvert:
+- Added version to usage.
+- Fixed conversion of gzip'ed and bzip'ed raw images
+- Calls af_has_pages to see if the input vnode implementation supports pages or not.
+  If it doesn't, then it just reads from the beginning of the image to the end.
+- Implemented -O (outdir) flag
+
+afinfo:
+- Now honors -w flag
+- Output squished to fit MD5s and SHA1s.
+
+aimage:
+- Properly prints free space on FreeBSD, MacOS and Linux
+- Prints MD5 & SHA1 as groups of 4 upper-case letters.
+- Now stores sectorsize in "sectorsize" segment
+- Now stores number of sectors that the device has in "devicesectors" segment
+- --pagesize= option now allows suffix of b, k, m or g
+- ACQUISTION_TIME now correct (it was being saved as a 64-bit number but reported as a 
+  32-bit number in afinfo.)
+
+
+
+Release 1.5.13:
+Encase support works for multiple encase files.
+       .E01, .E02 ... .E99
+
+Release 1.5.12:
+aimage:
+- now allows --maxsize=cd and --maxsize=bigcd
+- --no_hash (-H) avoids hash calculation
+
+Release 1.5.10:
+makefiles:
+- Finally implemented a single makefile along the lines
+  of the "Recursive Make considered Harmful" paper, but improved,
+  with targets that work in both the subdirectories and in the root directory.
+  Currently it only works with gmake, which is only a problem under FreeBSD.
+
+Release engineering:
+- added a "tests" directory and moved end-to-end testing there.
+  afconvert, afcat, and aimage are now automatically tested as part of the release
+  process.
+
+aimage:
+- no longer dumps core when not given an output file.
+- Doesn't waste left-most column of screen
+- Displays elapsed time when running.
+- Now displays elapsed time while imaging
+- Now displays aimage version
+- Saves total time to image a disk in the AFF file.
+- Properly indicates free space left on capture disk.
+
+Release 1.5.9:
+- Fixed bug in release system which was giving incorrect filenames
+- fixed bug in AFD which wasn't setting image size properly in the sub AFF files
+- fixed bug in AFD support where maxsize wasn't being set on default. 
+  Now it defaults to 600M
+
+Release 1.5.8:
+- Fixed progname bug (progname appears to only exist under
+  freeBSD)
+
+Release 1.5.7:
+- fixed a few bugs regarding AFD performance
+
+afcompare:
+- -v flag (verbose) implemented. When run without -v, doesn't report similarities.
+- corrected a bug when a data segment was in one file but not another.
+
+
+Release 1.5.6:
+- More options added to afcat for handling segments.
+aimage:
+- aimage now puts now information into aff files.
+
+
+
+Release 1.5.5:
+lib:
+- Eliminated bug when an afd file was opened read-only of the library
+  giving error messages that it was unable to copy over metadata from
+  the first AFF file to the other AFF files.
+- AFFLIB is now tolerant of a trailing / on .afd names.
+- Stores AFFLIB version in the AFF file when new files are created.
+
+afcat:
+- now prints AFFLIB version number.
+- now prints a warning on STDOUT if a page is skipped; suppress with -q
+- no longer clobbers output file without warning
+- no longer give errors about not being able to "update"
+  information when it cats out an AFD file.
+
+
+afcompare:
+- now prints AFFLIB version number
+
+afinfo:
+- Now prints AFFLIB version number.
+- Option -v no longer validates hash codes
+- Option -m validates MD5 codes
+- Option -s validates SHA1 codes
+- No longer prints the total compression efficiency
+
+afstats:
+- Now prints AFFLIB version number
+
+afxml:
+- Now prints AFFLIB version number
+- Puts AFFLIB version number as a comment in XML output
+
+release:
+- fixed bug of executables in release tar file
+
+aimage:
+- ETA acronym removed; now says "Done in:"
+
+
+
+
+Release 1.5.4:
+afconvert:
+- significant changes in option parsing to make it more reliable.
+- Now properly handles creating files with non-standard AFF segment sizes
+- change to "-z" option so that it zaps the output file, not the input file
+  (to make consistent with other af commands.)
+
+release engineering:
+- auotmatic validation of afconvert and afcat as part of the release cycle
+
+Release 1.5.3:
+aimage
+- Minor patch so it should write afd files...
+
+
+Release 1.5.1:
+- fixed suffixing for -M command in aimage
+aimage:
+- Now reads serial numbers of USB memory sticks using sysctl -a.
+- NOTE: Be sure that ther eis only one USB memory stick in the system when you do this,
+  because we can't figure out how to match the stick up with the S/N other than the
+  manufacturer's name.
+
+Release  1.5
+lib:
+- Initial support of EVF file format. (Only works on Intel right now, not PPC) 
+
+afconvert:
+- rewrote to use vnode support
+
+aimage:
+- Initial support for split files
+
+Release 1.4.1:
+aimage:
+- fixed bug when encountering errors and imaging from a device. 
+  (The error is that additional bad blocks were being written into the file with
+   out proper BAD SECTOR headers. No real data was corrupted, but in some cases
+   random data appeared in the image file which should not have been written.)
+- Improved error recovery. Previously, 5 attempts were made to read the sectors that failed, after
+  which the program gave up. Now it skips forward and tries to read the next set of sectors. It repeats
+  this whole process until there is a bad region that is equal 2.5 times the size of the 
+  default read (256K). 
+
+lib:
+- fixed bug in which small pages were written out with too much data
+- fixed bug in af_get_page in which invalid data was being left uninitialized rather than 
+  being initialized with the bad_block flag
+
+
+-Release 1.4
+Terminology change: data segments are renamed "pages" to eliminate confusion with AFF segments. 
+
+lib:
+- Implemented a "vnode" abstraction to make it easy to work with multiple file systems.
+- Found and fixed at least 10 major bugs. None of them would have caused data corruption,
+  but some would have caused the library to go into an infinite loop or to crash.
+- Support for "AFD" files --- these are directories of AFF files. This will allow AFF
+  to work with file systems that do not support files larger than 2^32 characters 
+  (such as FAT32). 
+
+
+Known bugs:
+AImage: bad block flags are not being properly written out in AFF files. 
+
+afinfo:
+- prints more information about AFF files in an easy-to-read format
+
+afcompare:
+- Now compares two AFF files, or an AFF and a RAW file.
+
+-Release 1.3.4
+aimage:'
+- Dramatic restructing of the program. 
+- You can now batch multiple aimage commands on a single command line.
+  The program surveys total amount of data to copy and a grand-total ETA.
+- New -A option will write out a segment with compression, a segment without
+  compression, and then will go with the fastest approach.
+- Better graphics
+- Prints a certificate when the imaging is finished
+
+lib:
+- Removed call to fpurge(), which was incorrect.
+- renamed aff_ to aff_toc, becuase it really is building a
+  table of contents.
+
+-Release 1.3.3
+lib:
+- Improved error handling in writing segments. 
+- More information is now provided to segment writing callback function. 
+
+aimage:
+- Removed the --info command, since it was just for debugging.
+- Made --make-config a flag that creates the config file if it doesn't exist,
+  but it uses the name provided by --config.
+- Revamped config file. 
+- removed some global variables that weren't being used; folded others into the 
+  imager class.
+- fixed bug in aimage when reading from devices whose length cannot be determined 
+  (e.g. /dev/zero, (tapes, TCP connections)
+
+aconvert:
+- No longer core-dumps if the file that it is asked to convert doesn't exist.
+
+January 9, 2006 - Release 1.3.3
+aimage:
+- added a -A flag which makes aimage compress or not compress, whichever is faster.
+
+
+January 9, 2006 - Release 1.3.2
+Overall:
+
+aimage:
+- Some curses testing code was left in. It's been removed.
+
+January 8, 2006 - Release 1.3.1.
+Overall:
+- Moved source for aimage to aimage/ directory
+- Move source for tools to tools/ directory
+
+aimage:
+- On Linux, now reads the serial number of USB drives that are being imaged
+  using the /proc file system. 
+
+tools:
+
+
+
+December 31, 2005 - Release 1.3.0
+overall:
+- Moved library source code into lib/ subdirectory. 
+  One big makefile still makes it all, see
+  "Recursive make considered harmful."
+  http://www.canb.auug.org.au/~millerp/rmch/recu-make-cons-harm.html
+
+afcat:
+- Now only outputs the segments containing data.
+  It does this by first scanning and making a list of all the data segments;
+  It then seeks to the location of each one in the virtual file, reads 
+  the segment worth of data, and sends it to stdout.
+
+afconvert:
+- When outputing with the -o option, now outputs an AFF file if file ends
+  '.aff' and outputs raw if file does not end .aff
+- The -x (no compression) flag now works. 
+- The -X (set compression level) flag has been implemented. 
+- As a result, you can now batch compress a set of uncompressed AFF files
+
+Release 1.2.9
+afconvert:
+- fixed crashing bug when converting raw files to aff files
+- fixed crashing bug when converting aff files to raw files.
+
+
+December 21, 2005 - Release 1.2.8
+
+library:
+- AF_BADBLOCKS is now initialized to 8 bytes of NULs, rather than 
+  a 0-length segment.
+- fixed corruption bug in af_del_seg().
+- Added (tm).
+
+aimage:
+- Fixed calculation of free space on the disk for FreeBSD.
+- Made display more attractive. 
+- Added support for automatically rescanning scsi bus. 
+  You can now scan the scsi bus and image by specifying "scsi1", for 
+  example, to image from scsi bus 1.  (FreeBSD only.)
+- Added optional preview to let you see the data as it is recorded.
+  This is great for spotting drives that have been 'sanitized' or
+  cleared.
+- Displays size of target disk in GB/MB/KB 
+- Doesn't compute hash for raw image if the image is invalid 
+  (if aimage did an lseek.)
+- Now captures ATA serial number even if disk can't be imaged. 
+- Prints final report of image results  
+
+afconvert:
+- fixed crashing bug in afconvert.
+- Corrected incorrect "progname" in many utilities.
+
+afinfo:
+- More tolerant of errors in aff file.
+
+affix:
+- Initial Release
+- Can fix a file that is not properly terminated by removing junk at end.
+  This is useful if a computer crashes while aimage is being run.
+
+December 6, 2005 - Release 1.2.7
+- Minor fixes for makedepend problems that people on various platforms had
+
+November 18, 2005 - Release 1.2.5
+- Implemented segment directory; list of all segments is now kept
+  in memory, rather than read on-the-fly from the disk. This 
+  dramatically improves performance on random-access test. 
+  Library falls back to old method of scanning the file for
+  each segment if the segment list is too large to hold in memory.
+  Time for aftest -3 improves on my laptop from TK seconds to 27 seconds.
+  
+
+November 18, 2005 - Release 1.2.4
+- redesigned afflib for improved performance.
+- afconvert can now convert from one AFF to another AFF.
+
+October 21, 2005 - Release 1.2.1
+- Added a whole bunch of segment names.
+- Found a nasty bug in updating of segments under certain circumstances
+- Lots of new features in aimage
+
+October 20, 2005 - Release 1.2.0
+- created atest for heavy-duty testing of af_seek()
+- support for reading drive SN under Linux and FreeBSD
+- found bug in af_seek()
+
+October 11, 2005 - Release 1.1.1
+- Modified af_open() so it read data_segsize on open.  
+- changed af_setsize() to af_set_sizes(). Now it doesn't allow you to change the
+  data segment size if it has already been set.
+- Modified convert to handle gzipped files with gzcat.
+- Fixed but in aconvert where infiles were not being closed.
+- removed fancy image size calculation from ainfo, as it wasn't right for compressed files.
+- Added -Wall and found lots of signage bugs
+- Cleanly compiles on Linux; supports > 2GB files
+
+
+September 11, 2005 - Release 1.1
+- Added support for writing files with af_write().
+- New files now automatically get bad block flag created
+- fixed afflib for AMD64 architectures.
+- ainfo wasn't calculating SHA-1 properly for -v option on AMD64. Fixed.
+  ainfo wasn't printing compression overhead properly. Fixed. Also fixed
+  small buffer overflow in printing of SHA-1 values.
+- changed "radio" typo to "ratio."
+- aconvert now aborts (and deletes AFF file) if ^C is pressed or if
+  a write fails.
+- aconvert now refuses to convert an AFF file. Added af_identify(fname) to 
+  return true if a file is probably an AFF file and false if it is not.
+
+August 14, 2005 - Release 1.0.1
+- changed minor bug in aconvert in handling of multiple files
+
+August 13, 2005	- Release 1.0
+
+Initial Release of AFFLIB. Includes library description, README, basic
+library functionality, and four utilities.
+
+
+================================================================
+Copyright 2005, 2006, 2007, 2008 Simson L. Garfinkel
+Copying and distribution of this file, with or without modification, are
+permitted provided the copyright notice and this notice are preserved.
+
+#
+# Local Variables:
+# mode: flyspell
+# mode: auto-fill
+# End:
+#

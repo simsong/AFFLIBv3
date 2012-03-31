@@ -1,0 +1,59 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+IMPLEMENTATION
+==============
+
+AFFLIB encryption will continue to use the cryptographic primitives
+provided by the OpenSSL library.
+
+The AFFILE Structure will be modified to include these additional fields:
+  AES_KEY ekey    - The OpenSSL AES256 encryption key
+  AES_KEY dkey    - The OpenSSL AES256 decryption key
+
+
+Reading:
+
+Getting pages is currently implemented with a chain of functions:
+
+  af_get_page() - gets the page and decompresses it if necessary.
+  af_get_page_raw() - gets raw pages (without compression)
+  af_get_seg()      - gets the actual segment
+
+
+Proposed modification:
+ 
+  If af_get_seg(s1) fails AND if a symmetric encryption key has been
+  set, the function will then look for s1/aes. If this is found the
+  segment will be decrypted and returned.
+
+Writing:
+
+
+Currently pages are written with these functions:
+
+  af_update_page(af,pagenum,data,datalen)
+  af_update_seg()
+
+Procedure for writing encrypted pages:
+
+ - Modify af_update_page() to call a new function,
+   af_update_page_raw(), which does the encryption.
+
+
+Other work that needs to be done:
+
+ - Make sure that pages are only written with this function. In
+    particular, check out afconvert, aimage, and atest
+
+
+================================================================
+Performance Notes:
+
+When reading encrypted AFF files, specify read buffers that are at
+least 16 bytes larger than you expect.  This gives the internal
+routines space to do the decryption in place. Otherwise additional
+memory needs to be allocated and data needs to be copied.
+
+
+================================================================

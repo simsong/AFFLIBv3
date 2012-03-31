@@ -1,0 +1,128 @@
+			ANNOUNCING AFFLIB 1.8
+
+I'm happy to announce the release of AFFLIB 1.8. You can download it
+from the standard location at http://www.afflib.org/
+
+Version 1.8 introduces support for Amazon's Simple Storage Service
+(S3). Using S3 you can store an unlimited amount of information on S3
+and then process it using Amazon's Elastic Computing Cloud (EC2). 
+This makes it possible for researchers to work with extremely large
+forensic data sets in an efficient and cost-effective manner. 
+
+Amazon's S3 system allows you to store data for just 15 cents per
+gigabyte per month. That's great; for $150 per month I can store a
+terrabyte. It's true that I can buy a terrabyte hard drive for $700
+(or two 500 gigabyte hard drives for $300). The key difference between
+Amazon's storage and my storage is that Amazon's is backed-up,
+replicated, and available at high-speed from multiple locations around
+the world.
+
+The problem with S3 is that it costs 20 cents per gigabyte to transfer
+data in-or-out of Amazon. That's more than storing it!  This turns out
+to be not so much of a problem, though, because Amazon also rents CPUs
+for 10 cents per hour on EC2 and there is no bandwidth charge to move
+data between EC2 and S3. 
+
+As a result, my typical workload looks like this:
+
+   * Image disks to S3.
+   * Bring up a few dozen computers on EC2 to analyze the disks.
+   * Wipe the disks or store them for long-term. 
+
+
+
+USING S3 FOR COMPUTER FORENSICS
+==================
+
+All objects in Amazon S3 must fit in the same global namespace. The
+namespace consists of a "bucket name" which must be unique, and an
+"object name" which is pretty much anything you want. ("foo" is okay
+here.) These get turns into URLs of the form
+http://s3.amazonws.com/bucket/object-name using the REST API. (There
+is also a CORBA API, but you don't want to use that because it
+requires that every object be repeatedly encoded into Base64 and
+decoded from Base64.)
+
+Buckets come on a first-come, first-serve basis. You can't
+have "foo" because it's already been taken, but you could have a
+bucket with the base64 coding of the MD5 of your social security
+number, if you wanted to do that. It's even reasonably secure, because
+bucket names are private --- nobody can list your bucket names.
+It's possible to infer that your bucket name exists by doing an
+exhaustive search, which is a problem for dictionary words but not for
+base64 encodings of MD5 hashes.
+
+You can only have 100 buckets per account, so don't go crazy with
+them. 
+
+Access control in based on buckets. You can make your bucket readable
+by up to 100 Amazon AWS IDs and read-write for another 100 IDs. If you
+need more than that, deploy a server on EC2 and implement your own
+access control policy using a database of your choosing. 
+
+The easiest way to use S3 is to some something like MonkeyDrive, which
+makes an S3 bucket look like a remote file system. Unfortunately, this won't
+work for computer forensics for two reasons:
+     
+     1. S3 likes to read and write entire objects at once.
+     2. S3 has a maximum object size of 5GB, which MonkeyDrive lowers
+        to 2GB due to a bug in Amazon's load balancers.
+
+The AFFLIB S3 implementation gets around this by storing each AFF
+segment inside its own object. Recall that AFF breaks a single disk
+image into data "pages" and metadata, where each data page is
+16MB. Because these pages are then compressed with zlib or LZMA, they
+can be quite small. That's good when you are paying 15 cents per
+gigabyte per month for storage.
+
+USING S3 with AFFLIB
+
+Using AFFLIB with S3 is really easy. AFF files stored on S3 are given
+URLs where the service is "s3" and the hostname is actually the name
+of the bucket in which the AFF file is stored. For example, if you
+have an AFF file called myfile.aff stored in a bucket called
+subjectfiles, the filename would be:
+
+    s3://subjectfiles/myfile.aff
+
+(Behind the scenes the S3 implementation is mapping this to a whole
+bunch of objects. For example, the segment "page1" maps to
+http://s3.amazonaws.com/subjectfiles/myfile.aff/page1 . But that level
+of detail shouldn't matter to most users of this system.)
+
+To actually use S3 and EC2 you need to sign up for an Amazon Web
+Service's account, which you can do with a credit-card. There are no
+start-up fees.
+
+1. Sign up for Amazon AWS and add S3 as a service.
+2. Set the following environment variables:
+
+setenv AWS_ACCESS_KEY_ID     "<your access key> id"
+setenv AWS_SECRET_ACCESS_KEY "<your secret access key>
+
+3. You'll need a bucket to store your files in. There's a new AFF
+utility called "s3" that controls the Amazon S3 system. Go ahead and
+make a bucket:
+
+     s3 mkdir <mybucketname>
+
+for example, we could make a bucket called subjectfiles:
+
+    s3 mkdir subjectfiles
+
+4. You can now use the afcopy program to copy an AFF file to this
+   bucket:
+
+   afcopy myfile.aff s3://subjectfiles/myfile.aff
+
+
+5. You can set the environment variable S3_DEFAULT_BUCKET If you don't
+   want to type "subjectfiles" all the time: 
+
+   setenv S3_DEFAULT_BUCKET subjectfiles
+
+   Then you can use the URL:
+
+	s3:///myfile.aff
+
+

@@ -1,0 +1,282 @@
+# This file is a work of a US government employee and as such is in the Public domain.
+# Simson L. Garfinkel, March 12, 2012
+
+Design for the encryption system:
+
+Encryption on AFF will be implemented by AFF Base Encryption
+Services. On top of the Base Encryption may be layered either
+Passphrase Encryption or Public Key Encryption. 
+
+AFF Base Encryption:
+---------------------
+Currently we'll be doing this with AES-256, but the system can be
+evolved to accommodate other encryption schemes as needed.
+
+Today AFF data pages are stored in segments named page%d --- page0, page1, etc. 
+The flag indicates if compression is used or not. 
+
+Encrypted pages will be stored in segments named page%d/aes --- ie,
+page0/aes, page1/aes, etc. 
+
+Restrictions:
+
+* A single "affkey" is used to encrypt every page.
+* The AES-256 key cannot be changed.
+
+Encryption will be done with AES256 in CBC mode. 
+The IV is the name of the sector, padded with NULs.
+
+AES256 requires that all buffers be padded to the AES block size,
+which is 16 bytes.  For performance we don't want to add padding if
+the page is already a multiple of the bock size, so here is the
+algorithm:
+
+* If len%16==0, do not pad
+* If len%16!=0, let
+      extra = len%16
+      pad   = 16-extra
+      Append pad NUL bytes
+      Encrypt
+      Append extra NUL bytes.
+      Write
+
+Now, when segment is read:
+ extra = len%16
+ pad = 16-extra
+
+* extra==0, it wasn't padded
+* Otherwise
+     Remove extra NUL bytes
+     Decrypt
+     Remove pad NUL bytes
+
+In this way, the length does not need to be explicitly coded.
+
+On decryption, the key can be "validated" by attempting to decrypt
+page0/aes and seeing if page0_md5 matches (because that's the MD5
+for the unencrypted, uncompressed page.) A new API call will be
+created for this purpose. 
+
+If a key is set, then pages that are written are automatically encrypted first. 
+
+If both an encrypted page and an unencrypted page are present in the
+file, the unencrypted page is returned (because the software never
+looks for the encrypted page.)
+
+If an unencrypted page is updated and encryption is turned on, the
+encrypted page is first written, then the unencrypted page is deleted.
+
+It is an error to change the affkey encryption key once it has been set.
+
+
+
+Advantages:
+* Simple to implement & test.
+* It's real encryption, not a "password" like E01 format uses. 
+* Works transparently with S3 implementation.
+* Allows an unencrypted file to be encrypted in-place. 
+* We can push this down into a lower layer to provide for encryption
+  of all metadata, although that won't be done in the initial
+  implementation. 
+
+Disadvantages:
+* Only encrypts the page data, not the metadata, in the initial implementation.
+* Only way to change the key is to copy to a new AFF file. 
+* Encryption key is cached in memory in the AF structure.
+
+
+Proposed API:
+ af_set_aes_key(af,key,keysize) - sets the key; use alg=0 to turn off encryption.
+                                - key is unsigned char. 
+				- keysize is in bits.
+ af_validate_key(af) - returns 0 if the key that was set can be used
+                       to validate a page
+ af_validate_key_page(af,pagenum) - Specifically checks to see if pagenum
+                        can be validated with the key that was set.
+      returns 0 - validates, -1 = does't validate; -2 = page doesn't
+                   exist; -3 = page md5 doesn't exist.
+
+
+AFF Passphrase Encryption
+--------------------------
+This approach builds upon the Base Encryption, but allows the user to
+store a passphrase. Instead of using SHA256 to generate the encryption
+key directly, the encryption key is a random 256 bit string. This
+string is then encrypted with the passphrase and stored in the AFF
+file. 
+
+The scheme could easily support multiple passphrases on each file,
+although that may not be useful.
+
+The encrypted encryption key is stored in a new segment: affkey-aes256
+
+The contents of affkey_aes256 a 68 byte structure:
+    bytes 0-3    - Version number. This is version 1. Stored in network byte order.
+    bytes 4-67   - The affkey, encrypted with AES in codebook mode 
+                   using SHA-256 of the passphrase as the encryption key.
+    bytes 68-131 - the SHA-256 of the affkey (so you know when you got it).
+
+With this scheme the passphrase can be changed without requiring the
+entire disk image to be re-encrypted---just rewrite affkey-aes256
+with a new password. 
+
+Advantages:
+* Easy to change the key
+* The passphrase is not cached in memory.
+
+Disadvantages:
+* If you can encrypt, you can decrypt (it's a passphrase).
+
+
+Proposed API:
+af_use_passphrase(af,char *phrase)
+    - Tries to use an existing passphrase from an AES-encrypted AFFILE
+    - errors if there is no AES-encrypted data to decrypt of if passphrase is wrong.
+
+af_establish_passphrase(af,char *phrase)
+    - If no encryption has been used yet, makes a random key and
+      stores it encrypted with the passphrase.
+    - fails if encryption has been used
+
+af_establish_passphrase_key(af,char *passphrase,char *key,int keylen)
+    - Verifies that the key is good (by decrypting existing encrypted data)
+
+af_change_passphrase(af,char *oldphrase,char *newphrase)
+    - Validates that oldphrase is correct, then changes it to new phrase.
+
+
+Signing AFF files with X.509 certificates
+--------------------------
+This approach is similar to AFF Passphrase Encryption, except that the
+instead of encrypting the affkey with a passphrase, we encrypt it a
+an X.509 certificate and its matching private key.
+
+The easiest way to get a private key and a corresponding X.509
+certificate is to make a self-signed certificate using the openssl command:
+
+It can also use self-signed certificates:
+    openssl req -x509 -newkey rsa:1024 -keyout sign.key -out sign.key -nodes
+
+This command will ask you a bunch of questions; the results are stored
+in the file sign.crt. When you create a signed AFF file the
+certificate will be stored in the file, so be careful what you
+say. Alternatively, you can create an RSA private/public key pair,
+create a certificate request (CSR), send the CSR to a certificate
+authority, and use the certificate that the authority sends you back.
+
+Note that this puts both the key and the self-signed certificate in
+the same file. That's fine for our purposes. 
+
+You can view the contents the certificate with this openssl command:
+
+    openssl x509 -text -in sign.key
+
+Each segment is signed with the X509 private key by the AFF library
+when the segment is written.  Two signature modes are support:
+
+Mode 0 : RAW SEGMENT SIGNATURE.
+         The signature is computed by calculating
+         the SHA256 hash of the segment name, a NULL byte, the segment argument (a 32-bit
+         number) in network byte order, and the segment data. 
+
+Mode 1 : DATA PAGE SIGNATURE
+         The signature is computed by calculating
+         the SHA256 hash of the segment name, five NULL bytes, and the
+         page data.
+
+Mode 1 is used for signing user data acquired from the hard drive; it
+intentionally signs uncompressed data. Mode 0 is used for signing all
+other data, including metadata returned from the drive, examiner
+notes, and so on.
+
+The signatures are written into segments themselves, with the segment
+name being "name/sha256" where "name" is the original segment
+name. The argument of the segment is the signature mode.
+
+Notice that AFF signatures are independent of the underlying storage
+system. The signatures can be stored in one file and the data in
+another file (as in an AFM file), or in multiple AFF files (as in an
+AFD directory). They can even be stored in a network-based object
+storage system (like S3).
+
+If not private key exists and a data segment is written AFFLIB will
+automatically compute the MD5 of the uncompressed data page and write
+it to the file. This isn't done if a private key exist.
+
+Right now the primary limitation is that the signature does not
+indicate which private key was used to create it. This isn't so much a
+problem, though, because we only support a single signing key. It is
+an issue for chain of custody blocks
+
+AFF Chain of Custody Block.
+
+When an AFF file is created or copied, an AFF Chain of Custody Block
+can be added. This block can be thought of as a signed table of
+contents, although it isn't strictly a TOC because the CCB doesn't
+indicate the position of each signed segment within the file.
+
+The AFF Chain of Custody Block is an XML block. Right now the block is
+just written into a segment and that signment is signed using the
+standard segment signing appraoch. Eventually the segment may be
+signed using XML signatures.
+
+XML elements:
+
+<custody_chain>
+  <date type="ISO 8601" value="19980708T13:33:11"/> - Date that this is being written
+  <signingcert>mycert</signingcert> - base64 encoding of X.509 certificate 
+  <notes>
+  </notes>
+  <segments>  - segments that are present in AFF file at time it was received
+      <segment_hash segname='myname1' mode='0' alg='sha256'>signature in base64 coding</segment_signature> 
+      ...
+  </segments>
+</custody_chain>
+
+Right now this is signed with a base-64 signature following the
+chain. Eventually we may move to XML signatures.
+
+================================================================
+
+Encrypting AFF files with X.509 certificates
+-------------------------------------------
+
+The public key is specified when the file is created. After the file
+is created, it can only be accessed using the corresponding private
+key. This includes all access--both reading and writing.
+
+For encrypting the private key is stored in the
+environment variable AFFLIB_ENCRYPTING_PUBLIC_KEY or in a filename
+referenced by the variable AFFLIB_ENCRYPTING_PUBLIC_KEYFILE
+
+For decrypting the private key is stored in the
+environment variable AFFLIB_DECRYPTING_PRIVATE_KEY or in a filename
+referenced by the variable AFFLIB_DECRYPTING_PRIVATE_KEYFILE
+
+Public key encryption is implemented by taking the affkey and storing
+it in a segment called "affkey-rsannn" where nnn runs from 0 to whatever.
+Padding is with PKCS1.
+
+Advantages:
+  * Easy to implement with existing cryptographic tools.
+  * Can encrypt to multiple keys
+
+================================================================
+
+AFF Public Key Signatures:
+--------------------------
+This approach uses a private key to sign each segment when it is written. 
+In this case, a private key is used for signing and the public key is
+used for verifying signatures. The public key will be stored in the
+image itself; its fingerprint can be recorded elsewhere.
+
+Once again, filenames are specified in environment variables:
+
+     AFFLIB_SIGNING_PRIVATE_KEY
+     AFFLIB_SIGNING_PUBLIC_KEY
+
+
+================================================================
+
+
+================================================================

@@ -1,0 +1,16 @@
+			ANNOUNCING AFFLIB 2.2
+
+I'm happy to announce the release of AFFLIB 2.2. You can download it
+from the standard location at http://www.afflib.org/
+
+Version 2.2 brings several important new features to AFFLIB:
+
+ * AIMAGE now computes SHA256 when an entire image is acquired,
+   in addition to also calculating MD5 and SHA1. 
+
+ * Support for AFFLIB running under Windows has been greatly
+   expanded. Now AFFLIB compiles on both Cygwin and Microsoft VC++
+   (version 2005). Extensive documentation is included in the Win32
+   directory for both downloading and installing the (free) Microsoft
+   build tools, and for compiling AFFLIB.
+
