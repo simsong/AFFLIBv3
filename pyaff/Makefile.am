@@ -9,5 +9,6 @@ pyexec_LTLIBRARIES 	= pyaff.la
 pyaff_la_SOURCES	= pyaff.c
 pyaff_la_LIBADD		= ../lib/libafflib.la
 pyaff_la_CPPFLAGS 	= $(PYTHON_CPPFLAGS)
+pyaff_la_CFLAGS                = -fno-strict-aliasing
 pyaff_la_LDFLAGS 	= -module -avoid-version $(PYTHON_LDFLAGS)
 endif

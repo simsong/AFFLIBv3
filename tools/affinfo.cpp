@@ -466,7 +466,7 @@ void print_info(AFFILE *af,const char *segname)
 	data_len = 32;
     }
     if(display_as_hex(segname,display_len)){
-	char buf[80];
+	char buf[82];
 	snprintf(cc,sizeof(output_line)-strlen(output_line),
 		 "%s%s",af_hexbuf(buf,sizeof(buf),data,display_len,opt_hexbuf),
 		dots ? "..." : "");
