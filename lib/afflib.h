@@ -52,6 +52,15 @@
 #include <stdio.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
+#else
+#ifdef _MSC_VER
+typedef signed char int8_t;
+typedef short int16_t;
+typedef int int32_t;
+typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
+typedef unsigned int uint32_t;
+#endif
 #endif
 #include <sys/types.h>
 
@@ -70,6 +79,10 @@
 #define __STDC_FORMAT_MACROS
 #endif
 #include <inttypes.h>
+#else
+#ifdef _MSC_VER
+#define PRIu32 "I32u"
+#endif
 #endif
 
 /** WIN32 is defined by the NMAKE makefile for Visual C++ under Windows and by mingw **/
