@@ -80,11 +80,11 @@ int opt_j_count = 0;
 int opt_stats = 0;
 
 struct page_stat_block {
-    uint32_t long zsectors;	// number of sectors that are all blank
-    uint32_t long badsectors;	// number of bad sectors
-    uint32_t long zpages;		// number of pages that are all blank
-    uint32_t long pages;		// total number of pages
-    uint32_t long sectors;		// total number of sectors
+    uint64_t zsectors;	// number of sectors that are all blank
+    uint64_t badsectors;	// number of bad sectors
+    uint64_t zpages;		// number of pages that are all blank
+    uint64_t pages;		// total number of pages
+    uint64_t sectors;		// total number of sectors
 };
 
 
