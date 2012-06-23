@@ -97,3 +97,6 @@ tools/affxml
 lib/version.h
 *.lo
 *.la
+makefile
+encrypted.aff
+affconfig.h
