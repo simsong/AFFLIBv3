@@ -1,12 +1,20 @@
-Install this file with:
+If you have an AFFLIB distribution file (e.g. afflib-3.2.1.tar.gz), then
+you can install this file with:
 
-	 ./configure && make && make install
+    # build configure if it is not present
+    if [ ! -e configure ]; sh bootstrap.sh ; fi
+    # run configure
+    ./configure && make && make install
 
 
 To disable optimization, do this:
 
       ./configure 'CXXFLAGS=-O0 -g' 'CFLAGS=-O0 -g'
 
-
 Optimization is automatically disabled if the environment variable
 AFF_NOOPT is set.
+
+If you are trying to compile out of a git or SVN repository, then you
+need to run autoconf to create the configure script and other
+tempaltes. We have provided a script called "./bootstrap.sh" that will
+do this for you.
