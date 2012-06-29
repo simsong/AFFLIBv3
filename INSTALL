@@ -1,6 +1,6 @@
 Install this file with:
 
-	 ./configure && make && make install
+	 ./bootstrap.sh && ./configure && make && make install
 
 
 To disable optimization, do this:
