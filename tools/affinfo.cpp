@@ -54,6 +54,14 @@ const char *progname = "afinfo";
 #define VALIDATE_MD5  0x01
 #define VALIDATE_SHA1 0x02
 
+// error reporting
+unsigned int error_code = 0x00;
+#define ERROR_MD5 0x01
+#define ERROR_SHA1 0x02
+#define ERROR_NOT_AFF 0x04
+#define ERROR_NO_PAGES 0x08
+#define ERROR_PAGE_GAP 0x10
+
 int opt_validate = 0;
 int opt_info = 1;
 int opt_all  = 0;
@@ -192,6 +200,7 @@ void validate(const char *infile)
 	break;
     default:
 	printf("%s is not an AFF file\n",infile);
+    error_code |= ERROR_NOT_AFF;
 	af_close(af);
 	return;
     }
@@ -219,6 +228,7 @@ void validate(const char *infile)
 
     if(pages.size()==0){
 	printf("No pages to validate.\n");
+    error_code |= ERROR_NO_PAGES;
 	af_close(af);
     }
 
@@ -229,6 +239,7 @@ void validate(const char *infile)
     for(; i!= pages.end();i++){
 	if(last+1 != *i){
 	    printf("gap in pages (%d!=%d); %s can't be validated.\n",last+1,*i,infile);
+        error_code |= ERROR_PAGE_GAP;
 	    af_close(af);
 	    return;
 	}
@@ -272,6 +283,7 @@ void validate(const char *infile)
 	    }
 	    else {
 		printf(" NO MATCH!\n");
+        error_code |= ERROR_MD5;
 	    }
 	}
 	else {
@@ -296,6 +308,7 @@ void validate(const char *infile)
 	    }
 	    else {
 		printf(" NO MATCH!\n");
+        error_code |= ERROR_SHA1;
 	    }
 	}
 	else {
@@ -822,7 +835,7 @@ int main(int argc,char **argv)
 #ifdef USE_S3
     s3_audit(0);
 #endif
-    return(0);
+    return(error_code);
 }
 
 
