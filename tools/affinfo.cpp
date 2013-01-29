@@ -230,6 +230,7 @@ void validate(const char *infile)
 	printf("No pages to validate.\n");
     error_code |= ERROR_NO_PAGES;
 	af_close(af);
+        return;
     }
 
     sort(pages.begin(),pages.end());
