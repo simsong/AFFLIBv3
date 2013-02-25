@@ -84,7 +84,6 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
     /* performance improvement: use af->image_size if it is set */
     uint64_t offset = af->pos;		/* where to start */
 
-    if(af->image_size<0)  {total=-1;goto done;}	// error
     if(af->image_size==0) {goto done;}		// no data in file
     if(af->pos > af->image_size) {goto done;}	// seeked beyond end of file
     if(af->pos+count > af->image_size) count = af->image_size - af->pos; // only this much left in file
@@ -138,7 +137,6 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
 	if(bytes_to_read > page_left)               bytes_to_read = page_left;
 	if(bytes_to_read > af->image_size - offset) bytes_to_read = (u_int)(af->image_size - offset);
 
-	assert(bytes_to_read >= 0);	//
 	if(bytes_to_read==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */
@@ -253,7 +251,6 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 
 	if(bytes_to_write > seg_left) bytes_to_write = seg_left;
 
-	assert(bytes_to_write >= 0);	//
 	if(bytes_to_write==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */

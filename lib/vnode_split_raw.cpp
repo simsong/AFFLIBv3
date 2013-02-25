@@ -603,7 +603,7 @@ static int split_raw_rewind_seg(AFFILE *af)
 }
 
 static int split_raw_update_seg(AFFILE *af, const char *name,
-				uint32_t arg,const u_char *value,uint32_t vallen)
+                                uint32_t /*arg*/,const u_char *value,uint32_t vallen)
 
 {
     int64_t page_num = af_segname_page_number(name);

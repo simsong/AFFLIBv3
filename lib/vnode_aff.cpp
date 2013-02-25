@@ -72,7 +72,7 @@ static int aff_write_ignore(AFFILE *af,size_t bytes)
     char next[AF_MAX_NAME_LEN];
     size_t segsize2=0;
     int count=0;
-    while(af_probe_next_seg(af,next,sizeof(next),0,0,&segsize2,1)==0 && next[0]==0 && segsize2>=0){
+    while(af_probe_next_seg(af,next,sizeof(next),0,0,&segsize2,1)==0 && next[0]==0){
 	count++;
 	if(count>10) break;		// something is wrong; just get out.
 	//printf("*** next %d segment at %qd len=%d will be deleted\n",count,ftello(af->aseg),segsize2);

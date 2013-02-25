@@ -229,7 +229,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
     AFFILE *af = (AFFILE *)calloc(sizeof(AFFILE),1);
     af_crypto_allocate(af);
 #ifdef HAVE_PTHREAD
-    pthread_rwlock_init(&af->rwlock);
+    pthread_rwlock_init(&af->rwlock, 0);
     AF_WRLOCK(af);
 #endif
     af->v	  = v;
@@ -517,10 +517,7 @@ int af_eof(AFFILE *af)
 
     if(af_vstat(af,&vni)) return -1;	// this is bad; we need vstat...
     if(vni.use_eof) return vni.at_eof;	// if implementation wants to use it, use it
-    if(af->pos<0){			// pos shouldn't be <0
-	errno = EINVAL;
-	return -1;		// this is bad
-    }
+
     int ret = (int64_t)af->pos >= (int64_t)vni.imagesize;
     AF_UNLOCK(af);
     return ret;
@@ -889,7 +886,7 @@ int af_update_seg(AFFILE *af, const char *segname,
 
 #ifdef HAVE_OPENSSL_BIO_H
 /* Requires no locking */
-int	af_update_seg_frombio(AFFILE *af,const char *segname,uint32_t arg,BIO *bio)
+int	af_update_seg_frombio(AFFILE *af,const char *segname,uint32_t /*arg*/,BIO *bio)
 {
     /* Get the buffer to write out */
     u_char *buf=0;

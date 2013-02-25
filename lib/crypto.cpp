@@ -633,7 +633,7 @@ int af_hash_verify_seg2(AFFILE *af,const char *segname,u_char *sigbuf_,size_t si
 }
 
 /* Verify a segment against a particular signature and public key */
-int af_sig_verify_seg2(AFFILE *af,const char *segname,EVP_PKEY *pubkey,u_char *sigbuf,size_t sigbuf_len,int sigmode)
+int af_sig_verify_seg2(AFFILE *af,const char *segname,EVP_PKEY */*pubkey*/,u_char *sigbuf,size_t sigbuf_len,int sigmode)
 {
     const EVP_MD *sha256 = EVP_get_digestbyname("SHA256");
     if(!sha256){

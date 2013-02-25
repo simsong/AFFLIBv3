@@ -202,7 +202,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 
 
 int raw_update_seg(AFFILE *af, const char *name,
-		    uint32_t arg,const u_char *value,uint32_t vallen)
+                   uint32_t /*arg*/,const u_char *value,uint32_t vallen)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
 
