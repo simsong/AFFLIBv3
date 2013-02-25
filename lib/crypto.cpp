@@ -62,7 +62,7 @@ int af_is_signature_segment(const char *segname){
 /****************************************************************
  *** AES ENCRYPTION LAYER
  ****************************************************************/
-   
+
 static const char *aff_cannot_sign = "AFFLIB: OpenSSL does not have SHA256! "\
     "AFF segments cannot be signed. "\
     "See http://www.afflib.org/requirements.php for additional information.";
@@ -94,7 +94,7 @@ void af_crypto_deallocate(AFFILE *af)
 #ifdef AES_BLOCK_SIZE
     memset(&af->crypto->ekey,0,sizeof(af->crypto->ekey));
     memset(&af->crypto->dkey,0,sizeof(af->crypto->dkey));
-#endif    
+#endif
 #ifdef HAVE_PEM_READ_BIO_RSA_PUBKEY
     if(af->crypto->sign_privkey){
 	EVP_PKEY_free(af->crypto->sign_privkey);
@@ -143,7 +143,7 @@ int af_set_aes_key(AFFILE *af,const unsigned char *userKey,const int bits)
 
 
 
-/** 
+/**
  * Take an unencrypted AFFKEY, encrypt it with the SHA256 of the passphrase,
  * and save it in the appropriate segment.
  */
@@ -160,7 +160,7 @@ int af_save_aes_key_with_passphrase(AFFILE *af,const char *passphrase, const u_c
     struct affkey affkey_seg;
     assert(sizeof(affkey_seg)==AFFKEY_SIZE);
     memset((unsigned char *)&affkey_seg,0,sizeof(affkey_seg));
-    
+
     uint32_t version_number = htonl(1);	// version 1
     memcpy(affkey_seg.version,(u_char *)&version_number,4);
     memcpy(affkey_seg.affkey_aes256,affkey,32);
@@ -187,7 +187,7 @@ int af_save_aes_key_with_passphrase(AFFILE *af,const char *passphrase, const u_c
 /** MacOS 10.5 with GCC 4.0.1 packed affkey at 52 bytes.
  ** Linux GCC 4.1.2 packed affkey at 56 bytes. It should be 52 bytes
  ** --- 4 bytes for the version number, 32 bytes for the affkey, 16 bytes for encryption of zeros.
- ** original code specified the version as uint32_t version:32, for which the 
+ ** original code specified the version as uint32_t version:32, for which the
  ** compiler allocated 64 bits...
  ** So this code needs to be willing to accept a 52-byte or 56-byte affkey.
  **/
@@ -223,7 +223,7 @@ int  af_get_aes_key_from_passphrase(AFFILE *af,const char *passphrase,
 
     if(sizeof(affkey_seg)==klen){
 	// On-disk structure is correct; copy it over
-	memcpy(&affkey_seg,kbuf,klen);	
+	memcpy(&affkey_seg,kbuf,klen);
 	memcpy((char *)&version,affkey_seg.version,4);
 	kversion = ntohl(version);
     } else {
@@ -233,7 +233,7 @@ int  af_get_aes_key_from_passphrase(AFFILE *af,const char *passphrase,
 	memcpy(affkey_seg.affkey_aes256,kbuf+4,sizeof(affkey_seg.affkey_aes256));
 	memcpy(affkey_seg.zeros_aes256,kbuf+36,sizeof(affkey_seg.zeros_aes256));
     }
-     
+
     /* make sure version is correct */
     if(kversion != 1){
 	errno = EINVAL;
@@ -333,7 +333,7 @@ int  af_change_aes_passphrase(AFFILE *af,const char *oldphrase,const char *newph
 
     unsigned char affkey[32];
     int r = af_get_aes_key_from_passphrase(af,oldphrase,affkey);
-    
+
     if(r) return r;
     r = af_save_aes_key_with_passphrase(af,newphrase,affkey);
     memset(affkey,0,sizeof(affkey));	// erase the temp data
@@ -427,7 +427,7 @@ int  af_set_sign_files(AFFILE *af,const char *keyfile,const char *certfile)
 	(*af->error_reporter)(aff_cannot_sign);
 	return AF_ERROR_NO_SHA256;			//
     }
-	
+
     BIO *bp = BIO_new_file(keyfile,"r");
     if(!bp) return -1;
     af->crypto->sign_privkey = PEM_read_bio_PrivateKey(bp,0,0,NULL);
@@ -507,7 +507,7 @@ int af_sign_seg3(AFFILE *af,const char *segname,
 int af_sign_seg(AFFILE *af,const char *segname)
 {
     size_t datalen = 0;
-    
+
     /* Now get the data to verify */
     if(af_get_seg(af,segname,0,0,&datalen)){
 	return AF_ERROR_SIG_DATAREAD_ERROR; // can't read the segment length
@@ -603,7 +603,7 @@ int af_hash_verify_seg2(AFFILE *af,const char *segname,u_char *sigbuf_,size_t si
 	if(af_get_seg(af,segname,0,0,&seglen)){
 	    return AF_ERROR_SIG_DATAREAD_ERROR; // can't read the segment length
 	}
-	
+
 	/* Now read the segment */
 	segbuf=(unsigned char *)malloc(seglen);
 	if(segbuf==0) return AF_ERROR_SIG_MALLOC;
@@ -664,7 +664,7 @@ int af_sig_verify_seg2(AFFILE *af,const char *segname,EVP_PKEY *pubkey,u_char *s
 	if(af_get_seg(af,segname,0,0,&seglen)){
 	    return AF_ERROR_SIG_DATAREAD_ERROR; // can't read the segment length
 	}
-	
+
 	/* Now read the segment */
 	segbuf=(unsigned char *)malloc(seglen);
 	if(segbuf==0) return AF_ERROR_SIG_MALLOC;
@@ -711,12 +711,12 @@ int af_sig_verify_seg(AFFILE *af,const char *segname)
 	BIO_free(cert_bio);
 	af->crypto->sign_pubkey = X509_get_pubkey(af->crypto->sign_cert);
     }
-    
+
     /* Figure out the signature segment name */
     char sigseg[AF_MAX_NAME_LEN + 1 + sizeof(AF_SIG256_SUFFIX)];
     strlcpy(sigseg,segname,sizeof(sigseg));
     strlcat(sigseg,AF_SIG256_SUFFIX,sizeof(sigseg));
-    
+
     /* Get the signature (it says how we need to handle the data) */
     unsigned char sigbuf[2048];		// big enough to hold any conceivable signature
     size_t sigbuf_len=sizeof(sigbuf);
@@ -768,7 +768,7 @@ int  af_set_seal_certificates(AFFILE *af,const char *certfiles[],int numcertfile
     int r = RAND_bytes(affkey,sizeof(affkey));
     if(r!=1) r = RAND_pseudo_bytes(affkey,sizeof(affkey)); // true random not supported
     if(r!=1) return AF_ERROR_RNG_FAIL; // pretty bad...
-    
+
     af_seal_affkey_using_certificates(af, certfiles, numcertfiles, affkey);
     return 0;
 }
@@ -786,10 +786,10 @@ int  af_seal_affkey_using_certificates(AFFILE *af,const char *certfiles[],int nu
     /* Repeat for each public key.. */
     int r;
     for(int i=0;i<numcertfiles;i++){
-	
+
 	EVP_PKEY	*seal_pubkey=0;		// encrypting public key (for encrypting the affkey)
 	X509	*seal_cert=0;		// encrypting certificate that was used...
-	
+
 	BIO *bp = BIO_new_file(certfiles[i],"r");
 	if(!bp) return -1;
 	PEM_read_bio_X509(bp,&seal_cert,0,0);
@@ -798,42 +798,42 @@ int  af_seal_affkey_using_certificates(AFFILE *af,const char *certfiles[],int nu
 	    return -2;
 	}
 	seal_pubkey = X509_get_pubkey(seal_cert);
-	
+
 	/* Create the next encrypted key. First make a copy of it... */
 	unsigned char affkey_copy[32];
 	memcpy(affkey_copy,affkey,32);
-	
+
 	EVP_CIPHER_CTX cipher_ctx;
-	
+
 	/* IV */
 	unsigned char iv[EVP_MAX_IV_LENGTH];
 	RAND_pseudo_bytes(iv, EVP_MAX_IV_LENGTH); /* make a random iv */
-	
+
 	/* EK */
 	unsigned char *ek=0;
 	unsigned char *ek_array[1];
-	
+
 	int ek_size = EVP_PKEY_size(seal_pubkey);
 	ek = (unsigned char *)malloc(ek_size);
 	ek_array[0] = ek;
-	
+
 	/* Destination for encrypted AFF key */
 	unsigned char encrypted_affkey[1024];
 	int encrypted_bytes = 0;
 	memset(encrypted_affkey,0,sizeof(encrypted_affkey));
-	
+
 	r = EVP_SealInit(&cipher_ctx,EVP_aes_256_cbc(),ek_array,&ek_size,&iv[0],&seal_pubkey,1);
 	if(r!=1) return -10;		// bad
-	
+
 	r = EVP_SealUpdate(&cipher_ctx,encrypted_affkey,&encrypted_bytes,affkey_copy,sizeof(affkey_copy));
 	if(r!=1) return -11;		// bad
 
 	int total_encrypted_bytes = encrypted_bytes;
 	r = EVP_SealFinal(&cipher_ctx,encrypted_affkey+total_encrypted_bytes,&encrypted_bytes);
 	if(r!=1) return -12;
-	    
+
 	total_encrypted_bytes += encrypted_bytes;
-	    
+
 	/* Now we need to combine the IV, encrypted key, and the encrypted aff key onto a single structure
 	 * and write it out
 	 */
@@ -908,12 +908,12 @@ int af_get_affkey_using_keyfile(AFFILE *af, const char *private_keyfile,u_char a
 	    free(buf);
 	    return -1;		// could not get the segment
 	}
-	    
+
 	/* Try to get and decrypt the segment */
-	unsigned char *decrypted = 0;	// 
+	unsigned char *decrypted = 0;	//
 	if (*(u_int *)buf == htonl(1)){	// check to see if the encrypted EVP is rev 1
 	    /* Handle rev 1 */
-	    const u_int int1 = sizeof(int)*1; // offset #1 
+	    const u_int int1 = sizeof(int)*1; // offset #1
 	    const u_int int2 = sizeof(int)*2; // offset #2
 	    const u_int int3 = sizeof(int)*3; // offset #3
 	    int ek_size               = ntohl(*(u_int *)(buf+int1));
@@ -924,7 +924,7 @@ int af_get_affkey_using_keyfile(AFFILE *af, const char *private_keyfile,u_char a
 	    unsigned char *iv = buf+int3;
 	    unsigned char *ek = buf+int3+EVP_MAX_IV_LENGTH;
 	    unsigned char *encrypted_affkey = buf+int3+EVP_MAX_IV_LENGTH+ek_size;
-		
+
 	    /* Now let's see if we can decode it*/
 	    EVP_CIPHER_CTX cipher_ctx;
 	    int r = EVP_OpenInit(&cipher_ctx,EVP_aes_256_cbc(),ek,ek_size,iv,seal_privkey);
@@ -950,9 +950,9 @@ int af_get_affkey_using_keyfile(AFFILE *af, const char *private_keyfile,u_char a
 	    }
 	}
     next:;
-	free(buf);	
+	free(buf);
     }
-    return ret;				// return the code 
+    return ret;				// return the code
 }
 
 

@@ -41,13 +41,13 @@ public:
     std::string eta_time(double fraction_done); // the actual time
 };
 
-/* This code in part from 
+/* This code in part from
  * http://social.msdn.microsoft.com/Forums/en/vcgeneral/thread/430449b3-f6dd-4e18-84de-eebd26a8d668
  */
 
 #ifdef WIN32
 #  include <winsock2.h>
-#  include <windows.h>			
+#  include <windows.h>
 #  ifndef DELTA_EPOCH_IN_MICROSECS
 #    if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
 #      define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
@@ -66,15 +66,15 @@ inline void timestamp(struct timeval *t)
     tmpres |= ft.dwHighDateTime;
     tmpres <<= 32;
     tmpres |= ft.dwLowDateTime;
- 
+
     /*converting file time to unix epoch*/
-    tmpres -= DELTA_EPOCH_IN_MICROSECS; 
+    tmpres -= DELTA_EPOCH_IN_MICROSECS;
     tmpres /= 10;  /*convert into microseconds*/
     t->tv_sec = (long)(tmpres / 1000000UL);
     t->tv_usec = (long)(tmpres % 1000000UL);
 #else
     gettimeofday(t,NULL);
-#endif    
+#endif
 }
 
 inline void aftimer::start()
@@ -115,7 +115,7 @@ inline std::string aftimer::hms(long t)
 {
     char   buf[64];
     int    days = t / (60*60*24);
-    
+
     t = t % (60*60*24);			/* what's left */
 
     int    h = t / 3600;
@@ -173,7 +173,7 @@ inline std::string aftimer::eta_time(double fraction_done)
 #else
     tm = *localtime(&when);
 #endif
-    
+
     char buf[64];
     snprintf(buf,sizeof(buf),"%02d:%02d:%02d",tm.tm_hour,tm.tm_min,tm.tm_sec);
     return std::string(buf);

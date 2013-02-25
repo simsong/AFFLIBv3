@@ -124,7 +124,7 @@ static int qemu_get_seg(AFFILE *af,const char *name, uint32_t *arg,
 	    return 0;
 	}
 	if(*datalen<8) return -2;
-	
+
 	struct aff_quad  q;
 	q.low  = htonl((uint32_t)(af->image_size & 0xffffffff));
 	q.high = htonl((uint32_t)(af->image_size >> 32));
@@ -187,11 +187,11 @@ static int qemu_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_
     char pagename[AF_MAX_NAME_LEN];		//
     memset(pagename,0,sizeof(pagename));
     snprintf(pagename,sizeof(pagename),AF_PAGE,af->cur_page++);
-    
+
     int r = 0;
     /* Get the segment, if it is wanted */
     if(data) r = qemu_get_seg(af,pagename,arg,data,datalen);
-    
+
     /* If r==0 and there is room for copying in the segment name, return it */
     if(r==0){
 	if(strlen(pagename)+1 < segname_len){

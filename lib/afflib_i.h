@@ -1,12 +1,12 @@
 /*
  * afflib_i.h:
  * The "master include file" of the AFF Library.
- * Includes many fucntions that are not designed 
+ * Includes many fucntions that are not designed
  * to be used by application programmers.
  *
  *
  * Copyright (c) 2005-2006
- *	Simson L. Garfinkel and Basis Technology, Inc. 
+ *	Simson L. Garfinkel and Basis Technology, Inc.
  *      All rights reserved.
  *
  * This code is derrived from software contributed by
@@ -41,7 +41,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.  
+ * SUCH DAMAGE.
  */
 
 #ifndef AFFLIB_I_H
@@ -381,7 +381,7 @@ struct _AFFILE {
     /* additional support for writing. */
     unsigned int compression_type;	// preferred compression type
     int		 compression_level;	// 0 is no compression
-    
+
 
     /* w_callback:
      * A callback that is called before and after each segment is written.
@@ -410,7 +410,7 @@ struct _AFFILE {
 
     void	*vnodeprivate;	      // private storage for the vnode
     void	(*error_reporter)(const char *fmt, ...);
-    struct af_crypto *crypto;		
+    struct af_crypto *crypto;
 #ifdef HAVE_PTHREAD
     pthread_rwlock_t rwlock;		// automatically created and destroyed if pthread exists
 #endif
@@ -432,7 +432,7 @@ struct af_crypto {
 #ifdef AES_BLOCK_SIZE
     AES_KEY	ekey;			// encrypt key
     AES_KEY	dkey;			// decrypt key
-#endif    
+#endif
 #ifdef HAVE_OPENSSL_EVP_H
     EVP_PKEY	*sign_privkey;		// signing private key (to write signatures)
     EVP_PKEY	*sign_pubkey;		// signing public key (to verify signatures)
@@ -440,14 +440,14 @@ struct af_crypto {
     /* Sealing is kept locally and immediately turned into a dkey & ekey */
 #endif
 };
-    
+
 
 /* The AFF STREAM VNODE */
 struct af_vnode {
     int type;				// numeric vnode type
     int flag;				// file system flag type
     const char *name;
-    int (*identify)(const char *fname,int exists);	// returns 1 if file system is identified by implementation; 
+    int (*identify)(const char *fname,int exists);	// returns 1 if file system is identified by implementation;
     int (*open)(AFFILE *af);
     int (*close)(AFFILE *af);
     int (*vstat)(AFFILE *af,struct af_vnode_info *);	// returns info about the vnode image file
@@ -463,8 +463,8 @@ struct af_vnode {
 };
 
 /* VNODE Flags */
-#define AF_VNODE_TYPE_PRIMITIVE 0x01	// single-file implementation 
-#define AF_VNODE_TYPE_COMPOUND  0x02	// multi-file implementation 
+#define AF_VNODE_TYPE_PRIMITIVE 0x01	// single-file implementation
+#define AF_VNODE_TYPE_COMPOUND  0x02	// multi-file implementation
 #define AF_VNODE_TYPE_RELIABLE  0x04	// writes are reliable; no need to verify them.
 #define AF_VNODE_MAXSIZE_MULTIPLE 0x08  // maxsize must be multiple of pagesize (for AFM and splitraw)
 #define AF_VNODE_NO_SIGNING     0x10	// vnode does not support signing (like raw)
@@ -513,7 +513,7 @@ struct aff_quad {
 /* As it is kept in memory */
 struct aff_toc_mem {
     char *name;			        // name of this directory entry
-    uint64_t offset;			// offset from beginning of file. 
+    uint64_t offset;			// offset from beginning of file.
     uint64_t segment_len;		// includes head, tail, name & length
 };
 
@@ -532,7 +532,7 @@ void af_initialize();			// initialize the AFFLIB
 
 /* Internal identification routines */
 int af_identify_file_type(const char *filename,int exists); // returns type of a file; if exists=1, file must exist
-const char *af_identify_file_name(const char *filename,int exists); // returns name of a file type; 
+const char *af_identify_file_name(const char *filename,int exists); // returns name of a file type;
 int split_raw_increment_fname (char *fn); /* exposed for testing in aftest */
 
 /* AFF implementation types returned by af_identify_type() and af_identify_name()*/
@@ -595,7 +595,7 @@ int	af_figure_media(int fd,struct af_figure_media_buf *);
  *          -2 if segname_len was not large enough to hold segname
  *         - segname - the name of the next segment.
  *         - segsize - number of bytes the entire segment is.
- *      
+ *
  * doesn't change af->aseg pointer if do_rewind is true, otherwise leaves stream
  *           positioned ready to read the data
  */
@@ -613,7 +613,7 @@ int	af_backspace(AFFILE *af);	// back up one segment
 
 /* Support for data pages. This is what the stream system is built upon.
  * Note: pagename to string translation happens inside afflib.cpp, not inside
- * the vnode driver. 
+ * the vnode driver.
  */
 int	af_page_size(AFFILE *af);	// legacy (now is af_get_pagesize)
 void	af_read_sizes(AFFILE *af);	// sets up values if we can get them.
@@ -679,7 +679,7 @@ size_t strlcat(char *dest,const char *src,size_t dest_size);
  * This is all experimental right now.
  */
 
-int	aff_segment_overhead(const char *segname);	
+int	aff_segment_overhead(const char *segname);
 int	aff_toc_free(AFFILE *af);
 void	aff_toc_print(AFFILE *af);
 int	aff_toc_build(AFFILE *af);	// build by scanning the AFFILE

@@ -1,6 +1,6 @@
 /*
  * vnode_aff.cpp:
- * 
+ *
  * Functions for the manipulation of AFF files...
  * Distributed under the Berkeley 4-part license
  */
@@ -22,11 +22,11 @@
 
 static int      aff_write_ignore(AFFILE *af,size_t bytes);
 static int	aff_write_seg(AFFILE *af,const char *name,uint32_t arg,
-			      const u_char *value,size_t vallen); 
+			      const u_char *value,size_t vallen);
 static int	aff_get_seg(AFFILE *af,const char *name,uint32_t *arg,
 			    unsigned char *data,size_t *datalen);
 #ifdef KERNEL_LIBRARY
-static int	aff_write_seg_no_data(AFFILE *af,const char *name,uint32_t arg, size_t vallen); 
+static int	aff_write_seg_no_data(AFFILE *af,const char *name,uint32_t arg, size_t vallen);
 #endif
 static int	aff_get_next_seg(AFFILE *af,char *segname,size_t segname_len,
 				 uint32_t *arg, unsigned char *data, size_t *datalen);
@@ -140,7 +140,7 @@ int aff_write_seg(AFFILE *af, const char *segname,uint32_t arg,const u_char *dat
     segt.segment_len = htonl(sizeof(segh)+segname_len + datalen + sizeof(segt));
     aff_toc_update(af,segname,ftello(af->aseg),datalen);
 
-    
+
     if(af_trace) fprintf(af_trace,"aff_write_seg: putting segment %s (datalen=%d) offset=%"PRId64"\n",
 			 segname,(int)datalen,ftello(af->aseg));
 
@@ -183,7 +183,7 @@ int aff_write_seg_no_data(AFFILE *af, const char *segname,uint32_t arg,size_t da
     segt.segment_len = htonl(sizeof(segh)+segname_len + datalen + sizeof(segt));
     aff_toc_update(af,segname,ftello(af->aseg),datalen);
 
-    
+
     if(af_trace) fprintf(af_trace,"aff_write_seg: putting segment %s (datalen=%zd) offset=%"PRId64"\n",
 			 segname,datalen,ftello(af->aseg));
 
@@ -199,7 +199,7 @@ int aff_write_seg_no_data(AFFILE *af, const char *segname,uint32_t arg,size_t da
 
 
 /****************************************************************
- *** low-level routines for reading 
+ *** low-level routines for reading
  ****************************************************************/
 
 /* aff_get_segment:
@@ -236,7 +236,7 @@ static int aff_get_seg(AFFILE *af,const char *name,
  * @param arg         - pointer to the arg
  * @param data        - pointer to the data
  * @param datalen_    - length of the data_ array. If *datalen_==0, set to the length of the data.
- * 
+ *
  * @return
  *    0 =  success.
  *  -1  = end of file. (AF_ERROR_EOF)
@@ -338,7 +338,7 @@ int af_truncate_blank(AFFILE *af)
 	}
     }
     fseeko(af->aseg,last_loc,SEEK_SET);	// return to where we were
-    return -1;				// say that we couldn't do it. 
+    return -1;				// say that we couldn't do it.
 }
 
 
@@ -368,7 +368,7 @@ static int aff_update_seg(AFFILE *af, const char *name,
     size_t size_closest = 0;
     uint64_t         loc_closest = 0;
     struct aff_toc_mem *adm = aff_toc(af,name);
-       
+
     if(af_trace) fprintf(af_trace,"aff_update_seg(name=%s,arg=%"PRIu32",vallen=%u)\n",name,arg,vallen);
 
 
@@ -412,7 +412,7 @@ static int aff_update_seg(AFFILE *af, const char *name,
 	     */
 	    fseeko(af->aseg,(uint64_t)0,SEEK_END);              // go to the end of the file
 	    break;			// and exit this loop
-	    
+
 	}
 
 	if((next_segment_name[0]==0) && (next_datasize>=size_needed)){
@@ -439,7 +439,7 @@ static int aff_update_seg(AFFILE *af, const char *name,
 
 	fseeko(af->aseg,loc_closest,SEEK_SET); // move to the location
 	aff_write_seg(af,name,arg,value,vallen); // write the new segment
-	
+
 	size_t newsize = size_closest - vallen - aff_segment_overhead(0) - strlen(name);
 	aff_write_ignore(af,newsize); // write the smaller ignore
 	return 0;
@@ -450,7 +450,7 @@ static int aff_update_seg(AFFILE *af, const char *name,
 	/* Keep truncating until there is nothing left */
     }
     //printf("*** appending '%s' bytes=%d to the end\n",name,vallen);
-    fseeko(af->aseg,0L,SEEK_END);		// move back to the end of the file 
+    fseeko(af->aseg,0L,SEEK_END);		// move back to the end of the file
     return aff_write_seg(af,name,arg,value,vallen); // just write at the end
 }
 
@@ -505,13 +505,13 @@ static int aff_del_seg(AFFILE *af,const char *segname)
  */
 static int aff_create(AFFILE *af)
 {
-    fwrite(AF_HEADER,1,8,af->aseg);  // writes the header 
+    fwrite(AF_HEADER,1,8,af->aseg);  // writes the header
     aff_toc_build(af);	             // build the toc (will be pretty small)
     af_make_badflag(af);	     // writes the flag for bad blocks
-    
+
     const char *version = xstr(PACKAGE_VERSION);
     aff_update_seg(af,AF_AFFLIB_VERSION,0,(const u_char *)version,strlen(version));
-    
+
 #ifdef HAVE_GETPROGNAME
     const char *progname = getprogname();
     if(aff_update_seg(af,AF_CREATOR,0,(const u_char *)progname,strlen(progname))) return -1;
@@ -553,9 +553,9 @@ static int aff_identify_file(const char *filename,int exists)
 	if(af_ext_is(filename,"aff")) return 1;
 	return 0;
     }
-	
+
     if(fd>0){
-	int len = strlen(AF_HEADER)+1;	
+	int len = strlen(AF_HEADER)+1;
 	char buf[64];
 	int r = read(fd,buf,len);
 	close(fd);
@@ -581,7 +581,7 @@ static int aff_open(AFFILE *af)
     /* Open the raw file */
     int fd = open(af->fname,af->openflags | O_BINARY,af->openmode);
     if(fd<0){				// couldn't open
-	return -1;			
+	return -1;
     }
 
     /* Lock the file if writing */
@@ -597,13 +597,13 @@ static int aff_open(AFFILE *af)
 
     /* Set defaults */
 
-    af->compression_type     = AF_COMPRESSION_ALG_ZLIB; 
+    af->compression_type     = AF_COMPRESSION_ALG_ZLIB;
     af->compression_level    = Z_DEFAULT_COMPRESSION;
 
     /* Open the FILE  for the AFFILE */
     char strflag[8];
     strcpy(strflag,"rb");		// we have to be able to read
-    if(af->openflags & O_RDWR) 	strcpy(strflag,"w+b"); 
+    if(af->openflags & O_RDWR) 	strcpy(strflag,"w+b");
 
     af->aseg = fdopen(fd,strflag);
     if(!af->aseg){
@@ -622,7 +622,7 @@ static int aff_open(AFFILE *af)
     if(sb.st_size==0){
 	return aff_create(af);
     }
-    
+
     /* We are opening an existing file. Verify once more than it is an AFF file
      * and skip past the header...
      */

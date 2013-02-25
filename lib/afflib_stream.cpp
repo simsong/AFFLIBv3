@@ -16,7 +16,7 @@
 #ifdef _WIN32
 #define ASIZE SSIZE_T
 #else
-#define ASIZE ssize_t 
+#define ASIZE ssize_t
 #endif
 
 
@@ -110,7 +110,7 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
 	if(af->pb==0){
 	    int64_t pagenum = offset / af->image_pagesize;
 	    af->pb = af_cache_alloc(af,pagenum);
-	    if(af->pb->pagebuf_valid==0){ 
+	    if(af->pb->pagebuf_valid==0){
 		/* page buffer isn't valid; need to get it */
 		af->pb->pagebuf_bytes = af->image_pagesize;		// we can hold this much
 		if(af_get_page(af,af->pb->pagenum,af->pb->pagebuf, &af->pb->pagebuf_bytes)){
@@ -124,7 +124,7 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
 	}
 	// Compute how many bytes can be copied...
 	// where we were reading from
-	u_int page_offset   = (u_int)(offset - af->pb->pagenum * af->image_pagesize); 
+	u_int page_offset   = (u_int)(offset - af->pb->pagenum * af->image_pagesize);
 
 	if(page_offset > af->pb->pagebuf_bytes){
 	    /* Page is short. */
@@ -138,7 +138,7 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
 	if(bytes_to_read > page_left)               bytes_to_read = page_left;
 	if(bytes_to_read > af->image_size - offset) bytes_to_read = (u_int)(af->image_size - offset);
 
-	assert(bytes_to_read >= 0);	// 
+	assert(bytes_to_read >= 0);	//
 	if(bytes_to_read==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */
@@ -173,9 +173,9 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
     af_invalidate_vni_cache(af);
 
     /* vnode write bypass:
-     * If a write function is defined, use it and avoid the page and cache business. 
+     * If a write function is defined, use it and avoid the page and cache business.
      */
-    if (af->v->write){		
+    if (af->v->write){
 	int r = (af->v->write)(af, buf, af->pos, count);
 	if(r>0){
 	    af->pos += r;
@@ -224,7 +224,7 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 	AF_UNLOCK(af);
 	return -1;			// error
     }
-       
+
 
     /* Can't use high-speed optimization; write through the cache */
     int total = 0;
@@ -245,15 +245,15 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 	    }
 	}
 	// where writing to
-	u_int seg_offset = (u_int)(offset - af->pb->pagenum * af->image_pagesize); 
+	u_int seg_offset = (u_int)(offset - af->pb->pagenum * af->image_pagesize);
 
 	// number we can write into
-	u_int seg_left   = af->image_pagesize - seg_offset; 
+	u_int seg_left   = af->image_pagesize - seg_offset;
 	u_int bytes_to_write = count;
 
 	if(bytes_to_write > seg_left) bytes_to_write = seg_left;
 
-	assert(bytes_to_write >= 0);	// 
+	assert(bytes_to_write >= 0);	//
 	if(bytes_to_write==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */
@@ -275,7 +275,7 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 	/* If we wrote out all of the bytes that were left in the segment,
 	 * then we are at the end of the segment, write it back...
 	 */
-	if(seg_left == bytes_to_write){	
+	if(seg_left == bytes_to_write){
 	    if(af_cache_flush(af)){
 		AF_UNLOCK(af);
 		return -1;

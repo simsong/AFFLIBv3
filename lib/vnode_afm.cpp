@@ -64,7 +64,7 @@ static int invalid_extension_char(const char *extension,int ext_len)
 
 static int afm_create(AFFILE *af)
 {
-    if (af_update_seg (af, AF_RAW_IMAGE_FILE_EXTENSION, 0, (const u_char *)SPLITRAW_DEFAULT_EXTENSION, 
+    if (af_update_seg (af, AF_RAW_IMAGE_FILE_EXTENSION, 0, (const u_char *)SPLITRAW_DEFAULT_EXTENSION,
 		       strlen(SPLITRAW_DEFAULT_EXTENSION))) {
 	(*af->error_reporter)("split_raw_read_write_setup: %s: failed to write %s\n",
 			      af->fname, AF_RAW_IMAGE_FILE_EXTENSION);
@@ -81,7 +81,7 @@ static int afm_create(AFFILE *af)
  * sub-implementations in their own files: an AFF file
  * and a split_raw file.
  */
- 
+
 static int afm_open(AFFILE *af)
 {
     af->vnodeprivate = (void *)calloc(sizeof(struct afm_private),1);
@@ -107,7 +107,7 @@ static int afm_open(AFFILE *af)
     /* Read the split raw extension */
     char raw_file_extension[4];
     size_t  len=3;				// don't overwrite the NUL
-    
+
     memset(raw_file_extension,0,sizeof(raw_file_extension));
     if (af_get_seg(ap->aff,AF_RAW_IMAGE_FILE_EXTENSION,0,(unsigned char *)raw_file_extension,&len)) {
 	(*af->error_reporter)("afm_open: %s: %s segment missing or too large\n",
@@ -121,7 +121,7 @@ static int afm_open(AFFILE *af)
 	afm_close(af);
 	return -1;
     }
-    
+
     /* Now open the splitraw file */
     char *sr_filename = strdup(af_filename(af));
     char *ext = strrchr(sr_filename,'.');
@@ -156,7 +156,7 @@ static int afm_open(AFFILE *af)
      * the parameters set with af_update_seg() calls, yet the split_raw
      * implementation gets the proper settings
      */
-    return 0;    
+    return 0;
 }
 
 
@@ -233,8 +233,8 @@ static int afm_split_raw_setup(AFFILE *af)
     /* Push down the image_pagesize from the AFM to the split_raw */
     uint32_t image_pagesize = af->image_pagesize; // default to what's in memory
     af_get_seg(af,AF_PAGESIZE,&image_pagesize,0,0); // get from the AFF file if possible
-    ap->sr->image_pagesize = af->image_pagesize; // overwrite the default with what the AFM file 
-    
+    ap->sr->image_pagesize = af->image_pagesize; // overwrite the default with what the AFM file
+
     ap->sr_initialized = 1;
     return 0;
 }
@@ -265,7 +265,7 @@ static int afm_get_seg(AFFILE *af,const char *name,uint32_t *arg,unsigned char *
     int64_t page_num = af_segname_page_number(name);
     if(page_num>=0) return af_get_seg(ap->sr,name,arg,data,datalen);
     return af_get_seg(ap->aff,name,arg,data,datalen);
-	
+
 }
 
 
@@ -317,7 +317,7 @@ static int afm_rewind_seg(AFFILE *af)
  */
 static int afm_update_seg(AFFILE *af, const char *name,
 			  uint32_t arg,const u_char *value,uint32_t vallen)
-    
+
 {
     struct afm_private *ap = AFM_PRIVATE(af);
     int64_t page_num = af_segname_page_number(name); // <0 means update metadata
@@ -356,7 +356,7 @@ struct af_vnode vnode_afm = {
     afm_identify_file,
     afm_open,
     afm_close,
-    afm_raw_vstat,			// nothing aff specific here. 
+    afm_raw_vstat,			// nothing aff specific here.
     afm_get_seg,			// get seg
     afm_get_next_seg,			// get_next_seg
     afm_rewind_seg,			// rewind_seg

@@ -2,7 +2,7 @@
 
 /*
  * afflib_dir.cpp:
- * 
+ *
  * Functions for the manipulation of the AFF directories
  */
 
@@ -87,7 +87,7 @@ int	aff_toc_build(AFFILE *af)	// build the dir if we couldn't find it
     aff_toc_free(af);			// clear the old one
     af_rewind_seg(af);			// start at the beginning
 
-    // note: was malloc(0), but that causes problems under Borland    
+    // note: was malloc(0), but that causes problems under Borland
     af->toc = (aff_toc_mem *)malloc(sizeof(aff_toc_mem));
     while(1){
 	char segname[AF_MAX_NAME_LEN];

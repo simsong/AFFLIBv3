@@ -8,7 +8,7 @@
  */
 
 /* the RAW_PAGESIZE is visible outside the module, but it's kind of irrevellant */
-#define RAW_PAGESIZE 16*1024*1024	
+#define RAW_PAGESIZE 16*1024*1024
 
 /* raw file implementation */
 struct raw_private {
@@ -176,7 +176,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 
     int bytes_to_read = af->image_pagesize; // copy this many bytes, unless
     if(bytes_to_read > bytes_left) bytes_to_read = bytes_left; // only this much is left
-    
+
     if(arg) *arg = 0;			// arg is always 0
     if(datalen){
 	if(data==0){ // asked for 0 bytes, so give the actual size
@@ -189,7 +189,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 	}
     }
     if(data){
-	fseeko(rp->raw,pos,SEEK_SET);    
+	fseeko(rp->raw,pos,SEEK_SET);
 	int bytes_read = fread(data,1,bytes_to_read,rp->raw);
 	if(bytes_read==bytes_to_read){
 	    if(datalen) *datalen = bytes_read;
@@ -237,7 +237,7 @@ static int raw_vstat(AFFILE *af,struct af_vnode_info *vni)
     fflush(rp->raw);
     vni->imagesize = raw_filesize(af);
     vni->supports_compression = 0;
-    vni->has_pages = 1;			
+    vni->has_pages = 1;
 
     if(rp->raw_popen){
 	/* popen files require special handling */
@@ -258,7 +258,7 @@ static int raw_rewind_seg(AFFILE *af)
 static int raw_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t *arg,
 			unsigned char *data,size_t *datalen)
 {
-    
+
     /* See if we are at the end of the "virtual" segment list */
     if((uint64_t)af->cur_page * af->image_pagesize >= af->image_size) return -1;
 

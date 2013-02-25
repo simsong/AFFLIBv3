@@ -1,6 +1,6 @@
 /*
  * vnode_aff.cpp:
- * 
+ *
  * Functions for the manipulation of AFF files...
  * Distributed under the Berkeley 4-part license
  */
@@ -292,7 +292,7 @@ static int afd_add_file(AFFILE *af,const char *fname_)
 
     int new_file = access(fname,F_OK)!=0;	// Is this a new file?
 
-    AFFILE *af2 = af_open(fname,af->openflags|AF_NO_CRYPTO,af->openmode); 
+    AFFILE *af2 = af_open(fname,af->openflags|AF_NO_CRYPTO,af->openmode);
     if(af2==0){
 	(*af->error_reporter)("open(%s,%d,%d) failed: %s\n",
 			      fname,af->openflags,af->openmode,strerror(errno));
@@ -309,18 +309,18 @@ static int afd_add_file(AFFILE *af,const char *fname_)
 	af_set_pagesize(af2,af->image_pagesize);		//
 	af_set_sectorsize(af2,af->image_sectorsize);
 	af_update_seg(af,AF_AFF_FILE_TYPE,0,(const u_char *)"AFD",3);
-	
+
 	/* If this is the second file, copy over additional metadata from first... */
 	if(ap->num_afs>1){
 	    AFFILE *af0 = ap->afs[0];
 	    memcpy(af2->badflag,af0->badflag,af->image_sectorsize);
 	    af2->bytes_memcpy += af->image_sectorsize;
-	    
+
 	    for(const char **segname=segs_to_copy;*segname;segname++){
 		unsigned char data[65536];	// big enough for most metadata
 		size_t datalen = sizeof(data);
 		uint32_t arg=0;
-		
+
 		if(af_get_seg(af0,*segname,&arg,data,&datalen)==0){
 		    int r = af_update_seg(af2,*segname,arg,data,datalen);
 		    if(r!=0){
@@ -331,12 +331,12 @@ static int afd_add_file(AFFILE *af,const char *fname_)
 	    }
 	}
     }
-    
+
     return 0;
 }
-    
-	
-	    
+
+
+
 /****************************************************************
  *** User-visible functions.
  ****************************************************************/
@@ -348,7 +348,7 @@ static int afd_open(AFFILE *af)
     /* If the name ends with a '/', remove it */
     char *lastc = af->fname + strlen(af->fname) - 1;
     if(*lastc=='/') *lastc = '\000';
-    
+
 
     /* If the directory doesn't exist, make it (if we are O_CREAT) */
     struct stat sb;
@@ -370,7 +370,7 @@ static int afd_open(AFFILE *af)
 	errno = ENOTDIR;		// needs to be a directory
 	return -1;
     }
-	    
+
 
     af->maxsize = AFD_DEFAULT_MAXSIZE;
     af->vnodeprivate = (void *)calloc(1,sizeof(struct afd_private));
@@ -486,7 +486,7 @@ static int afd_rewind_seg(AFFILE *af)
     for(int i=0;i<ap->num_afs;i++){
 	af_rewind_seg(ap->afs[i]);
     }
-    return 0;		
+    return 0;
 }
 
 
@@ -498,7 +498,7 @@ static int afd_rewind_seg(AFFILE *af)
  */
 static int afd_update_seg(AFFILE *af, const char *name,
 		    uint32_t arg,const u_char *value,uint32_t vallen)
-    
+
 {
     struct afd_private *ap = AFD_PRIVATE(af);
     AFFILE *af2 = afd_file_with_seg(af,name);
@@ -540,8 +540,8 @@ int afd_del_seg(AFFILE *af,const char *segname)
 
 
 struct af_vnode vnode_afd = {
-    AF_IDENTIFY_AFD,		// 
-    AF_VNODE_TYPE_COMPOUND|AF_VNODE_TYPE_RELIABLE,		// 
+    AF_IDENTIFY_AFD,		//
+    AF_VNODE_TYPE_COMPOUND|AF_VNODE_TYPE_RELIABLE,		//
     "AFF Directory",
     afd_identify_file,
     afd_open,			// open

@@ -25,7 +25,7 @@
 #define S3_DEFAULT_BUCKET "S3_DEFAULT_BUCKET"
 #define S3_DEBUG   "S3_DEBUG"
 #define AWS_ACCESS_KEY_ID "AWS_ACCESS_KEY_ID"
-#define AWS_SECRET_ACCESS_KEY "AWS_SECRET_ACCESS_KEY" 
+#define AWS_SECRET_ACCESS_KEY "AWS_SECRET_ACCESS_KEY"
 
 extern int s3_debug;
 extern int s3_retry_max;		// default 5; you can set however you wish
@@ -52,7 +52,7 @@ namespace s3 {
 
     class buffer {
     public:
-	char   *base;			// array 
+	char   *base;			// array
 	size_t  len;				// length
 	int     ptr;				// for reading
 	bool    writable;

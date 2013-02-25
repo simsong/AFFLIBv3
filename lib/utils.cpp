@@ -64,7 +64,7 @@ namespace aff {
 	while(af_get_next_seg(af,name_,sizeof(name_),&arg_,0,&len_)==0){
 	    // We shouldn't have 0-len segment names, but we do in some files.
 	    // Don't copy these segments.
-	    if(strlen(name_)>0){		
+	    if(strlen(name_)>0){
 		seginfo si(name_,len_,arg_);
 		push_back(si);
 	    }
@@ -84,7 +84,7 @@ namespace aff {
 
 
     bool seglist::contains(std::string segname)
-    { 
+    {
 	for(std::vector<seginfo>::const_iterator i = begin(); i!=end(); i++){
 	    if(i->name == segname) return true;
 	}
@@ -93,4 +93,4 @@ namespace aff {
 
 #endif
 }
-       
+
