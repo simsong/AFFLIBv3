@@ -136,6 +136,11 @@ AC_CHECK_LIB([expat],[XML_ParserCreate],,[have_expat="no ";AC_MSG_WARN([expat no
 
 
 ################################################################
+## LZMA (always enabled)
+AC_DEFINE(USE_LZMA, 1, [Enable LZMA compression])
+
+
+################################################################
 ## Amazon S3
 ## S3 requires curl and expat; otherwise we don't need them
 AC_ARG_ENABLE(s3,

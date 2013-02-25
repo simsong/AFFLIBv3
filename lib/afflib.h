@@ -123,7 +123,6 @@ typedef __int64 int64_t;
 
 /* If our types still aren't defined, give some kind of error
  */
-#define USE_LZMA
 struct affcallback_info;
 struct aff_pagebuf {
     int64_t       pagenum;		// -1 means no page loaded
