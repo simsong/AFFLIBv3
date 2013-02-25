@@ -20,10 +20,9 @@ struct raw_private {
 #define RAW_PRIVATE(af) ((struct raw_private *)(af->vnodeprivate))
 
 /* Return 1 if a file is a raw file... */
-static int raw_identify_file(const char *filename,int exists)
+static int raw_identify_file(const char *filename,int /*exists*/)
 {
-    if(exists && access(filename,R_OK)!=0) return 0;	// needs to exist and it doesn't
-    return access(filename,R_OK)==0;	// if we can read it, it's raw...
+    return af_ext_is(filename, "raw");
 }
 
 
@@ -52,16 +51,21 @@ static int64_t raw_filesize(AFFILE *af)
 static int raw_open(AFFILE *af)
 {
     /* Raw is the passthrough system.
-     * Right now, it is read only...
      */
-    const char *mode = "rb";
-    if(af->openflags && (O_RDWR | O_WRONLY)) mode = "r+b";
+    int fd = open(af->fname, af->openflags | O_BINARY, af->openmode);
+    if(fd < 0)
+        return -1;
+
+    FILE *file = fdopen(fd, (af->openflags & (O_RDWR | O_WRONLY)) ? "r+b" : "rb");
+    if(!file)
+    {
+        close(fd);
+        return -1;
+    }
 
     af->vnodeprivate = (void *)calloc(1,sizeof(struct raw_private));
     struct raw_private *rp = RAW_PRIVATE(af);
-
-    if(af->fname) rp->raw=fopen(af->fname,mode);
-    if(rp->raw==0) return -1;		// raw open failed
+    rp->raw = file;
     af->image_size	= raw_filesize(af);
     af->image_pagesize	= RAW_PAGESIZE;
     af->cur_page	= 0;
