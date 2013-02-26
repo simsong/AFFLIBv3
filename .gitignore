@@ -73,6 +73,7 @@ m4/lt~obsolete.m4
 missing
 stamp-h*
 depcomp
+test-driver
 
 # Executables
 .deps

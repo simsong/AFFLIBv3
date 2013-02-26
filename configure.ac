@@ -11,7 +11,7 @@ AM_MAINTAINER_MODE
 AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile lzma443/Makefile 
 			  tests/Makefile doc/Makefile pyaff/Makefile man/Makefile lib/version.h])
 AC_CONFIG_FILES([afflib.spec])
-AM_CONFIG_HEADER([affconfig.h])
+AC_CONFIG_HEADERS([affconfig.h])
 
 # Where we get installed
 AC_PREFIX_PROGRAM
