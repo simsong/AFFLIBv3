@@ -289,15 +289,23 @@ static int raw_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t
 static int raw_read(AFFILE *af, unsigned char *buf, uint64_t pos,size_t count)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
-    fseeko(rp->raw,pos,SEEK_SET);
-    return fread(buf,1,count,rp->raw);
+    if(fseeko(rp->raw, pos, SEEK_SET) < 0)
+        return -1;
+
+    errno = 0;
+    count = fread(buf, 1, count, rp->raw);
+    return (!count && errno) ? -1 : count;
 }
 
 static int raw_write(AFFILE *af, unsigned char *buf, uint64_t pos,size_t count)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
-    if(fseeko(rp->raw,pos,SEEK_SET)<0) return -1;
-    return fwrite(buf,1,count,rp->raw);
+    if(fseeko(rp->raw, pos, SEEK_SET) < 0)
+        return -1;
+
+    errno = 0;
+    count = fwrite(buf, 1, count, rp->raw);
+    return (!count && errno) ? -1 : count;
 }
 
 

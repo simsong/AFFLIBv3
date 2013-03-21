@@ -56,16 +56,26 @@ const unsigned char *af_badflag(AFFILE *af)
  *** Stream-level interface
  ****************************************************************/
 
-
-/* Throw out the current segment */
-int af_purge(AFFILE *af)
+static int af_get_pagebuf(AFFILE *af, int64_t pagenum)
 {
-    AF_WRLOCK(af);
-    if (af_trace) fprintf(af_trace,"af_purge(%p)\n",af);
-    int ret = af_cache_flush(af);	// flush the cache
-    af->pb = 0;				// no longer have a current page
-    AF_UNLOCK(af);
-    return ret;
+    if(!af->pb || af->pb->pagenum != pagenum)
+    {
+	af->pb = af_cache_alloc(af, pagenum);
+	if(!af->pb)
+	    return -1;
+    }
+
+    if(!af->pb->pagebuf_valid)
+    {
+	size_t pagebytes = af->image_pagesize;
+	if(af_get_page(af, pagenum, af->pb->pagebuf, &pagebytes) < 0)
+	    return -1;
+
+	af->pb->pagebuf_valid = 1;
+	af->pb->pagebuf_bytes = pagebytes;
+    }
+
+    return 0;
 }
 
 extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
@@ -97,30 +107,17 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
     }
 
     while(count>0){
-	/* If the correct segment is not loaded, purge the segment */
 	int64_t new_page = offset / af->image_pagesize;
 
-	if(af->pb==0 || new_page != af->pb->pagenum){
-	    af_cache_flush(af);
-	    af->pb = 0;
+	if(af_get_pagebuf(af, new_page) < 0)
+	{
+	    /* if nothing was read yet, return 0 for EOF or -1 for read error */
+	    /* ENOENT (page not found) means EOF, other errno means read error */
+	    if(!total && errno != ENOENT)
+		total = -1;
+	    break;
 	}
 
-	/* If no segment is loaded in cache, load the current segment */
-	if(af->pb==0){
-	    int64_t pagenum = offset / af->image_pagesize;
-	    af->pb = af_cache_alloc(af,pagenum);
-	    if(af->pb->pagebuf_valid==0){
-		/* page buffer isn't valid; need to get it */
-		af->pb->pagebuf_bytes = af->image_pagesize;		// we can hold this much
-		if(af_get_page(af,af->pb->pagenum,af->pb->pagebuf, &af->pb->pagebuf_bytes)){
-		    /* Page doesn't exist; fill with NULs */
-		    memset(af->pb->pagebuf,0,af->pb->pagebuf_bytes);
-		    /* TK: Should fill with BADBLOCK here if desired */
-		    /* previously had BREAK here */
-		}
-		af->pb->pagebuf_valid = 1;	// contents of the page buffer are valid
-	    }
-	}
 	// Compute how many bytes can be copied...
 	// where we were reading from
 	u_int page_offset   = (u_int)(offset - af->pb->pagenum * af->image_pagesize);

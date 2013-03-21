@@ -191,7 +191,6 @@ static AFFILE *afd_file_with_seg(AFFILE *af,const char *name)
 	    return ap->afs[i];
 	}
     }
-    errno = ENOTDIR;			// get ready for error return
     return 0;
 }
 
@@ -452,10 +451,10 @@ static int afd_get_seg(AFFILE *af,const char *name,uint32_t *arg,unsigned char *
 		       size_t *datalen)
 {
     AFFILE *af2 = afd_file_with_seg(af,name);
-    if(af2){
-	return af_get_seg(af2,name,arg,data,datalen); // use this one
-    }
-    return -1;				// not found
+    if(!af2)
+	{ errno = ENOENT; return -1; }
+
+    return af_get_seg(af2,name,arg,data,datalen); // use this one
 }
 
 
@@ -532,10 +531,10 @@ static int afd_update_seg(AFFILE *af, const char *name,
 int afd_del_seg(AFFILE *af,const char *segname)
 {
     AFFILE *af2 = afd_file_with_seg(af,segname);
-    if(af2){
-	return af_del_seg(af2,segname);
-    }
-    return -1;				// not found
+    if(!af2)
+	{ errno = ENOENT; return -1; }
+
+    return af_del_seg(af2,segname);
 }
 
 

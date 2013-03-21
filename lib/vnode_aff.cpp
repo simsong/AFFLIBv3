@@ -218,7 +218,11 @@ static int aff_get_seg(AFFILE *af,const char *name,
      * we will rewind to the beginning and go to the end.
      */
     struct aff_toc_mem *adm = aff_toc(af,name);
-    if(!adm) return -1;
+    if(!adm)
+	{ errno = ENOENT; return -1; }
+
+    if(!arg && !data && !datalen)
+	return 0; // caller only wants to know whether the segment exists
 
     fseeko(af->aseg,adm->offset,SEEK_SET);
     int ret = aff_get_next_seg(af,next,sizeof(next),arg,data,datalen);
@@ -572,78 +576,77 @@ static int aff_identify_file(const char *filename,int exists)
     return 0;
 }
 
+static int err_close(int fd)
+{
+    int tmp = errno;
+    close(fd);
+    errno = tmp;
+    return -1;
+}
 
+static int err_close(AFFILE *af)
+{
+    int tmp = errno;
+    fclose(af->aseg);
+    af->aseg = 0;
+    errno = tmp;
+    return -1;
+}
 
 static int aff_open(AFFILE *af)
 {
-    if(af_is_filestream(af->fname)==0) return -1; // not a file stream
+    // must be a file stream with read access
+    if(!af_is_filestream(af->fname) || (af->openflags & O_ACCMODE) == O_WRONLY)
+	{ errno = EINVAL; return -1; }
+
+    bool canWrite = (af->openflags & O_ACCMODE) == O_RDWR;
 
     /* Open the raw file */
     int fd = open(af->fname,af->openflags | O_BINARY,af->openmode);
-    if(fd<0){				// couldn't open
+    if(fd < 0)
 	return -1;
-    }
 
     /* Lock the file if writing */
 #ifdef HAVE_FLOCK
-    if(af->openflags & O_RDWR){
-	int lockmode = LOCK_SH;		// default
-	if((af->openflags & O_ACCMODE)==O_RDWR) lockmode = LOCK_EX; // there can be only one
-	if(flock(fd,lockmode)){
-	    warn("Cannot exclusively lock %s:",af->fname);
-	}
-    }
+    if(flock(fd, canWrite ? LOCK_EX : LOCK_SH) < 0)
+	return err_close(fd);
 #endif
 
     /* Set defaults */
+    af->compression_type = AF_COMPRESSION_ALG_ZLIB;
+    af->compression_level = Z_DEFAULT_COMPRESSION;
 
-    af->compression_type     = AF_COMPRESSION_ALG_ZLIB;
-    af->compression_level    = Z_DEFAULT_COMPRESSION;
-
-    /* Open the FILE  for the AFFILE */
-    char strflag[8];
-    strcpy(strflag,"rb");		// we have to be able to read
-    if(af->openflags & O_RDWR) 	strcpy(strflag,"w+b");
-
-    af->aseg = fdopen(fd,strflag);
-    if(!af->aseg){
-      (*af->error_reporter)("fdopen(%d,%s)",fd,strflag);
-      return -1;
-    }
+    /* Open the FILE for the AFFILE */
+    af->aseg = fdopen(fd, canWrite ? "w+b" : "rb");
+    if(!af->aseg)
+	return err_close(fd);
 
     /* Get file size */
     struct stat sb;
-    if(fstat(fd,&sb)){
-	(*af->error_reporter)("aff_open: fstat(%s): ",af->fname);	// this should not happen
-	return -1;
-    }
+    if(fstat(fd, &sb) < 0)
+	return err_close(af);
 
     /* If file is empty, then put out an AFF header, badflag, and AFF version */
-    if(sb.st_size==0){
+    if(canWrite && sb.st_size == 0)
 	return aff_create(af);
-    }
 
     /* We are opening an existing file. Verify once more than it is an AFF file
      * and skip past the header...
      */
-
-    char buf[8];
-    if(fread(buf,sizeof(buf),1,af->aseg)!=1){
-	/* Hm. End of file. That shouldn't happen here. */
-	(*af->error_reporter)("aff_open: couldn't read AFF header on existing file?");
-	return -1;			// should not happen
-    }
-
-    if(strcmp(buf,AF_HEADER)!=0){
-	buf[7] = 0;
-	(*af->error_reporter)("aff_open: %s is not an AFF file (header=%s)\n",
-			      af->fname,buf);
-	return -1;
+    char buf[8]; errno = 0;
+    size_t itemsRead = fread(buf, sizeof(buf), 1, af->aseg);
+    if(itemsRead != 1 || strcmp(buf, AF_HEADER))
+    {
+	if(!errno)
+	    errno = EIO;
+	return err_close(af);
     }
 
     /* File has been validated */
-    if(aff_toc_build(af)) return -1;	// build the TOC
-    return 0;				// everything must be okay.
+    if(aff_toc_build(af) < 0)
+	return err_close(af);
+
+    return 0;
 }
 
 

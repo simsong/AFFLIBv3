@@ -138,7 +138,8 @@ int af_get_page_raw(AFFILE *af,int64_t pagenum,uint32_t *arg,
     memset(segname,0,sizeof(segname));
     sprintf(segname,AF_PAGE,pagenum);
     int r = af_get_seg(af,segname,arg,data,bytes);
-    if(r!=0){
+    if(r < 0 && errno == ENOENT)
+    {
 	/* Couldn't read with AF_PAGE; try AF_SEG_D.
 	 * This is legacy for the old AFF files. Perhaps we should delete it.
 	 */
@@ -176,12 +177,15 @@ int af_get_page(AFFILE *af,int64_t pagenum,unsigned char *data,size_t *bytes)
 	 * If we have been provided with a buffer,
 	 * fill buffer with the 'bad segment' flag and return.
 	 */
-	if (data && (af->openmode&AF_BADBLOCK_FILL)) {
+	if(data && (af->openmode & AF_BADBLOCK_FILL) && errno == ENOENT)
+	{
 	    for(size_t i = 0;i <= af->image_pagesize - af->image_sectorsize;
 		i+= af->image_sectorsize){
 		memcpy(data+i,af->badflag,af->image_sectorsize);
 		af->bytes_memcpy += af->image_sectorsize;
 	    }
+
+	    r = 0;
 	}
 	return r;		// segment doesn't exist
     }
@@ -561,7 +565,11 @@ void af_cache_writethrough(AFFILE *af,int64_t pagenum,const unsigned char *buf,i
 struct aff_pagebuf *af_cache_alloc(AFFILE *af,int64_t pagenum)
 {
     if(af_trace) fprintf(af_trace,"af_cache_alloc(%p,%"I64d")\n",af,pagenum);
-    af_cache_flush(af);			// make sure nothing in cache is dirty
+
+    /* Make sure nothing in the cache is dirty */
+    if(af_cache_flush(af) < 0)
+	return 0;
+
     /* See if this page is already in the cache */
     for(int i=0;i<af->num_pbufs;i++){
 	struct aff_pagebuf *p = &af->pbcache[i];

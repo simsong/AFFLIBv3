@@ -839,10 +839,13 @@ int af_update_segf(AFFILE *af, const char *segname,
     }
 #endif
     int r = (*af->v->update_seg)(af,segname,arg,data,datalen); // actually update the segment
-    if(r==0) af->bytes_written += datalen;
+    if(r < 0)
+        { AF_UNLOCK(af); return r; }
+
+    af->bytes_written += datalen;
 #ifdef HAVE_AES_ENCRYPT
     /* if we encrypted, make sure the unencrypted segment is deleted */
-    if(r==0 && oldname) (*af->v->del_seg)(af,oldname);
+    if(oldname) (*af->v->del_seg)(af,oldname);
     if(newdata){
 	free(newdata);		// free any allocated data
 	newdata = 0;
@@ -865,7 +868,6 @@ int af_update_segf(AFFILE *af, const char *segname,
 #ifdef USE_AFFSIGS
     const u_char *signdata = data;	// remember the original data location
     if(AF_SEALING(af)
-       && (r==0)
        && af->crypto->sign_privkey
        && ((flag & AF_SIGFLAG_NOSIG)==0)
        && !ends_with(segname,AF_SIG256_SUFFIX)){
