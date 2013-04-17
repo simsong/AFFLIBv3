@@ -389,6 +389,7 @@ static int afd_open(AFFILE *af)
 	    strlcat(path,"/",sizeof(path));
 	    strlcat(path,dp->d_name,sizeof(path));
 	    if(afd_add_file(af,path)){
+		closedir(dirp);
 		return -1;
 	    }
 	}
