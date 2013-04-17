@@ -206,20 +206,29 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
      * and if an entire page is being written,
      * just write it out and update the pointers, then return.
      */
-    if(af->pb==0 && af->image_pagesize==(unsigned)count && write_page_offset == 0){
-	// copy into cache if we have this page anywhere in our cache
-	af_cache_writethrough(af,write_page,buf,count);
-	int ret = af_update_page(af,write_page,buf,count);
-	if(ret==0){			// no error
-	    af->pos += count;
-	    if(af->pos > af->image_size) af->image_size = af->pos;
-	    AF_UNLOCK(af);
-	    return count;
-	}
-	AF_UNLOCK(af);
-	return -1;			// error
-    }
+    if(!af->pb && !write_page_offset && !(count % af->image_pagesize))
+    {
+	for(size_t written = 0; written < count; written += af->image_pagesize)
+	{
+	    // copy into cache if we have this page anywhere in our cache
+	    af_cache_writethrough(af, write_page, buf + written, af->image_pagesize);
 
+	    if(af_update_page(af, write_page, buf + written, af->image_pagesize) < 0)
+	    {
+		AF_UNLOCK(af);
+		return -1;
+	    }
+
+	    af->pos += af->image_pagesize;
+	    if(af->pos > af->image_size)
+		af->image_size = af->pos;
+
+	    write_page++;
+	}
+
+	AF_UNLOCK(af);
+	return count;
+    }
 
     /* Can't use high-speed optimization; write through the cache */
     int total = 0;
