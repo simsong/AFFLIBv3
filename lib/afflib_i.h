@@ -687,6 +687,9 @@ struct aff_toc_mem *aff_toc(AFFILE *af,const char *segname);
 int	aff_toc_del(AFFILE *af,const char *segname);
 void	aff_toc_update(AFFILE *af,const char *segname,uint64_t offset,uint64_t datalen);
 
+struct aff_toc_mem *aff_toc_next_seg(AFFILE *af, uint64_t offset);
+int aff_toc_find_hole(AFFILE *af, uint64_t min_size, uint64_t *offset, uint64_t *size);
+
 /* lzma_glue.cpp:
  * For the LZMA compression engine
  */

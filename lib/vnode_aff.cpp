@@ -360,102 +360,56 @@ int af_truncate_blank(AFFILE *af)
 static int aff_update_seg(AFFILE *af, const char *name,
 		    uint32_t arg,const u_char *value,uint32_t vallen)
 {
-    char   next_segment_name[AF_MAX_NAME_LEN];
-    size_t next_segsize = 0;
-    size_t next_datasize = 0;
-
-    /* if we are updating with a different size,
-     * remember the location and size of the AF_IGNORE segment that
-     * has the smallest size that is >= strlen(name)+vallen
-     */
     size_t size_needed = vallen+aff_segment_overhead(name);
-    size_t size_closest = 0;
-    uint64_t         loc_closest = 0;
     struct aff_toc_mem *adm = aff_toc(af,name);
 
     if(af_trace) fprintf(af_trace,"aff_update_seg(name=%s,arg=%"PRIu32",vallen=%u)\n",name,arg,vallen);
 
+    if(adm)
+    {
+	/* segment already exists */
+	if(fseeko(af->aseg, adm->offset, SEEK_SET) < 0)
+	    return -1;
 
-    if(adm){
-	/* Segment is in the TOC; seek to it */
-	fseeko(af->aseg,adm->offset,SEEK_SET);
-    }
-    else {
-	/* Otherwise, go to the beginning of the file and try to find a suitable hole
-	 * TK: This could be made significantly faster by just scanning the TOC for a hole.
-	 */
-	af_rewind_seg(af);			// start at the beginning
-    }
+	/* if its size matches, just overwrite it */
+	if(adm->segment_len == size_needed)
+	    return aff_write_seg(af, name, arg, value, vallen);
 
-    while(af_probe_next_seg(af,next_segment_name,sizeof(next_segment_name),0,&next_datasize,&next_segsize,1)==0){
-	/* Remember this information */
-	uint64_t next_segment_loc = ftello(af->aseg);
-#ifdef DEBUG2
-	fprintf(stderr,"  next_segment_name=%s next_datasize=%d next_segsize=%d next_segment_loc=%qd\n",
-		next_segment_name, next_datasize, next_segsize,next_segment_loc);
-#endif
-	if(strcmp(next_segment_name,name)==0){	// found the segment
-	    if(next_datasize == vallen){        // Does it exactly fit?
-		int r = aff_write_seg(af,name,arg,value,vallen); // Yes, just write in place!
-		return r;
-	    }
+	/* otherwise, invalidate it */
+	if(aff_write_ignore(af, adm->segment_len - aff_segment_overhead(0)) < 0)
+	    return -1;
 
-	    //printf("** Segment '%s' doesn't fit at %qd; invalidating.\n",name,ftello(af->aseg));
-	    aff_write_ignore(af,next_datasize+strlen(name));
-
-	    /* If we are in random mode, jump back to the beginning of the file.
-	     * This does a good job filling in the holes.
-	     */
-	    if(af->random_access){
-		af_rewind_seg(af);
-		continue;
-	    }
-
-	    /* Otherwise just go to the end. Experience has shown that sequential access
-	     * tends not to generate holes.
-	     */
-	    fseeko(af->aseg,(uint64_t)0,SEEK_END);              // go to the end of the file
-	    break;			// and exit this loop
-
-	}
-
-	if((next_segment_name[0]==0) && (next_datasize>=size_needed)){
-	    //printf("   >> %d byte blank\n",next_datasize);
-	}
-
-	/* If this is an AF_IGNORE, see if it is a close match */
-	if((next_segment_name[0]==AF_IGNORE[0]) &&
-	   (next_datasize>=size_needed) &&
-	   ((next_datasize<size_closest || size_closest==0)) &&
-	   ((next_datasize<1024 && size_needed<1024) || (next_datasize>=1024 && size_needed>=1024))){
-	    size_closest = next_datasize;
-	    loc_closest  = next_segment_loc;
-	}
-	fseeko(af->aseg,next_segsize,SEEK_CUR); // skip this segment
+	aff_toc_del(af, name);
     }
 
-    /* Ready to write */
-    if(size_closest>0){
-	/* Yes. Put it here and put a new AF_IGNORE in the space left-over
-	 * TODO: If the following space is also an AF_IGNORE, then combine the two.
-	 */
-	//printf("*** Squeezing it in at %qd. name=%s. vallen=%d size_closest=%d\n",loc_closest,name,vallen,size_closest);
+    /* search through TOC for a hole */
+    /* need space for a new AF_IGNORE segment also */
+    uint64_t hole_offset, hole_size;
+    if(aff_toc_find_hole(af, size_needed + aff_segment_overhead(0), &hole_offset, &hole_size) == 0)
+    {
+	/* found a large enough hole */
+	if(fseeko(af->aseg, hole_offset, SEEK_SET) < 0)
+	    return -1;
 
-	fseeko(af->aseg,loc_closest,SEEK_SET); // move to the location
-	aff_write_seg(af,name,arg,value,vallen); // write the new segment
+	/* write segment */
+	if(aff_write_seg(af, name, arg, value, vallen) < 0)
+	    return -1;
 
-	size_t newsize = size_closest - vallen - aff_segment_overhead(0) - strlen(name);
-	aff_write_ignore(af,newsize); // write the smaller ignore
-	return 0;
+	/* fill in any remaining space with AF_IGNORE */
+	return aff_write_ignore(af, hole_size - size_needed - aff_segment_overhead(0));
     }
-    /* If we reach here we are positioned at the end of the file. */
-    /* If the last segment is an ignore, truncate the file before writing */
-    while(af_truncate_blank(af)==0){
-	/* Keep truncating until there is nothing left */
-    }
-    //printf("*** appending '%s' bytes=%d to the end\n",name,vallen);
-    fseeko(af->aseg,0L,SEEK_END);		// move back to the end of the file
-    return aff_write_seg(af,name,arg,value,vallen); // just write at the end
+
+    /* no holes; seek to end of file and truncate any trailing AF_IGNORE */
+    if(fseeko(af->aseg, 0, SEEK_END) < 0)
+	return -1;
+
+    while(af_truncate_blank(af) == 0) {}
+
+    /* write segment at end of file */
+    if(fseeko(af->aseg, 0, SEEK_END) < 0)
+	return -1;
+
+    return aff_write_seg(af, name, arg, value, vallen);
 }
 
 

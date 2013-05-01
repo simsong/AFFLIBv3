@@ -47,6 +47,10 @@ static int toc_sort(const void *a_,const void *b_)
 
 static int aff_toc_append(AFFILE *af,const char *segname,uint64_t offset,uint64_t datalen)
 {
+    /* don't add AF_IGNORE segments to TOC */
+    if(!segname[0])
+        return 0;
+
     af->toc = (aff_toc_mem *)realloc(af->toc,sizeof(*af->toc)*(af->toc_count+1));
     if(af->toc==0){
 	(*af->error_reporter)("realloc() failed in aff_toc_append. toc_count=%d\n",af->toc_count);
@@ -64,6 +68,10 @@ static int aff_toc_append(AFFILE *af,const char *segname,uint64_t offset,uint64_
  */
 void aff_toc_update(AFFILE *af,const char *segname,uint64_t offset,uint64_t datalen)
 {
+    /* don't add AF_IGNORE segments to TOC */
+    if(!segname[0])
+        return;
+
     for(int i=0;i<af->toc_count;i++){
 	if(af->toc[i].name==0 || strcmp(af->toc[i].name,segname)==0){
 	    if(af->toc[i].name==0){	// if name was empty, copy it over
@@ -139,3 +147,46 @@ int aff_toc_del(AFFILE *af,const char *segname)
     return -1;
 }
 
+/* Finds the next segment starting at or beyond a given byte offset. */
+/* Returns the TOC entry if found; null if not found. */
+struct aff_toc_mem *aff_toc_next_seg(AFFILE *af, uint64_t offset)
+{
+    struct aff_toc_mem *next_seg = 0;
+    struct aff_toc_mem *end = af->toc + af->toc_count;
+
+    for(struct aff_toc_mem *seg = af->toc; seg != end; seg++)
+    {
+        if(!seg->name)
+            continue;
+
+        if(seg->offset >= offset && (!next_seg || seg->offset < next_seg->offset))
+            next_seg = seg;
+    }
+
+    return next_seg;
+}
+
+/* Finds the smallest unused block of at least min_size bytes. */
+/* Returns 0 if found, -1 if not found. */
+int aff_toc_find_hole(AFFILE *af, uint64_t min_size, uint64_t *offset, uint64_t *size)
+{
+    int ret = -1;
+    uint64_t search_offset = 0;
+    struct aff_toc_mem *seg;
+
+    while((seg = aff_toc_next_seg(af, search_offset)))
+    {
+        uint64_t test_size = seg->offset - search_offset;
+
+        if(test_size >= min_size && (ret < 0 || test_size < *size))
+        {
+            *offset = search_offset;
+            *size = test_size;
+            ret = 0;
+        }
+
+        search_offset = seg->offset + seg->segment_len;
+    }
+
+    return ret;
+}
