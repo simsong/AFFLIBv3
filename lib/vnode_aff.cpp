@@ -566,10 +566,6 @@ static int aff_open(AFFILE *af)
 	return err_close(fd);
 #endif
 
-    /* Set defaults */
-    af->compression_type = AF_COMPRESSION_ALG_ZLIB;
-    af->compression_level = Z_DEFAULT_COMPRESSION;
-
     /* Open the FILE for the AFFILE */
     af->aseg = fdopen(fd, canWrite ? "w+b" : "rb");
     if(!af->aseg)

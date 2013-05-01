@@ -85,6 +85,35 @@ void aff_toc_update(AFFILE *af,const char *segname,uint64_t offset,uint64_t data
     aff_toc_append(af,segname,offset,datalen);    /* Need to append it to the directory */
 }
 
+/* exact compression settings are not saved in the AFF file, so make a best guess */
+static void guess_compression(AFFILE *af, const char *segname, uint32_t flags)
+{
+    /* ignore non-data segments */
+    if(af_segname_page_number(segname) < 0)
+	return;
+
+    if(flags & AF_PAGE_COMPRESSED)
+    {
+	switch(flags & AF_PAGE_COMP_ALG_MASK)
+	{
+	case AF_PAGE_COMP_ALG_ZLIB:
+	    af->compression_type = AF_COMPRESSION_ALG_ZLIB;
+	    af->compression_level = (flags & AF_PAGE_COMP_MAX) ? AF_COMPRESSION_MAX : AF_COMPRESSION_DEFAULT;
+	    break;
+
+	case AF_PAGE_COMP_ALG_LZMA:
+	    af->compression_type = AF_COMPRESSION_ALG_LZMA;
+	    af->compression_level = (flags & AF_PAGE_COMP_MAX) ? AF_COMPRESSION_MAX : AF_COMPRESSION_DEFAULT;
+	    break;
+	}
+    }
+    else
+    {
+	af->compression_type = AF_COMPRESSION_ALG_NONE;
+	af->compression_level = 0;
+    }
+}
+
 /*
  * aff_toc_build:
  * Build the directory by reading the existing file.
@@ -95,18 +124,24 @@ int	aff_toc_build(AFFILE *af)	// build the dir if we couldn't find it
     aff_toc_free(af);			// clear the old one
     af_rewind_seg(af);			// start at the beginning
 
+    /* default compression settings */
+    af->compression_type = AF_COMPRESSION_ALG_ZLIB;
+    af->compression_level = AF_COMPRESSION_DEFAULT;
+
     // note: was malloc(0), but that causes problems under Borland
     af->toc = (aff_toc_mem *)malloc(sizeof(aff_toc_mem));
     while(1){
 	char segname[AF_MAX_NAME_LEN];
 	size_t segname_len=sizeof(segname);
 	uint64_t pos = ftello(af->aseg);
+	uint32_t flags = 0;
 	size_t datalen=0;
 
 	errno = 0;
-	int r = af_get_next_seg(af,segname,segname_len,0,0,&datalen);
+	int r = af_get_next_seg(af, segname, segname_len, &flags, 0, &datalen);
 	switch(r){
 	case AF_ERROR_NO_ERROR:
+	    guess_compression(af, segname, flags);
 	    if(aff_toc_append(af,segname,pos,datalen)){
 		return -1; // malloc error?
 	    }
