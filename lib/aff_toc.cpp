@@ -95,6 +95,7 @@ int	aff_toc_build(AFFILE *af)	// build the dir if we couldn't find it
 	uint64_t pos = ftello(af->aseg);
 	size_t datalen=0;
 
+	errno = 0;
 	int r = af_get_next_seg(af,segname,segname_len,0,0,&datalen);
 	switch(r){
 	case AF_ERROR_NO_ERROR:
@@ -105,7 +106,8 @@ int	aff_toc_build(AFFILE *af)	// build the dir if we couldn't find it
 	case AF_ERROR_EOF:
 	    return 0;			// end of file; no errors
 	default: /* unknown error */
-	    fseeko(af->aseg,pos,SEEK_SET); // go back
+	    if(!errno)
+		errno = EIO;
 	    return r;			// send up the error code
 	}
     }
