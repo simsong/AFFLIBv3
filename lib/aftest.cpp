@@ -28,7 +28,7 @@ const char *progname = 0;
 const char *opt_protocol = "file:///";
 const char *opt_ext = "aff";
 int   opt_compression_level = AF_COMPRESSION_DEFAULT;// default compression level
-int   opt_compression_type  = AF_COMPRESSION_ALG_ZLIB;	// 
+int   opt_compression_type  = AF_COMPRESSION_ALG_ZLIB;	//
 const char *tempdir = "/tmp/";
 
 
@@ -72,7 +72,7 @@ int sequential_test()
     const char *fmt = "this is line %d\n";
 
     printf("Sequential test...\n");
-    
+
     AFFILE *af = open_testfile("test_sequential",1);
     for(int i=0;i<MAX_FMTS;i++){
 	if(i%250==0) printf("\rwriting %d/%d...",i,MAX_FMTS);
@@ -188,11 +188,11 @@ int random_write_test()
 	fflush(stdout);
     }
     af_close(af);
-    
+
     /* Now verify what was written */
     printf("Verifying write test...\n");
     af = open_testfile("test_random",0);
-    
+
     for(i=0;i<MAX_FMTS;i++){
 	char should[256];		// what we should get
 	sprintf(should,fmt,i);
@@ -412,7 +412,7 @@ void sparse_test()
 	errx(1,"Tried to read %zd bytes at the end of the file; got %zd bytes (should get %zd)",
 	    sizeof(big_buf),r,sizeof(buf));
     }
-			  
+
 
     /* Now see if we can read past the end of the file */
     af_seek(af,11*mult,SEEK_SET);
@@ -444,7 +444,7 @@ void compress(const char *fname)
 {
     int fd = open(fname,O_RDONLY,0666);
     if(fd<0) err(1,"%s",fname);
-    
+
     struct stat st;
     if(fstat(fd,&st)) err(1,"stat");
 
@@ -469,7 +469,7 @@ void lzma_test()
     printf("starting up\n");
     FILE *f = fopen(fn,"r");
     if(!f) err(1,"%s",fn);
-    
+
     struct stat st;
     if(fstat(fileno(f),&st)) err(1,"stat");
 
@@ -514,7 +514,7 @@ void make_test_seg(u_char buf[1024],int num)
 int aestest()
 {
     unsigned char keyblock[32];
-     
+
     /* Make a key; doesn't need to be a good key; make it 256 bits */
     for(int i=0;i<32;i++){
 	keyblock[i] = i;
@@ -532,7 +532,7 @@ int aestest()
     make_test_seg(test,0);
     for(u_int len=0;len<=strlen((const char *)test);len++){
 	if(af_update_seg(af,"page0",0,test,len)) err(1,"af_update_seg len=%d",len);
-	
+
 	/* Now try to read the segment */
 	memset(buf,0,sizeof(buf));
 	buflen = sizeof(buf);
@@ -569,7 +569,7 @@ int aestest()
 	errx(1,"Error: segment encrypted/aes wasn't actually encrypted.");
     }
     af_close(af);
-    
+
     /* Now set the correct encryption key and see if we can read it */
     af = af_open("crypto.aff",O_RDONLY,0666);
     if(af_set_aes_key(af,keyblock,256)) err(1,"af_set_aes_key");
@@ -601,7 +601,7 @@ int aestest()
 
     printf("Basic crypto checks. Now check passphrase....\n");
 
-    /* Write the data with a passphrase and try to read it back */ 
+    /* Write the data with a passphrase and try to read it back */
     af = af_open("crypto_pass.aff",O_CREAT|O_RDWR|O_TRUNC,0666);
     if(!af) err(1,"af_open 3");
     af_set_pagesize(af,65536);
@@ -650,8 +650,8 @@ int aestest()
     printf("encrypted data read with new passphrase 'dummy': %s\n",rbuf);
     af_close(af);
     exit(0);
-    
-    
+
+
     /* Now try to read with the wrong passphrase */
     af = af_open("crypto.aff",O_RDONLY,0666);
     if(af_use_aes_passphrase(af,"yummy2")) err(1,"af_set_passphrase 3");
@@ -746,7 +746,7 @@ void time_test()
 
 #include <openssl/pem.h>
 #include <openssl/bio.h>
- 
+
 void rsatest()
 {
     const EVP_MD *sha256 = EVP_get_digestbyname("sha256");
@@ -779,9 +779,9 @@ void rsatest()
     X509 *x = 0;
     PEM_read_bio_X509(bp,&x,0,0);
     EVP_PKEY *pubkey = X509_get_pubkey(x);
-    
+
     printf("pubkey=%p\n",pubkey);
-	
+
     EVP_VerifyInit(&md,sha256);
     EVP_VerifyUpdate(&md,ptext,sizeof(ptext));
     int r = EVP_VerifyFinal(&md,sig,siglen,pubkey);
@@ -963,7 +963,7 @@ int main(int argc,char **argv)
 	case 'f': figure(optarg); break;
 	case 'e': opt_ext = optarg; break;
 	case 'c': compress(optarg); break;
-	    
+
 	case 'p': opt_protocol = optarg; break;
 	case 'x': xmltest(optarg);break;
 	case 'C': aestest(); break;
@@ -975,7 +975,7 @@ int main(int argc,char **argv)
 	    usage();
 	}
     }
-	
+
     if(do_bugs || do_all) bugs_test();
     if(do_sequential || do_all) sequential_test();
     if(do_reverse || do_all ) reverse_test();
@@ -984,7 +984,7 @@ int main(int argc,char **argv)
     if(do_image_test || do_all) image_test();
 
     for(int i=0;i<random_repeat;i++){
-	if(do_random_read_test  || do_all) random_read_test(256*1024,rand() % 65536); 
+	if(do_random_read_test  || do_all) random_read_test(256*1024,rand() % 65536);
 	if(do_random_write_test || do_all) random_write_test();
     }
 

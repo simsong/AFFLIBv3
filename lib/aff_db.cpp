@@ -1,8 +1,8 @@
-/* Distributed under the 4-part Berkeley License */ 
+/* Distributed under the 4-part Berkeley License */
 
 /*
  * afflib_db.cpp:
- * 
+ *
  * Functions for the manipulation of the AFF database.
  */
 
@@ -18,7 +18,7 @@
  ****************************************************************/
 
 /****************************************************************
- *** Probe Functions 
+ *** Probe Functions
  ****************************************************************/
 
 int af_probe_next_seg(AFFILE *af,
@@ -29,7 +29,7 @@ int af_probe_next_seg(AFFILE *af,
 		       size_t *segsize_, // optional get size of entire segment
 		       int do_rewind) // optional rewind af->aseg, otherwise leave at start of segment data
 {
-    if(!af->aseg)(*af->error_reporter)("af_probe_next_segment only works with aff files");    
+    if(!af->aseg)(*af->error_reporter)("af_probe_next_segment only works with aff files");
 
     struct af_segment_head segh;
     memset(&segh,0,sizeof(segh));
@@ -37,7 +37,7 @@ int af_probe_next_seg(AFFILE *af,
     uint64_t start = ftello(af->aseg);
 #ifdef __BORLANDC__
     fseeko(af->aseg, start, SEEK_SET) ;    // Windows is dumb :-(
-#endif    
+#endif
 
     if(fread(&segh,sizeof(segh),1,af->aseg)!=1){
 	return AF_ERROR_EOF;
@@ -152,7 +152,7 @@ int	aff_find_seg(AFFILE *af,const char *segname,
     }
     return -1;				// couldn't find segment
 }
-		    
+
 int af_get_segq(AFFILE *af,const char *name,int64_t *aff_quad)
 {
     unsigned char buf[8];
@@ -164,7 +164,7 @@ int af_get_segq(AFFILE *af,const char *name,int64_t *aff_quad)
     if(bufsize!=sizeof(struct aff_quad)){		// make sure size is good.
 	return -1;
     }
-	
+
     *aff_quad = af_decode_q(buf);
     return 0;
 }

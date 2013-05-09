@@ -8,7 +8,7 @@ AC_INIT([AFFLIB],[3.7.1],[bugs@afflib.org])
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 
-AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile lzma443/Makefile 
+AC_CONFIG_FILES([Makefile lib/Makefile tools/Makefile lzma443/Makefile
 			  tests/Makefile doc/Makefile pyaff/Makefile man/Makefile lib/version.h])
 AC_CONFIG_FILES([afflib.spec])
 AC_CONFIG_HEADERS([affconfig.h])
@@ -43,13 +43,13 @@ if test x"${cross_compiling}" = "xno" ; then
         AC_MSG_NOTICE([ *** ADDING ${spfx}/lib to LDFLAGS *** ])
     fi
   done
-  AC_MSG_NOTICE([ CPPFLAGS = ${CPPFLAGS} ])        
-  AC_MSG_NOTICE([ LDFLAGS = ${LDFLAGS} ])        
+  AC_MSG_NOTICE([ CPPFLAGS = ${CPPFLAGS} ])
+  AC_MSG_NOTICE([ LDFLAGS = ${LDFLAGS} ])
 else
   AC_MSG_NOTICE([Cross Compiling --- will not update CPPFALGS or LDFLAGS with /usr/local, /opt/local or /sw])
   LIBS="$LIBS -lws2_32 -lgdi32"
 fi
-        
+
 if test -r /bin/uname.exe ; then
   if test `uname -o` == "Msys" ; then
     AC_MSG_NOTICE([Compiling with Msys. Setting flags appropriately.])
@@ -75,7 +75,7 @@ AC_C_INLINE
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
-AC_STRUCT_TM			
+AC_STRUCT_TM
 AC_STRUCT_ST_BLOCKS
 AC_STRUCT_ST_RDEV
 
@@ -136,6 +136,11 @@ AC_CHECK_LIB([expat],[XML_ParserCreate],,[have_expat="no ";AC_MSG_WARN([expat no
 
 
 ################################################################
+## LZMA (always enabled)
+AC_DEFINE(USE_LZMA, 1, [Enable LZMA compression])
+
+
+################################################################
 ## Amazon S3
 ## S3 requires curl and expat; otherwise we don't need them
 AC_ARG_ENABLE(s3,
@@ -166,7 +171,7 @@ AC_SUBST(S3_BIN)
 AM_CONDITIONAL([MAYBE_S3],[test "x${enable_s3}" = "xyes"])   # used by automake
 
 ################################################################
-### QEMU 
+### QEMU
 ################################################################
 
 AC_ARG_ENABLE([qemu])
@@ -191,9 +196,9 @@ AM_CONDITIONAL([MAYBE_QEMU],[test "x${enable_qemu}" = "xyes"])  # used by automa
 
 
 ################################################################
-### PyAFF 
+### PyAFF
 ################################################################
-# python checks 
+# python checks
 # (requires autoconf 1.5+ and the macros in acinclude.m4)
 AC_ARG_ENABLE([python],
 	AC_HELP_STRING([--enable-python=no], [Build python bindings (pyaff)]),
@@ -267,7 +272,7 @@ if test x"${AFF_NOOPT}" != "x" ; then
 fi
 
 if test "${with_noopt}" = "yes" ; then
-  CFLAGS=`echo "$CFLAGS" | sed s/-O[[0-9]]//`             # note the double quoting! 
+  CFLAGS=`echo "$CFLAGS" | sed s/-O[[0-9]]//`             # note the double quoting!
   CXXFLAGS=`echo "$CXXFLAGS" | sed s/-O[[0-9]]//`
 fi
 

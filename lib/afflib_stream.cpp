@@ -16,7 +16,7 @@
 #ifdef _WIN32
 #define ASIZE SSIZE_T
 #else
-#define ASIZE ssize_t 
+#define ASIZE ssize_t
 #endif
 
 
@@ -56,16 +56,26 @@ const unsigned char *af_badflag(AFFILE *af)
  *** Stream-level interface
  ****************************************************************/
 
-
-/* Throw out the current segment */
-int af_purge(AFFILE *af)
+static int af_get_pagebuf(AFFILE *af, int64_t pagenum)
 {
-    AF_WRLOCK(af);
-    if (af_trace) fprintf(af_trace,"af_purge(%p)\n",af);
-    int ret = af_cache_flush(af);	// flush the cache
-    af->pb = 0;				// no longer have a current page
-    AF_UNLOCK(af);
-    return ret;
+    if(!af->pb || af->pb->pagenum != pagenum)
+    {
+	af->pb = af_cache_alloc(af, pagenum);
+	if(!af->pb)
+	    return -1;
+    }
+
+    if(!af->pb->pagebuf_valid)
+    {
+	size_t pagebytes = af->image_pagesize;
+	if(af_get_page(af, pagenum, af->pb->pagebuf, &pagebytes) < 0)
+	    return -1;
+
+	af->pb->pagebuf_valid = 1;
+	af->pb->pagebuf_bytes = pagebytes;
+    }
+
+    return 0;
 }
 
 extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
@@ -84,7 +94,6 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
     /* performance improvement: use af->image_size if it is set */
     uint64_t offset = af->pos;		/* where to start */
 
-    if(af->image_size<0)  {total=-1;goto done;}	// error
     if(af->image_size==0) {goto done;}		// no data in file
     if(af->pos > af->image_size) {goto done;}	// seeked beyond end of file
     if(af->pos+count > af->image_size) count = af->image_size - af->pos; // only this much left in file
@@ -98,33 +107,20 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
     }
 
     while(count>0){
-	/* If the correct segment is not loaded, purge the segment */
 	int64_t new_page = offset / af->image_pagesize;
 
-	if(af->pb==0 || new_page != af->pb->pagenum){
-	    af_cache_flush(af);
-	    af->pb = 0;
+	if(af_get_pagebuf(af, new_page) < 0)
+	{
+	    /* if nothing was read yet, return 0 for EOF or -1 for read error */
+	    /* ENOENT (page not found) means EOF, other errno means read error */
+	    if(!total && errno != ENOENT)
+		total = -1;
+	    break;
 	}
 
-	/* If no segment is loaded in cache, load the current segment */
-	if(af->pb==0){
-	    int64_t pagenum = offset / af->image_pagesize;
-	    af->pb = af_cache_alloc(af,pagenum);
-	    if(af->pb->pagebuf_valid==0){ 
-		/* page buffer isn't valid; need to get it */
-		af->pb->pagebuf_bytes = af->image_pagesize;		// we can hold this much
-		if(af_get_page(af,af->pb->pagenum,af->pb->pagebuf, &af->pb->pagebuf_bytes)){
-		    /* Page doesn't exist; fill with NULs */
-		    memset(af->pb->pagebuf,0,af->pb->pagebuf_bytes);
-		    /* TK: Should fill with BADBLOCK here if desired */
-		    /* previously had BREAK here */
-		}
-		af->pb->pagebuf_valid = 1;	// contents of the page buffer are valid
-	    }
-	}
 	// Compute how many bytes can be copied...
 	// where we were reading from
-	u_int page_offset   = (u_int)(offset - af->pb->pagenum * af->image_pagesize); 
+	u_int page_offset   = (u_int)(offset - af->pb->pagenum * af->image_pagesize);
 
 	if(page_offset > af->pb->pagebuf_bytes){
 	    /* Page is short. */
@@ -138,7 +134,6 @@ extern "C" ASIZE af_read(AFFILE *af,unsigned char *buf,ASIZE count)
 	if(bytes_to_read > page_left)               bytes_to_read = page_left;
 	if(bytes_to_read > af->image_size - offset) bytes_to_read = (u_int)(af->image_size - offset);
 
-	assert(bytes_to_read >= 0);	// 
 	if(bytes_to_read==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */
@@ -173,9 +168,9 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
     af_invalidate_vni_cache(af);
 
     /* vnode write bypass:
-     * If a write function is defined, use it and avoid the page and cache business. 
+     * If a write function is defined, use it and avoid the page and cache business.
      */
-    if (af->v->write){		
+    if (af->v->write){
 	int r = (af->v->write)(af, buf, af->pos, count);
 	if(r>0){
 	    af->pos += r;
@@ -211,20 +206,29 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
      * and if an entire page is being written,
      * just write it out and update the pointers, then return.
      */
-    if(af->pb==0 && af->image_pagesize==(unsigned)count && write_page_offset == 0){
-	// copy into cache if we have this page anywhere in our cache
-	af_cache_writethrough(af,write_page,buf,count);
-	int ret = af_update_page(af,write_page,buf,count);
-	if(ret==0){			// no error
-	    af->pos += count;
-	    if(af->pos > af->image_size) af->image_size = af->pos;
-	    AF_UNLOCK(af);
-	    return count;
+    if(!af->pb && !write_page_offset && !(count % af->image_pagesize))
+    {
+	for(size_t written = 0; written < count; written += af->image_pagesize)
+	{
+	    // copy into cache if we have this page anywhere in our cache
+	    af_cache_writethrough(af, write_page, buf + written, af->image_pagesize);
+
+	    if(af_update_page(af, write_page, buf + written, af->image_pagesize) < 0)
+	    {
+		AF_UNLOCK(af);
+		return -1;
+	    }
+
+	    af->pos += af->image_pagesize;
+	    if(af->pos > af->image_size)
+		af->image_size = af->pos;
+
+	    write_page++;
 	}
+
 	AF_UNLOCK(af);
-	return -1;			// error
+	return count;
     }
-       
 
     /* Can't use high-speed optimization; write through the cache */
     int total = 0;
@@ -245,15 +249,14 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 	    }
 	}
 	// where writing to
-	u_int seg_offset = (u_int)(offset - af->pb->pagenum * af->image_pagesize); 
+	u_int seg_offset = (u_int)(offset - af->pb->pagenum * af->image_pagesize);
 
 	// number we can write into
-	u_int seg_left   = af->image_pagesize - seg_offset; 
+	u_int seg_left   = af->image_pagesize - seg_offset;
 	u_int bytes_to_write = count;
 
 	if(bytes_to_write > seg_left) bytes_to_write = seg_left;
 
-	assert(bytes_to_write >= 0);	// 
 	if(bytes_to_write==0) break; // that's all we could get
 
 	/* Copy out the bytes for the user */
@@ -275,7 +278,7 @@ int af_write(AFFILE *af,unsigned char *buf,size_t count)
 	/* If we wrote out all of the bytes that were left in the segment,
 	 * then we are at the end of the segment, write it back...
 	 */
-	if(seg_left == bytes_to_write){	
+	if(seg_left == bytes_to_write){
 	    if(af_cache_flush(af)){
 		AF_UNLOCK(af);
 		return -1;

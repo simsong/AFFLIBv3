@@ -1,6 +1,6 @@
 /*
  * vnode_aff.cpp:
- * 
+ *
  * Functions for the manipulation of AFF files...
  *
  * Distributed under the Berkeley 4-part license
@@ -77,7 +77,7 @@ static int s3_open(AFFILE *af)
     /* Create the bucket if it doesn't exist */
     aws_access_key_id     = getenv(AWS_ACCESS_KEY_ID);
     aws_secret_access_key = getenv(AWS_SECRET_ACCESS_KEY);
-    
+
     if(!aws_access_key_id) fprintf(stderr,"s3: AWS_ACCESS_KEY_ID not defined\n");
     if(!aws_secret_access_key) fprintf(stderr,"s3: AWS_SECRET_ACCESS_KEY not defined\n");
     if(!aws_access_key_id || !aws_secret_access_key) return -1; /* can't open */
@@ -108,7 +108,7 @@ static int s3_open(AFFILE *af)
      * file was already created. Return an error.
      */
     bool exists = af_get_seg(af,AF_PAGESIZE,0,0,0)==0;
-    
+
     if((af->openflags & O_CREAT) && (af->openflags & O_EXCL) && exists){
 	errno = EEXIST;
 	return -1;
@@ -252,7 +252,7 @@ static int s3_rewind_seg(AFFILE *af)
 	delete sp->lbr;
 	sp->lbr = 0;
     }
-    return 0;		
+    return 0;
 }
 
 
@@ -262,7 +262,7 @@ static int s3_rewind_seg(AFFILE *af)
  */
 static int s3_update_seg(AFFILE *af, const char *name,
 		    uint32_t arg,const u_char *value,uint32_t vallen)
-    
+
 {
     struct s3_private *sp =S3_PRIVATE(af);
     char metabuf[64];
@@ -285,8 +285,8 @@ int s3_del_seg(AFFILE *af,const char *segname)
 
 
 struct af_vnode vnode_s3 = {
-    AF_IDENTIFY_S3,			// 
-    AF_VNODE_TYPE_RELIABLE,		// 
+    AF_IDENTIFY_S3,			//
+    AF_VNODE_TYPE_RELIABLE,		//
     "s3.amazonaws.com",
     s3_identify_file,
     s3_open,				// open
@@ -308,8 +308,8 @@ static int s3_cantopen(AFFILE *af)
 }
 
 struct af_vnode vnode_s3 = {
-    AF_IDENTIFY_S3,			// 
-    AF_VNODE_TYPE_RELIABLE,		// 
+    AF_IDENTIFY_S3,			//
+    AF_VNODE_TYPE_RELIABLE,		//
     "s3.amazonaws.com",
     s3_identify_file,
     s3_cantopen,			// open

@@ -1,6 +1,6 @@
 /*
  * vnode_aff.cpp:
- * 
+ *
  * Functions for the manipulation of AFF files...
  * Distributed under the Berkeley 4-part license
  */
@@ -22,11 +22,11 @@
 
 static int      aff_write_ignore(AFFILE *af,size_t bytes);
 static int	aff_write_seg(AFFILE *af,const char *name,uint32_t arg,
-			      const u_char *value,size_t vallen); 
+			      const u_char *value,size_t vallen);
 static int	aff_get_seg(AFFILE *af,const char *name,uint32_t *arg,
 			    unsigned char *data,size_t *datalen);
 #ifdef KERNEL_LIBRARY
-static int	aff_write_seg_no_data(AFFILE *af,const char *name,uint32_t arg, size_t vallen); 
+static int	aff_write_seg_no_data(AFFILE *af,const char *name,uint32_t arg, size_t vallen);
 #endif
 static int	aff_get_next_seg(AFFILE *af,char *segname,size_t segname_len,
 				 uint32_t *arg, unsigned char *data, size_t *datalen);
@@ -72,7 +72,7 @@ static int aff_write_ignore(AFFILE *af,size_t bytes)
     char next[AF_MAX_NAME_LEN];
     size_t segsize2=0;
     int count=0;
-    while(af_probe_next_seg(af,next,sizeof(next),0,0,&segsize2,1)==0 && next[0]==0 && segsize2>=0){
+    while(af_probe_next_seg(af,next,sizeof(next),0,0,&segsize2,1)==0 && next[0]==0){
 	count++;
 	if(count>10) break;		// something is wrong; just get out.
 	//printf("*** next %d segment at %qd len=%d will be deleted\n",count,ftello(af->aseg),segsize2);
@@ -140,7 +140,7 @@ int aff_write_seg(AFFILE *af, const char *segname,uint32_t arg,const u_char *dat
     segt.segment_len = htonl(sizeof(segh)+segname_len + datalen + sizeof(segt));
     aff_toc_update(af,segname,ftello(af->aseg),datalen);
 
-    
+
     if(af_trace) fprintf(af_trace,"aff_write_seg: putting segment %s (datalen=%d) offset=%"PRId64"\n",
 			 segname,(int)datalen,ftello(af->aseg));
 
@@ -183,7 +183,7 @@ int aff_write_seg_no_data(AFFILE *af, const char *segname,uint32_t arg,size_t da
     segt.segment_len = htonl(sizeof(segh)+segname_len + datalen + sizeof(segt));
     aff_toc_update(af,segname,ftello(af->aseg),datalen);
 
-    
+
     if(af_trace) fprintf(af_trace,"aff_write_seg: putting segment %s (datalen=%zd) offset=%"PRId64"\n",
 			 segname,datalen,ftello(af->aseg));
 
@@ -199,7 +199,7 @@ int aff_write_seg_no_data(AFFILE *af, const char *segname,uint32_t arg,size_t da
 
 
 /****************************************************************
- *** low-level routines for reading 
+ *** low-level routines for reading
  ****************************************************************/
 
 /* aff_get_segment:
@@ -218,7 +218,11 @@ static int aff_get_seg(AFFILE *af,const char *name,
      * we will rewind to the beginning and go to the end.
      */
     struct aff_toc_mem *adm = aff_toc(af,name);
-    if(!adm) return -1;
+    if(!adm)
+	{ errno = ENOENT; return -1; }
+
+    if(!arg && !data && !datalen)
+	return 0; // caller only wants to know whether the segment exists
 
     fseeko(af->aseg,adm->offset,SEEK_SET);
     int ret = aff_get_next_seg(af,next,sizeof(next),arg,data,datalen);
@@ -236,7 +240,7 @@ static int aff_get_seg(AFFILE *af,const char *name,
  * @param arg         - pointer to the arg
  * @param data        - pointer to the data
  * @param datalen_    - length of the data_ array. If *datalen_==0, set to the length of the data.
- * 
+ *
  * @return
  *    0 =  success.
  *  -1  = end of file. (AF_ERROR_EOF)
@@ -338,7 +342,7 @@ int af_truncate_blank(AFFILE *af)
 	}
     }
     fseeko(af->aseg,last_loc,SEEK_SET);	// return to where we were
-    return -1;				// say that we couldn't do it. 
+    return -1;				// say that we couldn't do it.
 }
 
 
@@ -356,102 +360,56 @@ int af_truncate_blank(AFFILE *af)
 static int aff_update_seg(AFFILE *af, const char *name,
 		    uint32_t arg,const u_char *value,uint32_t vallen)
 {
-    char   next_segment_name[AF_MAX_NAME_LEN];
-    size_t next_segsize = 0;
-    size_t next_datasize = 0;
-
-    /* if we are updating with a different size,
-     * remember the location and size of the AF_IGNORE segment that
-     * has the smallest size that is >= strlen(name)+vallen
-     */
     size_t size_needed = vallen+aff_segment_overhead(name);
-    size_t size_closest = 0;
-    uint64_t         loc_closest = 0;
     struct aff_toc_mem *adm = aff_toc(af,name);
-       
+
     if(af_trace) fprintf(af_trace,"aff_update_seg(name=%s,arg=%"PRIu32",vallen=%u)\n",name,arg,vallen);
 
+    if(adm)
+    {
+	/* segment already exists */
+	if(fseeko(af->aseg, adm->offset, SEEK_SET) < 0)
+	    return -1;
 
-    if(adm){
-	/* Segment is in the TOC; seek to it */
-	fseeko(af->aseg,adm->offset,SEEK_SET);
-    }
-    else {
-	/* Otherwise, go to the beginning of the file and try to find a suitable hole
-	 * TK: This could be made significantly faster by just scanning the TOC for a hole.
-	 */
-	af_rewind_seg(af);			// start at the beginning
-    }
+	/* if its size matches, just overwrite it */
+	if(adm->segment_len == size_needed)
+	    return aff_write_seg(af, name, arg, value, vallen);
 
-    while(af_probe_next_seg(af,next_segment_name,sizeof(next_segment_name),0,&next_datasize,&next_segsize,1)==0){
-	/* Remember this information */
-	uint64_t next_segment_loc = ftello(af->aseg);
-#ifdef DEBUG2
-	fprintf(stderr,"  next_segment_name=%s next_datasize=%d next_segsize=%d next_segment_loc=%qd\n",
-		next_segment_name, next_datasize, next_segsize,next_segment_loc);
-#endif
-	if(strcmp(next_segment_name,name)==0){	// found the segment
-	    if(next_datasize == vallen){        // Does it exactly fit?
-		int r = aff_write_seg(af,name,arg,value,vallen); // Yes, just write in place!
-		return r;
-	    }
+	/* otherwise, invalidate it */
+	if(aff_write_ignore(af, adm->segment_len - aff_segment_overhead(0)) < 0)
+	    return -1;
 
-	    //printf("** Segment '%s' doesn't fit at %qd; invalidating.\n",name,ftello(af->aseg));
-	    aff_write_ignore(af,next_datasize+strlen(name));
-
-	    /* If we are in random mode, jump back to the beginning of the file.
-	     * This does a good job filling in the holes.
-	     */
-	    if(af->random_access){
-		af_rewind_seg(af);
-		continue;
-	    }
-
-	    /* Otherwise just go to the end. Experience has shown that sequential access
-	     * tends not to generate holes.
-	     */
-	    fseeko(af->aseg,(uint64_t)0,SEEK_END);              // go to the end of the file
-	    break;			// and exit this loop
-	    
-	}
-
-	if((next_segment_name[0]==0) && (next_datasize>=size_needed)){
-	    //printf("   >> %d byte blank\n",next_datasize);
-	}
-
-	/* If this is an AF_IGNORE, see if it is a close match */
-	if((next_segment_name[0]==AF_IGNORE[0]) &&
-	   (next_datasize>=size_needed) &&
-	   ((next_datasize<size_closest || size_closest==0)) &&
-	   ((next_datasize<1024 && size_needed<1024) || (next_datasize>=1024 && size_needed>=1024))){
-	    size_closest = next_datasize;
-	    loc_closest  = next_segment_loc;
-	}
-	fseeko(af->aseg,next_segsize,SEEK_CUR); // skip this segment
+	aff_toc_del(af, name);
     }
 
-    /* Ready to write */
-    if(size_closest>0){
-	/* Yes. Put it here and put a new AF_IGNORE in the space left-over
-	 * TODO: If the following space is also an AF_IGNORE, then combine the two.
-	 */
-	//printf("*** Squeezing it in at %qd. name=%s. vallen=%d size_closest=%d\n",loc_closest,name,vallen,size_closest);
+    /* search through TOC for a hole */
+    /* need space for a new AF_IGNORE segment also */
+    uint64_t hole_offset, hole_size;
+    if(aff_toc_find_hole(af, size_needed + aff_segment_overhead(0), &hole_offset, &hole_size) == 0)
+    {
+	/* found a large enough hole */
+	if(fseeko(af->aseg, hole_offset, SEEK_SET) < 0)
+	    return -1;
 
-	fseeko(af->aseg,loc_closest,SEEK_SET); // move to the location
-	aff_write_seg(af,name,arg,value,vallen); // write the new segment
-	
-	size_t newsize = size_closest - vallen - aff_segment_overhead(0) - strlen(name);
-	aff_write_ignore(af,newsize); // write the smaller ignore
-	return 0;
+	/* write segment */
+	if(aff_write_seg(af, name, arg, value, vallen) < 0)
+	    return -1;
+
+	/* fill in any remaining space with AF_IGNORE */
+	return aff_write_ignore(af, hole_size - size_needed - aff_segment_overhead(0));
     }
-    /* If we reach here we are positioned at the end of the file. */
-    /* If the last segment is an ignore, truncate the file before writing */
-    while(af_truncate_blank(af)==0){
-	/* Keep truncating until there is nothing left */
-    }
-    //printf("*** appending '%s' bytes=%d to the end\n",name,vallen);
-    fseeko(af->aseg,0L,SEEK_END);		// move back to the end of the file 
-    return aff_write_seg(af,name,arg,value,vallen); // just write at the end
+
+    /* no holes; seek to end of file and truncate any trailing AF_IGNORE */
+    if(fseeko(af->aseg, 0, SEEK_END) < 0)
+	return -1;
+
+    while(af_truncate_blank(af) == 0) {}
+
+    /* write segment at end of file */
+    if(fseeko(af->aseg, 0, SEEK_END) < 0)
+	return -1;
+
+    return aff_write_seg(af, name, arg, value, vallen);
 }
 
 
@@ -505,13 +463,13 @@ static int aff_del_seg(AFFILE *af,const char *segname)
  */
 static int aff_create(AFFILE *af)
 {
-    fwrite(AF_HEADER,1,8,af->aseg);  // writes the header 
+    fwrite(AF_HEADER,1,8,af->aseg);  // writes the header
     aff_toc_build(af);	             // build the toc (will be pretty small)
     af_make_badflag(af);	     // writes the flag for bad blocks
-    
+
     const char *version = xstr(PACKAGE_VERSION);
     aff_update_seg(af,AF_AFFLIB_VERSION,0,(const u_char *)version,strlen(version));
-    
+
 #ifdef HAVE_GETPROGNAME
     const char *progname = getprogname();
     if(aff_update_seg(af,AF_CREATOR,0,(const u_char *)progname,strlen(progname))) return -1;
@@ -553,9 +511,9 @@ static int aff_identify_file(const char *filename,int exists)
 	if(af_ext_is(filename,"aff")) return 1;
 	return 0;
     }
-	
+
     if(fd>0){
-	int len = strlen(AF_HEADER)+1;	
+	int len = strlen(AF_HEADER)+1;
 	char buf[64];
 	int r = read(fd,buf,len);
 	close(fd);
@@ -572,78 +530,73 @@ static int aff_identify_file(const char *filename,int exists)
     return 0;
 }
 
+static int err_close(int fd)
+{
+    int tmp = errno;
+    close(fd);
+    errno = tmp;
+    return -1;
+}
 
+static int err_close(AFFILE *af)
+{
+    int tmp = errno;
+    fclose(af->aseg);
+    af->aseg = 0;
+    errno = tmp;
+    return -1;
+}
 
 static int aff_open(AFFILE *af)
 {
-    if(af_is_filestream(af->fname)==0) return -1; // not a file stream
+    // must be a file stream with read access
+    if(!af_is_filestream(af->fname) || (af->openflags & O_ACCMODE) == O_WRONLY)
+	{ errno = EINVAL; return -1; }
+
+    bool canWrite = (af->openflags & O_ACCMODE) == O_RDWR;
 
     /* Open the raw file */
     int fd = open(af->fname,af->openflags | O_BINARY,af->openmode);
-    if(fd<0){				// couldn't open
-	return -1;			
-    }
+    if(fd < 0)
+	return -1;
 
     /* Lock the file if writing */
 #ifdef HAVE_FLOCK
-    if(af->openflags & O_RDWR){
-	int lockmode = LOCK_SH;		// default
-	if((af->openflags & O_ACCMODE)==O_RDWR) lockmode = LOCK_EX; // there can be only one
-	if(flock(fd,lockmode)){
-	    warn("Cannot exclusively lock %s:",af->fname);
-	}
-    }
+    if(flock(fd, canWrite ? LOCK_EX : LOCK_SH) < 0)
+	return err_close(fd);
 #endif
 
-    /* Set defaults */
-
-    af->compression_type     = AF_COMPRESSION_ALG_ZLIB; 
-    af->compression_level    = Z_DEFAULT_COMPRESSION;
-
-    /* Open the FILE  for the AFFILE */
-    char strflag[8];
-    strcpy(strflag,"rb");		// we have to be able to read
-    if(af->openflags & O_RDWR) 	strcpy(strflag,"w+b"); 
-
-    af->aseg = fdopen(fd,strflag);
-    if(!af->aseg){
-      (*af->error_reporter)("fdopen(%d,%s)",fd,strflag);
-      return -1;
-    }
+    /* Open the FILE for the AFFILE */
+    af->aseg = fdopen(fd, canWrite ? "w+b" : "rb");
+    if(!af->aseg)
+	return err_close(fd);
 
     /* Get file size */
     struct stat sb;
-    if(fstat(fd,&sb)){
-	(*af->error_reporter)("aff_open: fstat(%s): ",af->fname);	// this should not happen
-	return -1;
-    }
+    if(fstat(fd, &sb) < 0)
+	return err_close(af);
 
     /* If file is empty, then put out an AFF header, badflag, and AFF version */
-    if(sb.st_size==0){
+    if(canWrite && sb.st_size == 0)
 	return aff_create(af);
-    }
-    
+
     /* We are opening an existing file. Verify once more than it is an AFF file
      * and skip past the header...
      */
-
-    char buf[8];
-    if(fread(buf,sizeof(buf),1,af->aseg)!=1){
-	/* Hm. End of file. That shouldn't happen here. */
-	(*af->error_reporter)("aff_open: couldn't read AFF header on existing file?");
-	return -1;			// should not happen
-    }
-
-    if(strcmp(buf,AF_HEADER)!=0){
-	buf[7] = 0;
-	(*af->error_reporter)("aff_open: %s is not an AFF file (header=%s)\n",
-			      af->fname,buf);
-	return -1;
+    char buf[8]; errno = 0;
+    size_t itemsRead = fread(buf, sizeof(buf), 1, af->aseg);
+    if(itemsRead != 1 || strcmp(buf, AF_HEADER))
+    {
+	if(!errno)
+	    errno = EIO;
+	return err_close(af);
     }
 
     /* File has been validated */
-    if(aff_toc_build(af)) return -1;	// build the TOC
-    return 0;				// everything must be okay.
+    if(aff_toc_build(af) < 0)
+	return err_close(af);
+
+    return 0;
 }
 
 

@@ -72,7 +72,7 @@ void warnx(const char *fmt,...)
 
 
 
-/* 
+/*
  * af_hexbuf:
  * Turn a binay string into a hex string, optionally with spaces.
  */
@@ -91,7 +91,7 @@ const char *af_hexbuf(char *dst,int dst_len,const unsigned char *bin,int bytes,i
 	dst_len -= 2;
 	bytes--;
 	charcount++;			// how many characters
-	
+
 	if((flag & AF_HEXBUF_SPACE4) && charcount%2==0){
 	    *dst++ = ' ';
 	    *dst   = '\000';
@@ -314,5 +314,5 @@ void af_parse_url(const char *url,char **protocol,char **hostname,char **usernam
 	free(scratch);
 	url = slash+1;
     }
-    if(path) *path = strdup(url);	                // remember file name    
+    if(path) *path = strdup(url);	                // remember file name
 }

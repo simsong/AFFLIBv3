@@ -40,15 +40,15 @@ struct af_vnode *af_vnode_array[] = {
 #ifdef USE_S3
     &vnode_s3,				// must be first for s3:// interpertation
 #endif
-    &vnode_afd, 
+    &vnode_afd,
     &vnode_afm,				// must be before aff
     &vnode_aff,
 #ifdef USE_QEMU
     &vnode_vmdk,
     &vnode_dmg,
 #endif
-#ifdef USE_SPARSEIMAGE			
-    &vnode_sparseimage,           
+#ifdef USE_SPARSEIMAGE
+    &vnode_sparseimage,
 #endif
     &vnode_split_raw,			// must be before raw
     &vnode_raw,				// greedy; must be last
@@ -134,7 +134,7 @@ void	af_perror(const char *str)
     fprintf(stderr,"%s: %s: %s\n",getprogname(),str,af_error_str);
 #else
     fprintf(stderr,"%s: %s\n",str,af_error_str);
-#endif    
+#endif
 }
 
 
@@ -229,7 +229,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
     AFFILE *af = (AFFILE *)calloc(sizeof(AFFILE),1);
     af_crypto_allocate(af);
 #ifdef HAVE_PTHREAD
-    pthread_rwlock_init(&af->rwlock);
+    pthread_rwlock_init(&af->rwlock, 0);
     AF_WRLOCK(af);
 #endif
     af->v	  = v;
@@ -284,7 +284,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
 	    af->password[buflen] = '\000';
 	}
     }
-		
+
     /* TK: If no password was set and the AFFLIB_ASK_PASS is set, ask for a passphrase */
 
     /* Note things for hard files */
@@ -304,7 +304,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
     if(flags & AF_HALF_OPEN) return af;	// for low-level tools
 
     /* Try opening it! */
-    if((*af->v->open)(af)){ 
+    if((*af->v->open)(af)){
 	strlcpy(af_error_str,af->error_str,sizeof(af_error_str)); // make a copy of the error string
 	af_deallocate(af);
 	return 0;
@@ -337,7 +337,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
 		af_sanitize_password(af);
 	    }
 	}
-	
+
 	/* Try public key... */
 	if(can_decrypt==false){
 	    const char *kf = getenv(AFFLIB_DECRYPTING_PRIVATE_KEYFILE);
@@ -346,7 +346,7 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
 	    }
 	}
     }
-	
+
     af_read_sizes(af);		// set up the metadata
     if(af_trace) fprintf(af_trace,"af_open_with(%s,%o,%o,%s)\n",url,flags,mode,v->name);
     return af;
@@ -517,10 +517,7 @@ int af_eof(AFFILE *af)
 
     if(af_vstat(af,&vni)) return -1;	// this is bad; we need vstat...
     if(vni.use_eof) return vni.at_eof;	// if implementation wants to use it, use it
-    if(af->pos<0){			// pos shouldn't be <0
-	errno = EINVAL;
-	return -1;		// this is bad
-    }
+
     int ret = (int64_t)af->pos >= (int64_t)vni.imagesize;
     AF_UNLOCK(af);
     return ret;
@@ -537,7 +534,7 @@ void af_set_callback(AFFILE *af,void (*wcb)(struct affcallback_info *))
 void af_enable_compression(AFFILE *af,int type,int level)
 {
     AF_WRLOCK(af);
-    af->compression_type  = type; 
+    af->compression_type  = type;
     af->compression_level = level;
     AF_UNLOCK(af);
 }
@@ -588,7 +585,7 @@ int64_t af_get_imagesize(AFFILE *af)
     return ret;
 }
 
-/* 
+/*
  * af_make_badflag:
  * Create a randomized bag flag and
  * leave an empty segment of how many badsectors there are
@@ -655,14 +652,14 @@ void af_aes_decrypt(AFFILE *af,const char *segname,unsigned char *data,size_t *d
     /* An encrypted segment was retrieved; decrypt and trunc the length as necessary */
     uint32_t extra = (*datalen) % AES_BLOCK_SIZE;
     uint32_t pad = (AES_BLOCK_SIZE - extra) % AES_BLOCK_SIZE;
-    
+
     if(data==0){			// just wants to find out new length
 	if(extra>0){
 	    *datalen -= AES_BLOCK_SIZE;
 	}
 	return;
     }
-	
+
     if(extra!=0 && *datalen < AES_BLOCK_SIZE){
 	*datalen = 0;			// something is wrong
 	return;
@@ -678,7 +675,7 @@ void af_aes_decrypt(AFFILE *af,const char *segname,unsigned char *data,size_t *d
     unsigned char iv[AES_BLOCK_SIZE];
     memset(iv,0,sizeof(iv));
     strlcpy((char *)iv,segname,sizeof(iv));
-	
+
     /* Decrypt! */
     AF_READLOCK(af);
     AES_cbc_encrypt(data,data,*datalen,&af->crypto->dkey,iv,AES_DECRYPT);
@@ -728,7 +725,7 @@ int af_get_seg(AFFILE *af,const char *segname,uint32_t *arg,unsigned char *data,
 	    return 0;			// finally it fits
 	}
     }
-#endif    
+#endif
     /* Try for the unencrypted segment */
     int ret = (*af->v->get_seg)(af,segname,arg,data,datalen);
     AF_UNLOCK(af);
@@ -747,7 +744,7 @@ int af_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t *arg,
     }
     int r = (*af->v->get_next_seg)(af,segname,segname_len,arg,data,datalen);
 #ifdef HAVE_AES_ENCRYPT
-    if(AF_SEALING_VNODE(af) 
+    if(AF_SEALING_VNODE(af)
        && ends_with(segname,AF_AES256_SUFFIX)
        && af->crypto->auto_decrypt){
 	segname[strlen(segname)-strlen(AF_AES256_SUFFIX)] = 0;
@@ -771,7 +768,7 @@ int af_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t *arg,
 	AF_UNLOCK(af);
 	return r;			// not sure why we got this error
     }
-#endif    
+#endif
     AF_UNLOCK(af);
     return r;
 }
@@ -827,7 +824,7 @@ int af_update_segf(AFFILE *af, const char *segname,
 	oldname = segname;
 	segname = aesname;
 
-	/* Figure out if we need to padd out for encryption. Allocate space and 
+	/* Figure out if we need to padd out for encryption. Allocate space and
 	 */
 	uint32_t extra = (datalen) % AES_BLOCK_SIZE;
 	uint32_t pad = (AES_BLOCK_SIZE - extra) % AES_BLOCK_SIZE;
@@ -842,10 +839,13 @@ int af_update_segf(AFFILE *af, const char *segname,
     }
 #endif
     int r = (*af->v->update_seg)(af,segname,arg,data,datalen); // actually update the segment
-    if(r==0) af->bytes_written += datalen;
+    if(r < 0)
+        { AF_UNLOCK(af); return r; }
+
+    af->bytes_written += datalen;
 #ifdef HAVE_AES_ENCRYPT
     /* if we encrypted, make sure the unencrypted segment is deleted */
-    if(r==0 && oldname) (*af->v->del_seg)(af,oldname);
+    if(oldname) (*af->v->del_seg)(af,oldname);
     if(newdata){
 	free(newdata);		// free any allocated data
 	newdata = 0;
@@ -868,7 +868,6 @@ int af_update_segf(AFFILE *af, const char *segname,
 #ifdef USE_AFFSIGS
     const u_char *signdata = data;	// remember the original data location
     if(AF_SEALING(af)
-       && (r==0)
        && af->crypto->sign_privkey
        && ((flag & AF_SIGFLAG_NOSIG)==0)
        && !ends_with(segname,AF_SIG256_SUFFIX)){
@@ -889,7 +888,7 @@ int af_update_seg(AFFILE *af, const char *segname,
 
 #ifdef HAVE_OPENSSL_BIO_H
 /* Requires no locking */
-int	af_update_seg_frombio(AFFILE *af,const char *segname,uint32_t arg,BIO *bio)
+int	af_update_seg_frombio(AFFILE *af,const char *segname,uint32_t /*arg*/,BIO *bio)
 {
     /* Get the buffer to write out */
     u_char *buf=0;

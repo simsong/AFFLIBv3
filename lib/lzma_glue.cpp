@@ -49,7 +49,7 @@ public:
     unsigned char *buf;
     size_t  buflen;
     size_t  ptr;
-    size_t  *notify;   
+    size_t  *notify;
     virtual ~COutMemoryStream(){}
     COutMemoryStream(unsigned char *buf_,size_t len,size_t *notify_){
 	buf    = buf_;
@@ -58,7 +58,7 @@ public:
 	notify = notify_;
     }
 
-    MY_UNKNOWN_IMP1(IOutStream) STDMETHOD(Write)(const void *data, UInt32 size, 
+    MY_UNKNOWN_IMP1(IOutStream) STDMETHOD(Write)(const void *data, UInt32 size,
 						 UInt32 *processedSize){
 	if(ptr+size > buflen) return E_FAIL;
 	memcpy(buf+ptr,data,size);
@@ -88,7 +88,7 @@ int lzma_compress(unsigned char *dest,size_t *destLen,const unsigned char *data,
     };
     const int nprops = sizeof(propIDs) / sizeof(propIDs[0]);
     PROPVARIANT p[nprops];
-    
+
     p[0].vt = VT_UI4; p[0].ulVal = UInt32(1 << 24);
     p[1].vt = VT_UI4; p[1].ulVal = UInt32(2); // posBits
     p[2].vt = VT_UI4; p[2].ulVal = UInt32(3); // literal context bits
@@ -116,7 +116,7 @@ int lzma_compress(unsigned char *dest,size_t *destLen,const unsigned char *data,
     COutMemoryStream *outStream = new COutMemoryStream(dest,*destLen,destLen);
     outStream->AddRef();
 
-    encoder->WriteCoderProperties(outStream); 
+    encoder->WriteCoderProperties(outStream);
 
     for (int i = 0; i < 8; i++) {
 	Byte b = Byte(fileSize >> (8 * i));

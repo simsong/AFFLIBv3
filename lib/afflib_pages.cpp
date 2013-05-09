@@ -27,7 +27,7 @@ void af_read_sizes(AFFILE *af)
 	af->badflag_set = 1;
     }
 
-    /* Read the image file segment if it is present. 
+    /* Read the image file segment if it is present.
      * If it isn't, scan through the disk image to figure out the size of the disk image.
      */
 
@@ -134,11 +134,12 @@ int af_get_page_raw(AFFILE *af,int64_t pagenum,uint32_t *arg,
 		    unsigned char *data,size_t *bytes)
 {
     char segname[AF_MAX_NAME_LEN];
-    
+
     memset(segname,0,sizeof(segname));
     sprintf(segname,AF_PAGE,pagenum);
     int r = af_get_seg(af,segname,arg,data,bytes);
-    if(r!=0){
+    if(r < 0 && errno == ENOENT)
+    {
 	/* Couldn't read with AF_PAGE; try AF_SEG_D.
 	 * This is legacy for the old AFF files. Perhaps we should delete it.
 	 */
@@ -176,16 +177,19 @@ int af_get_page(AFFILE *af,int64_t pagenum,unsigned char *data,size_t *bytes)
 	 * If we have been provided with a buffer,
 	 * fill buffer with the 'bad segment' flag and return.
 	 */
-	if (data && (af->openmode&AF_BADBLOCK_FILL)) {
+	if(data && (af->openmode & AF_BADBLOCK_FILL) && errno == ENOENT)
+	{
 	    for(size_t i = 0;i <= af->image_pagesize - af->image_sectorsize;
 		i+= af->image_sectorsize){
 		memcpy(data+i,af->badflag,af->image_sectorsize);
 		af->bytes_memcpy += af->image_sectorsize;
 	    }
+
+	    r = 0;
 	}
 	return r;		// segment doesn't exist
     }
-       
+
 
     /* If the segment isn't compressed, just get it*/
     uint32_t pageflag = 0;
@@ -270,7 +274,7 @@ int af_get_page(AFFILE *af,int64_t pagenum,unsigned char *data,size_t *bytes)
 	    }
 	    break;
 #endif
-	    
+
 	default:
 	    (*af->error_reporter)("Unknown compression algorithm 0x%d",
 				  pageflag & AF_PAGE_COMP_ALG_MASK);
@@ -297,7 +301,7 @@ int af_get_page(AFFILE *af,int64_t pagenum,unsigned char *data,size_t *bytes)
 	    data[*bytes + i] = 0;
 	}
 	size_t end_of_data = *bytes + bytes_left_in_sector;
-	
+
 	/* Now fill to the end of the page... */
 	for(size_t i = end_of_data; i <= af->image_pagesize-SECTOR_SIZE; i+=SECTOR_SIZE){
 	    memcpy(data+i,af->badflag,SECTOR_SIZE);
@@ -310,9 +314,35 @@ int af_get_page(AFFILE *af,int64_t pagenum,unsigned char *data,size_t *bytes)
 
 static bool is_buffer_zero(unsigned char *buf,int buflen)
 {
-    for(int i=0;i<buflen;i++){
-	if(buf[i]) return false;
+    if(buflen >= (int)sizeof(long))
+    {
+        // align to word boundary
+        buflen -= (intptr_t)buf % sizeof(long);
+
+        while((intptr_t)buf % sizeof(long))
+        {
+            if(*buf++)
+                return false;
+        }
+
+        // read in words
+        long *ptr = (long*)buf;
+        buf += buflen - buflen % sizeof(long);
+        buflen %= sizeof(long);
+
+        while(ptr < (long*)buf)
+        {
+            if(*ptr++)
+                return false;
+        }
     }
+
+    while(buflen--)
+    {
+        if(*buf++)
+            return false;
+    }
+
     return true;
 }
 
@@ -390,14 +420,14 @@ int af_update_page(AFFILE *af,int64_t pagenum,unsigned char *data,int datalen)
 
 	    /* Try zero compression first; it's the best algorithm we have  */
 	    if(is_buffer_zero(data,datalen)){
-		acbi.compression_alg   = AF_PAGE_COMP_ALG_ZERO; 
+		acbi.compression_alg   = AF_PAGE_COMP_ALG_ZERO;
 		acbi.compression_level = AF_COMPRESSION_MAX;
 
 		if(af->w_callback) { acbi.phase = 1; (*af->w_callback)(&acbi); }
 
 		*ldata = htonl(datalen); // store the data length
 		destLen = 4;		 // 4 bytes
-		flag = AF_PAGE_COMPRESSED | AF_PAGE_COMP_ALG_ZERO | AF_PAGE_COMP_MAX; 
+		flag = AF_PAGE_COMPRESSED | AF_PAGE_COMP_ALG_ZERO | AF_PAGE_COMP_MAX;
 		cres = 0;
 
 		acbi.compressed = 1;		// it was compressed
@@ -468,13 +498,13 @@ int af_update_page(AFFILE *af,int64_t pagenum,unsigned char *data,int datalen)
 	    cdata = 0;
 	}
     }
-    
+
     /* If a compressed segment was not written, write it uncompressed */
-    if(af->pages_written == starting_pages_written){ 
+    if(af->pages_written == starting_pages_written){
 	if(af->w_callback) {acbi.phase = 3;(*af->w_callback)(&acbi);}
 	ret = af_update_segf(af,segname_buf,0,data,datalen,AF_SIGFLAG_NOSIG);
 	acbi.bytes_written = datalen;
-	if(af->w_callback) {acbi.phase = 4;(*af->w_callback)(&acbi);} 
+	if(af->w_callback) {acbi.phase = 4;(*af->w_callback)(&acbi);}
 	if(ret==0){
 	    acbi.bytes_written = datalen;	// because that is how much we wrote
 	    af->pages_written++;
@@ -488,15 +518,15 @@ int af_update_page(AFFILE *af,int64_t pagenum,unsigned char *data,int datalen)
  ****************************************************************/
 
 /* The page cache is a read/write cache.
- * 
+ *
  * Pages that are read are cached after they are decompressed.
- * When new pages are fetched, we check the cache first to see if they are there; 
+ * When new pages are fetched, we check the cache first to see if they are there;
  * if so, they are satsfied by the cache.
- * 
- * Modifications are written to the cache, then dumped to the disk. 
- * 
+ *
+ * Modifications are written to the cache, then dumped to the disk.
+ *
  * The cache is managed by two functions:
- * af_cache_flush(af) - (prevously af_purge) 
+ * af_cache_flush(af) - (prevously af_purge)
  *      - Makes sure that all dirty buffers are written.
  *      - Sets af->pb=NULL (no current page)
  *      - (returns 0 if success, -1 if failure.)
@@ -549,7 +579,7 @@ void af_cache_writethrough(AFFILE *af,int64_t pagenum,const unsigned char *buf,i
 	}
     }
 }
-	
+
 #ifdef HAVE_MALLOC_H
 #include <malloc.h>
 #endif
@@ -561,7 +591,11 @@ void af_cache_writethrough(AFFILE *af,int64_t pagenum,const unsigned char *buf,i
 struct aff_pagebuf *af_cache_alloc(AFFILE *af,int64_t pagenum)
 {
     if(af_trace) fprintf(af_trace,"af_cache_alloc(%p,%"I64d")\n",af,pagenum);
-    af_cache_flush(af);			// make sure nothing in cache is dirty
+
+    /* Make sure nothing in the cache is dirty */
+    if(af_cache_flush(af) < 0)
+	return 0;
+
     /* See if this page is already in the cache */
     for(int i=0;i<af->num_pbufs;i++){
 	struct aff_pagebuf *p = &af->pbcache[i];
@@ -584,7 +618,7 @@ struct aff_pagebuf *af_cache_alloc(AFFILE *af,int64_t pagenum)
 	    break;
 	}
     }
-    if(slot==-1){			
+    if(slot==-1){
 	/* Find the oldest cache entry */
 	int oldest_i = 0;
 	int oldest_t = af->pbcache[0].last;

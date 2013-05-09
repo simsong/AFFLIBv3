@@ -2,7 +2,7 @@
  * afflib_os.cpp:
  *
  * The OS-specific features of AFFLIB
- * 
+ *
  * This file is a work of a US government employee and as such is in the Public domain.
  * Simson L. Garfinkel, March 12, 2012
  */
@@ -19,7 +19,7 @@
 #undef HAVE_SYS_DISK_H
 #endif
 
-#if defined(HAVE_SYS_DISK_H) 
+#if defined(HAVE_SYS_DISK_H)
 #include <sys/disk.h>
 #endif
 
@@ -36,7 +36,7 @@
  ****************************************************************/
 
 /* No longer needed with VC2008 */
-#if 0					
+#if 0
 #if defined(WIN32) and !defined(__MINGW_H)
 #pragma warning(disable: 4996)
 int64 ftello(FILE *stream)
@@ -88,7 +88,7 @@ int	af_figure_media(int fd,struct af_figure_media_buf *afb)
 {
     memset(afb,0,sizeof(*afb));
     afb->version = 1;
-    
+
 #ifdef __APPLE__
 #define MEDIA_FIGURED
     if(ioctl(fd,DKIOCGETBLOCKSIZE,&afb->sector_size)){
@@ -125,7 +125,7 @@ int	af_figure_media(int fd,struct af_figure_media_buf *afb)
      * from a #define
      */
 
-    afb->sector_size = BLOCK_SIZE;	
+    afb->sector_size = BLOCK_SIZE;
 #ifdef BLKGETSIZE64
     uint64_t total_bytes=0;
     if(ioctl(fd,BLKGETSIZE64,&total_bytes)){
@@ -150,10 +150,10 @@ int	af_figure_media(int fd,struct af_figure_media_buf *afb)
     afb->sector_size = BLOCK_SIZE;	// it's a good guess
 #else
     afb->sector_size = 512;	// it's a good guess
-#endif    
+#endif
 
     /* Try seeking to the end of fd and ask where we are! */
-    
+
     off_t start_pos   = lseek(fd,0,SEEK_CUR); // find where we are
     off_t end_of_file = lseek(fd,0,SEEK_END);
 
