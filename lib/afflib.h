@@ -1,14 +1,14 @@
 #ifndef _AFFLIB_H_
-#define _AFFLIB_H_ 
+#define _AFFLIB_H_
 
 /*
  * afflib.h:
- * 
+ *
  * This file describes the public AFFLIB interface.
  * The interface to reading AFF files and  Raw files.
  *
  * Copyright (c) 2005-2006
- *	Simson L. Garfinkel and Basis Technology, Inc. 
+ *	Simson L. Garfinkel and Basis Technology, Inc.
  *      All rights reserved.
  *
  * This code is derrived from software contributed by
@@ -43,7 +43,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.  
+ * SUCH DAMAGE.
  */
 
 /* Figure out what kind of OS we are running on */
@@ -86,7 +86,7 @@ typedef unsigned int uint32_t;
 #endif
 
 /** WIN32 is defined by the NMAKE makefile for Visual C++ under Windows and by mingw **/
-#ifdef WIN32                            
+#ifdef WIN32
 #include <basetsd.h>
 #include <io.h>				// gets isatty
 
@@ -115,7 +115,7 @@ typedef __int64 int64_t;
 #define PRIu64 "I64u"
 #endif
 
-#endif	
+#endif
 /** END OF WIN32 DEFINES **/
 
 #define I64d PRIi64
@@ -123,10 +123,9 @@ typedef __int64 int64_t;
 
 /* If our types still aren't defined, give some kind of error
  */
-#define USE_LZMA
 struct affcallback_info;
 struct aff_pagebuf {
-    int64_t       pagenum;		// -1 means no page loaded 
+    int64_t       pagenum;		// -1 means no page loaded
     unsigned char *pagebuf;		// where the data is; size is image_pagesize
     size_t        pagebuf_bytes;        // number of bytes in the pagebuf that are valid.
     uint32_t  pagenum_valid:1;	// buffer contains data
@@ -152,7 +151,7 @@ struct af_vnode_info {
     uint32_t segment_count_signed;
     uint32_t segment_count_encrypted;
     uint32_t page_count_encrypted;
-};					// 
+};					//
 
 
 /* All of this stuff should be hidden inside a single private structure... */
@@ -161,7 +160,7 @@ typedef struct _AFFILE AFFILE;
 /* The information that is provided in the aff callback */
 struct affcallback_info {
     int info_version;			// version number for this segment
-    AFFILE *af;				// v1: the AFFILE responsibile for the callback 
+    AFFILE *af;				// v1: the AFFILE responsibile for the callback
     int phase;				// v1: 1 = before compress; 2 = after compressing;
 					//     3 = before writing; 4 = after writing
     int64_t pagenum;			// v1: page number being written
@@ -210,7 +209,7 @@ int	af_set_option(AFFILE *af,int option,int value);
 
 #define AF_OPTION_AUTO_ENCRYPT     1	// 1 = auto-encrypt
 #define AF_OPTION_AUTO_DECRYPT     2	// 1 = auto-decrypt
-// The following are not implemented yet 
+// The following are not implemented yet
 #define AF_OPTION_PIECEWISE_MD5    3	// 1 = automatically write pagen_md5 segments
 #define AF_OPTION_PIECEWISE_SHA1   4	// 1 = automatically write pagen_md5 segments
 #define AF_OPTION_PIECEWISE_SHA256 5	// 1 = automatically write pagen_md5 segments
@@ -220,7 +219,7 @@ int	af_set_option(AFFILE *af,int option,int value);
 /* Special AFOPEN flags for af_open_with */
 #define AF_OPEN_PRIMITIVE (1<<31)	// only open primtive, not compound files
 #define AF_BADBLOCK_FILL  (1<<30)	// fill unallocated (sparse) with BADBLOCK flag
-#define AF_HALF_OPEN      (1<<29)       // return af before calling af->v->open; 
+#define AF_HALF_OPEN      (1<<29)       // return af before calling af->v->open;
 #define AF_NO_CRYPTO      (1<<28)       // disable encryption layer
 
 /* navigating within the data segments as if they were a single file */
@@ -234,7 +233,7 @@ uint64_t  af_tell(AFFILE *af);
 int	  af_eof(AFFILE *af);		// is the virtual file at the end?
 
 /* Additional routines for writing */
-void	af_set_callback(AFFILE *af, void (*cb)(struct affcallback_info *acbi)); 
+void	af_set_callback(AFFILE *af, void (*cb)(struct affcallback_info *acbi));
 void	af_enable_compression(AFFILE *af,int type,int level); // set/gunset compression for writing
 int	af_compression_type(AFFILE *af);
 int	af_write(AFFILE *af,unsigned char *buf,size_t count);
@@ -254,7 +253,7 @@ int64_t af_get_imagesize(AFFILE *af);	// byte # of last mapped byte in image, or
 int	af_get_pagesize(AFFILE *af);	// returns page size, or -1
 int	af_set_acquisition_date(AFFILE *af,time_t t); // sets AF_ACQUISITION_DATE
 
-#define af_imagesize(af) af_get_imagesize(af) // backwards compatiability 
+#define af_imagesize(af) af_get_imagesize(af) // backwards compatiability
 int	    af_get_segq(AFFILE *af,const char *name,int64_t *quad);/* Get/set 8-byte values */
 int	    af_update_segq(AFFILE *af,const char *name,int64_t quad);
 
@@ -268,7 +267,7 @@ int	    af_update_segq(AFFILE *af,const char *name,int64_t quad);
  * If arg!=0, set *arg to be the segment's flag.
  * if data==0, don't return it.
  * if datalen && *datalen==0, return the size of the data segment.
- *** Returns 0 on success, 
+ *** Returns 0 on success,
  *** -1 on end of file. (AF_ERROR_EOF)
  *** -2 if *data is not large enough to hold the segment (AF_ERROR_DATASMALL)
  *** -3 file is corrupt or other internal error. (AF_ERROR_CORRUPT)
@@ -336,7 +335,7 @@ int  af_set_sign_files(AFFILE *af,const char *keyfile,const char *certfile);
 int  af_sign_seg3(AFFILE *af,const char *segname, uint32_t arg,
 		  const unsigned char *data,uint32_t datalen,uint32_t signmode);
 int  af_sign_seg(AFFILE *af,const char *segname);
-int  af_sign_all_unsigned_segments(AFFILE *af);	// 
+int  af_sign_all_unsigned_segments(AFFILE *af);	//
 int  af_sig_verify_seg(AFFILE *af,const char *segname);	// see below for return codes
 
 int  af_is_signature_segment(const char *segname);
@@ -421,7 +420,7 @@ int af_hash_verify_seg2(AFFILE *af,const char *segname,unsigned char *sigbuf_,si
 
 /* AFF Flags */
 /* Flags for 8-byte segments */
-#define AF_SEG_QUADWORD        0x0002	
+#define AF_SEG_QUADWORD        0x0002
 
 /* Flags for selecting compression algorithm to try */
 #define AF_COMPRESSION_ALG_NONE 0	// don't compress
@@ -432,10 +431,10 @@ int af_hash_verify_seg2(AFFILE *af,const char *segname,unsigned char *sigbuf_,si
 #define AF_PAGE_COMPRESSED      0x0001
 #define AF_PAGE_COMP_MAX        0x0002	// compressed at maximum; nice to know
 #define AF_PAGE_COMP_ALG_MASK   0x00F0	// up to 16 compression algorithms may be used
-#define AF_PAGE_COMP_ALG_ZLIB   0x0000	
+#define AF_PAGE_COMP_ALG_ZLIB   0x0000
 #define AF_PAGE_COMP_ALG_BZIP   0x0010	// not implemented; why bother?
 #define AF_PAGE_COMP_ALG_LZMA   0x0020	// high compression but pretty slow
-#define AF_PAGE_COMP_ALG_ZERO   0x0030  // Data segment is a 4-byte value of # of NULLs. 
+#define AF_PAGE_COMP_ALG_ZERO   0x0030  // Data segment is a 4-byte value of # of NULLs.
 
 #define AF_MD5    "md5"			// stores image md5
 #define AF_SHA1   "sha1"			// stores image sha1
@@ -452,13 +451,13 @@ int af_hash_verify_seg2(AFFILE *af,const char *segname,unsigned char *sigbuf_,si
 #define AF_ACQUISITION_NOTES	    "acquisition_notes" // notes made while imaging
 #define AF_ACQUISITION_DEVICE	    "acquisition_device" // device used to do the imaging
 #define AF_ACQUISITION_SECONDS      "acquisition_seconds" // stored in arg
-#define AF_ACQUISITION_TECHNICIAN   "acquisition_tecnician" 
-#define AF_ACQUISITION_MACADDR      "acquisition_macaddr" 
+#define AF_ACQUISITION_TECHNICIAN   "acquisition_tecnician"
+#define AF_ACQUISITION_MACADDR      "acquisition_macaddr"
 #define AF_ACQUISITION_DMESG	    "acquisition_dmesg"
 
 
 //  mac addresses are store in ASCII as a list of lines that end with \n,
-//  for example, "00:03:93:14:c5:04\n" 
+//  for example, "00:03:93:14:c5:04\n"
 //  It is all the mac addresses that were on the acquisition system
 
 // DMESG is the output from the "dmesg" command at the time of acquisition

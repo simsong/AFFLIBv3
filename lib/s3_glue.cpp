@@ -104,7 +104,7 @@ size_t buffer::read(char *b,size_t count){
     }
     return 0;
 }
-	
+
 void buffer::print() {
     fwrite(base,1,len,stdout);
 }
@@ -187,7 +187,7 @@ static void endElement(void *userData, const char *name)
     }
 #ifdef BAD_STL
     einfo->cbuf = "";
-#else    
+#else
     einfo->cbuf.clear();
 #endif
     einfo->depth--;
@@ -200,7 +200,7 @@ static void characterDataHandler(void *userData,const XML_Char *s,int len)
 }
 
 
-static class s3_result *xml_extract_response(const class buffer *buf) 
+static class s3_result *xml_extract_response(const class buffer *buf)
 {
     class s3_result *e = new s3_result();
 
@@ -230,7 +230,7 @@ static string canonical_string(string method,string path,curl_slist *headers, ti
 {
     /* Iterate through the headers a line at a time */
     map<string,string> interesting_headers;
-    
+
     for(;headers;headers = headers->next){
 	char *line = strdup(headers->data);
 	char *word;
@@ -360,11 +360,11 @@ static int hexval(int ch) { return (isdigit(ch) ? ch-'0' : ch-'a'+10);}
  * sendbuf - if we are sending something ,this is what is being sent.
  * sendbuflen - how long that buffer is
  * extraheaders - any additional headers that should be sent; useful for metadata
- * 
+ *
  * Returns a response buffer
  */
 
-/* CURLINFO_RESPONSE_CODE is the new name for the option previously known as 
+/* CURLINFO_RESPONSE_CODE is the new name for the option previously known as
  * CURLINFO_HTTP_CODE.
  */
 
@@ -380,7 +380,7 @@ class response_buffer *request(string method,string path,string query,time_t exp
     /* Note: this function is not threadsafe */
     static bool curl_initted = false;
     if(!curl_initted){
-	curl_global_init(CURL_GLOBAL_ALL);	
+	curl_global_init(CURL_GLOBAL_ALL);
 	curl_initted=true;
     }
 
@@ -391,7 +391,7 @@ class response_buffer *request(string method,string path,string query,time_t exp
 
 	if(s3_debug>1) printf("==================================================\n");
 	if(s3_debug && retry_count>0) printf("=== S3 RETRY %d ===\n",retry_count);
-	
+
 	CURL *c = curl_easy_init();
 	struct curl_slist *headers=NULL;
 
@@ -421,7 +421,7 @@ class response_buffer *request(string method,string path,string query,time_t exp
 	    /* Create an Authorization header */
 
 	    char authorization[96];
-	
+
 	    snprintf(authorization,sizeof(authorization),"Authorization: AWS %s:%s",
 		     aws_access_key_id,encoded_canonical.c_str());
 	    headers = curl_slist_append(headers, authorization);
@@ -492,7 +492,7 @@ class response_buffer *request(string method,string path,string query,time_t exp
 	s3_bytes_read += b->len;
 
 	// CURL API says do not assume NULL terminate, so terminate it
-	h->write("\000",1);			
+	h->write("\000",1);
 	curl_easy_getinfo(c,CURLINFO_RESPONSE_CODE,&b->result);
 
 	/* Now clean up */
@@ -596,7 +596,7 @@ class s3_result *list_bucket(string bucket,string prefix,string marker,int max_k
     return r;
 }
 
-/* 
+/*
  * af_hexbuf:
  * Turn a binay string into a hex string, optionally with spaces.
  */
@@ -619,7 +619,7 @@ static const char *hexbuf(char *dst,int dst_len,const unsigned char *bin,int byt
 	dst_len -= 2;
 	bytes--;
 	charcount++;			// how many characters
-	
+
 	bool add_spaces = false;
 	if(flag & HEXBUF_SPACE2) add_spaces = true;
 	if((flag & HEXBUF_SPACE4) && charcount%2==0){
@@ -635,7 +635,7 @@ static const char *hexbuf(char *dst,int dst_len,const unsigned char *bin,int byt
 /* object_put:
  * Put an object. Make sure that the MD5 of the response matches..
  * Makes a few retry attempts
- * Return 0 if success, -1 if failure. 
+ * Return 0 if success, -1 if failure.
  */
 int object_put(string bucket,string path,
 		  const char *buf,size_t buflen,
@@ -668,7 +668,7 @@ int object_put(string bucket,string path,
     }
     /* Write failed. Delete the written object and return */
     response_buffer *res = request("DELETE",bucket + "/" + path,"",0,0,0,0);
-    if(res) delete res;			
+    if(res) delete res;
     errno = EIO;
     return -1;
 }

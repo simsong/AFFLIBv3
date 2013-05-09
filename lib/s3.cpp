@@ -1,11 +1,11 @@
-/* 
+/*
  * s3.cpp:
  * The stand-alone S3 program.
  *
  * These features would be nice:
  * have "ls" use Delimiter option to just list the drives
  * Give "ls" an option to list just the AFF files.
- * Have implementation read a list of all the segments on open, and cache this. 
+ * Have implementation read a list of all the segments on open, and cache this.
  *
  * Distributed under the Berkeley 4-part license.
  * Simson L. Garfinkel, March 12, 2012
@@ -119,7 +119,7 @@ void s3_ls(FILE *out,const char *prefix,cvector *cv)
 	    strlcpy(tstamp,(*i)->LastModified.c_str(),sizeof(tstamp));
 	    tstamp[10] = ' ';
 	    tstamp[19] = '\000';
-	    
+
 	    if(out){
 		fprintf(out,"%s ",(*i)->OwnerDisplayName.c_str());
 		fprintf(out,"%8d  ",(int)(*i)->Size);
@@ -191,7 +191,7 @@ void s3_delp(int argc,char **argv)
 	argv++;
 	argc--;
     }
-    
+
 
     if(argc!=1) errx(1,"delp requires a single argument");
     s3_ls(f,*argv,&cv);
@@ -314,7 +314,7 @@ int regress()
 	snprintf(value,sizeof(value),"This is the contents of bucket %d\n",i);
 	object_put(opt_bucket,name,value,strlen(value),0);
     }
-	
+
     for(int i=0;i<100;i++){
 	if(i%10==0) printf("\n");
 	class s3_result  *e = list_bucket(opt_bucket,"","",0);
@@ -375,7 +375,7 @@ void s3_bandwidth(int argc,char **argv)
     char randp[1024];
     snprintf(base,sizeof(base),"%s.%d",BANDWIDTH_PREFIX,size);
     snprintf(randp,sizeof(randp),"%s.%d.%d",BANDWIDTH_PREFIX,size,random() % 1000);
-    
+
 
     aftimer twrite;
 
@@ -392,7 +392,7 @@ void s3_bandwidth(int argc,char **argv)
 	write_err   += s3_object_put_retry_count;
 
 	twrite.stop();
-	
+
 	if(opt_make) exit(0);		// file made
 
 	/* Delete the writes */
@@ -410,7 +410,7 @@ void s3_bandwidth(int argc,char **argv)
     char rkey[1024];
     snprintf(rkey,sizeof(rkey),"%s.%d",base,bandwidth_offset);
     response_buffer *r=0;
-    
+
     if(opt_url==0){
 	r = object_get(opt_bucket,rkey,0);
 	if(!r || r->result==404){

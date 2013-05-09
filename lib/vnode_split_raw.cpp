@@ -132,12 +132,12 @@ int split_raw_increment_fname (char *fn)
 
     /* Get the case */
     int lower = islower(ext[0]);
-	
+
     /* Convert to all uppercase */
     for(int i=0;i<3;i++){
 	if(isalpha(ext[i])) ext[i] = toupper(ext[i]);
     }
-    
+
     /* Increment */
     if(incval(ext[2],10)){
 	if(incval(ext[1],36)){
@@ -161,7 +161,7 @@ void srp_validate(AFFILE *af)
     for(uint32_t i=0;i<srp->num_raw_files;i++){
 	assert(srp->fds[i]!=0);
     }
-}    
+}
 
 /** Debugging routine.
  */
@@ -173,7 +173,7 @@ void srp_dump(AFFILE *af)
     }
     srp_validate(af);
     fprintf(stderr,"===================\n");
-}    
+}
 
 static void srp_add_fd(AFFILE *af,int fd)
 {
@@ -217,7 +217,7 @@ static int split_raw_open_internal(AFFILE *af, uint64_t *image_size)
 	(*image_size) = sb.st_size;
 	return 0;
     }
-	
+
     /* This gets set to 1 the first time we find a file whose size doesn't
        match the size of the first file.  If we successfully open a file
        when this flag is already 1, then our sanity checks fail. */
@@ -322,7 +322,7 @@ static int split_raw_read(AFFILE *af, unsigned char *buf, uint64_t pos,size_t co
     while (count > 0) {
 	int filenum = -1;
 	off_t file_offset = 0;
-	
+
 	if (af->maxsize) {		// if we do file segments
 	    filenum     = (int)(pos / af->maxsize);
 	    file_offset = (off_t)(pos % af->maxsize);
@@ -439,7 +439,7 @@ int split_raw_write_internal2(AFFILE *af, unsigned char *buf, uint64_t pos,size_
 	/* DONE! */
 
 	acbi.bytes_written = c4;
-	if(af->w_callback) {acbi.phase = 4;(*af->w_callback)(&acbi);} 
+	if(af->w_callback) {acbi.phase = 4;(*af->w_callback)(&acbi);}
 	if (c4 <= 0) {			// some error writing?
 	    if (ret)
 		return ret;
@@ -452,7 +452,7 @@ int split_raw_write_internal2(AFFILE *af, unsigned char *buf, uint64_t pos,size_
 	pos   += c4;
 	srp->pos[i] += c4;
 	if (af->image_size < pos) af->image_size = pos;	// image was extended
-	if (c3 != c4){			// amount written doesn't equal request; return 
+	if (c3 != c4){			// amount written doesn't equal request; return
 	    return ret;
 	}
     }
@@ -467,13 +467,13 @@ int split_raw_write(AFFILE *af, unsigned char *buf, uint64_t pos,size_t count)
 
   if (af->maxsize) {
       if (pos > af->image_size) {        // writing beyond the end...
-	  while(pos > af->image_size){	
+	  while(pos > af->image_size){
 
 	      /* repeat until file is as big as where we should be writing */
 	      int64_t bytes_left   = pos - af->image_size;
-	      int bytes_to_write = (int)(af->maxsize - (af->image_size % af->maxsize)); 
+	      int bytes_to_write = (int)(af->maxsize - (af->image_size % af->maxsize));
 	      if(bytes_to_write > bytes_left) bytes_to_write = (int)bytes_left;
-	      int bytes_written = split_raw_write_internal2(af,0,af->image_size,bytes_to_write); 
+	      int bytes_written = split_raw_write_internal2(af,0,af->image_size,bytes_to_write);
 	      if(bytes_to_write != bytes_written){
 		  return -1;		// some kind of internal error
 	      }
@@ -530,13 +530,13 @@ static int split_raw_get_seg(AFFILE *af,const char *name,uint32_t *arg,unsigned 
 	errno = ENOTSUP;		// sorry! We don't store metadata
 	return -1;
     }
-  
+
     uint64_t pos = page_num * af->image_pagesize; // where we are to start reading
     uint64_t bytes_left = af->image_size - pos;	// how many bytes left in the file
 
     uint32_t bytes_to_read = af->image_pagesize; // copy this many bytes, unless
     if(bytes_to_read > bytes_left) bytes_to_read = (uint32_t)bytes_left; // only this much is left
-    
+
     if(arg) *arg = 0;			// arg is always 0
     if(datalen){
 	if(data==0){ // asked for 0 bytes, so give the actual size
@@ -603,15 +603,15 @@ static int split_raw_rewind_seg(AFFILE *af)
 }
 
 static int split_raw_update_seg(AFFILE *af, const char *name,
-				uint32_t arg,const u_char *value,uint32_t vallen)
-    
+                                uint32_t /*arg*/,const u_char *value,uint32_t vallen)
+
 {
     int64_t page_num = af_segname_page_number(name);
     if(page_num<0){
 	errno = ENOTSUP;		// sorry! We don't store metadata
 	return -1;
     }
-	
+
     uint64_t pos = page_num * af->image_pagesize; // where we are to start reading
     int written = split_raw_write(af, (unsigned char *)value, pos,vallen);
     if(written==(int)vallen) return 0;	// success

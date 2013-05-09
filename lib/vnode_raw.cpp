@@ -8,7 +8,7 @@
  */
 
 /* the RAW_PAGESIZE is visible outside the module, but it's kind of irrevellant */
-#define RAW_PAGESIZE 16*1024*1024	
+#define RAW_PAGESIZE 16*1024*1024
 
 /* raw file implementation */
 struct raw_private {
@@ -20,10 +20,9 @@ struct raw_private {
 #define RAW_PRIVATE(af) ((struct raw_private *)(af->vnodeprivate))
 
 /* Return 1 if a file is a raw file... */
-static int raw_identify_file(const char *filename,int exists)
+static int raw_identify_file(const char *filename,int /*exists*/)
 {
-    if(exists && access(filename,R_OK)!=0) return 0;	// needs to exist and it doesn't
-    return access(filename,R_OK)==0;	// if we can read it, it's raw...
+    return af_ext_is(filename, "raw");
 }
 
 
@@ -52,16 +51,21 @@ static int64_t raw_filesize(AFFILE *af)
 static int raw_open(AFFILE *af)
 {
     /* Raw is the passthrough system.
-     * Right now, it is read only...
      */
-    const char *mode = "rb";
-    if(af->openflags && (O_RDWR | O_WRONLY)) mode = "r+b";
+    int fd = open(af->fname, af->openflags | O_BINARY, af->openmode);
+    if(fd < 0)
+        return -1;
+
+    FILE *file = fdopen(fd, (af->openflags & (O_RDWR | O_WRONLY)) ? "r+b" : "rb");
+    if(!file)
+    {
+        close(fd);
+        return -1;
+    }
 
     af->vnodeprivate = (void *)calloc(1,sizeof(struct raw_private));
     struct raw_private *rp = RAW_PRIVATE(af);
-
-    if(af->fname) rp->raw=fopen(af->fname,mode);
-    if(rp->raw==0) return -1;		// raw open failed
+    rp->raw = file;
     af->image_size	= raw_filesize(af);
     af->image_pagesize	= RAW_PAGESIZE;
     af->cur_page	= 0;
@@ -176,7 +180,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 
     int bytes_to_read = af->image_pagesize; // copy this many bytes, unless
     if(bytes_to_read > bytes_left) bytes_to_read = bytes_left; // only this much is left
-    
+
     if(arg) *arg = 0;			// arg is always 0
     if(datalen){
 	if(data==0){ // asked for 0 bytes, so give the actual size
@@ -189,7 +193,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 	}
     }
     if(data){
-	fseeko(rp->raw,pos,SEEK_SET);    
+	fseeko(rp->raw,pos,SEEK_SET);
 	int bytes_read = fread(data,1,bytes_to_read,rp->raw);
 	if(bytes_read==bytes_to_read){
 	    if(datalen) *datalen = bytes_read;
@@ -202,7 +206,7 @@ static int raw_get_seg(AFFILE *af,const char *name,
 
 
 int raw_update_seg(AFFILE *af, const char *name,
-		    uint32_t arg,const u_char *value,uint32_t vallen)
+                   uint32_t /*arg*/,const u_char *value,uint32_t vallen)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
 
@@ -237,7 +241,7 @@ static int raw_vstat(AFFILE *af,struct af_vnode_info *vni)
     fflush(rp->raw);
     vni->imagesize = raw_filesize(af);
     vni->supports_compression = 0;
-    vni->has_pages = 1;			
+    vni->has_pages = 1;
 
     if(rp->raw_popen){
 	/* popen files require special handling */
@@ -258,7 +262,7 @@ static int raw_rewind_seg(AFFILE *af)
 static int raw_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t *arg,
 			unsigned char *data,size_t *datalen)
 {
-    
+
     /* See if we are at the end of the "virtual" segment list */
     if((uint64_t)af->cur_page * af->image_pagesize >= af->image_size) return -1;
 
@@ -285,15 +289,23 @@ static int raw_get_next_seg(AFFILE *af,char *segname,size_t segname_len,uint32_t
 static int raw_read(AFFILE *af, unsigned char *buf, uint64_t pos,size_t count)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
-    fseeko(rp->raw,pos,SEEK_SET);
-    return fread(buf,1,count,rp->raw);
+    if(fseeko(rp->raw, pos, SEEK_SET) < 0)
+        return -1;
+
+    errno = 0;
+    count = fread(buf, 1, count, rp->raw);
+    return (!count && errno) ? -1 : count;
 }
 
 static int raw_write(AFFILE *af, unsigned char *buf, uint64_t pos,size_t count)
 {
     struct raw_private *rp = RAW_PRIVATE(af);
-    if(fseeko(rp->raw,pos,SEEK_SET)<0) return -1;
-    return fwrite(buf,1,count,rp->raw);
+    if(fseeko(rp->raw, pos, SEEK_SET) < 0)
+        return -1;
+
+    errno = 0;
+    count = fwrite(buf, 1, count, rp->raw);
+    return (!count && errno) ? -1 : count;
 }
 
 
