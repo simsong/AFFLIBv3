@@ -12,7 +12,7 @@ export PATH=$srcdir:../tools:../../tools:.:$PATH
 BASE=`mktemp -t encryptedXXXXXX`
 ENCRYPTED_AFF=$BASE.aff
 ENCRYPTED_AFD=$BASE.afd
-PLAINTEXT_ISO=$BASE.iso
+PLAINTEXT_ISO=$BASE.raw
 
 echo Making encrypted AFF from stored value
 

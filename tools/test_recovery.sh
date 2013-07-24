@@ -10,7 +10,7 @@ export PATH=$srcdir:../tools:../../tools:.:$PATH
 RECOVERY_BASE=`mktemp -t recoveryXXXX`
 RECOVERY_KEY=$RECOVERY_BASE.key
 RECOVERY_BAK=$RECOVERY_BASE.bak
-RECOVERY_ISO=$RECOVERY_BASE.iso
+RECOVERY_ISO=$RECOVERY_BASE.raw
 RECOVERY_AFM=$RECOVERY_BASE.afm
 RECOVERY_PEM=$RECOVERY_BASE.pem
 
@@ -44,7 +44,7 @@ echo ===========
 echo Step 2: VERIFYING SIGNATURE
 if ! affverify $RECOVERY_AFM ; then exit 1 ; fi
 echo ===========
-echo Step 3: CORRUPTING FILE recovery.iso
+echo Step 3: CORRUPTING FILE recovery.raw
 dd if=/dev/random of=$RECOVERY_ISO count=1 skip=1 conv=notrunc
 echo ===========
 echo Step 4: ATTEMPTING RECOVERY

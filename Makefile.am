@@ -30,7 +30,6 @@ release:
 	make prerelease
 	make distcheck
 	make the_release
-	make distribute_release
 
 prerelease:
 	@echo Making sure SVN is up to date
@@ -55,14 +54,8 @@ getrelease:
 	tar xfz $(PACKAGE).tar.gz
 	(cd afflib-*;./configure;make;make test_crypto)
 
-the_release:
+the_release: $(RELEASE).tar.gz
 	gpg --detach-sign $(RELEASE).tar.gz
-
-distribute_release:
-	scp $(RELEASE).tar.gz{,.sig} $(RELEASE_SSH)
-	ssh $(RELEASE_HOST) 'cd $(RELEASE_LOC);/bin/rm $(PACKAGE).tar.gz;ln -s $(RELEASE).tar.gz $(PACKAGE).tar.gz'
-	ssh $(RELEASE_HOST) 'echo $(RELEASE).tar.gz > $(RELEASE_PATH)'
-	@echo Release $(RELEASE) uploaded to server
 
 DOCS = BUGLIST.txt README_Linux.txt README_Win32.txt \
 	doc/crypto_doc.txt \
@@ -79,7 +72,7 @@ EXTRA_DIST = $(DOCS) \
 	afflib.spec \
 	afflib.pc.in \
 	afflib.pubkey.asc \
-	tests/encrypted.iso \
+	tests/encrypted.raw \
 	tests/encrypted.aff \
 	win32/Changes.txt \
 	win32/README_MSVC++.txt \

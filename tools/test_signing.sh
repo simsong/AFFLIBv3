@@ -22,8 +22,12 @@ echo TEST $0
 echo === MAKING THE TEST FILES ===
 
 export PATH=$srcdir:../tools:../../tools:.:$PATH
-test_make_random_iso.sh rawevidence.iso
+test_make_random_iso.sh rawevidence.raw
 
+if [ ! -r rawevidence.raw ]; then
+  echo rawevidence.raw not made
+  exit 1
+fi
 
 echo ==== AFSIGN TEST ===
 echo Making X.509 keys
@@ -35,8 +39,14 @@ openssl req -x509 -newkey rsa:1024 -keyout $ARCHIVES_PEM -out $ARCHIVES_PEM -nod
 
 echo Making an AFF file to sign
 rm -f $EVIDENCE evidence?.aff
-affconvert -o $EVIDENCE rawevidence.iso 
-echo Initial AFF file
+ls -l rawevidence.raw
+# echo affconvert -o $EVIDENCE rawevidence.raw 
+# pwd
+# which affconvert
+# affconvert -o junk.aff rawevidence.raw
+affconvert -o $EVIDENCE rawevidence.raw 
+echo Initial AFF file made:
+ls -l $EVIDENCE
 if ! affinfo -a $EVIDENCE ; then exit 1 ; fi
 
 echo Signing AFF file...
@@ -51,11 +61,11 @@ echo Signature test 1 passed
 echo Testing chain-of-custody signatures
 
 echo Step 10: Copying original raw file to evidence1.aff
-if ! affcopy -k $AGENT_PEM rawevidence.iso evidence1.aff ; then exit 1; fi
+if ! affcopy -k $AGENT_PEM rawevidence.raw evidence1.aff ; then exit 1; fi
 echo Step 11: Running affinfo on evidence1.aff
 if ! affinfo -a evidence1.aff ; then exit 1 ; fi
-echo Step 12: Comparing rawevidence.iso to evidence1.aff
-if ! affcompare rawevidence.iso evidence1.aff ; then exit 1 ; fi
+echo Step 12: Comparing rawevidence.raw to evidence1.aff
+if ! affcompare rawevidence.raw evidence1.aff ; then exit 1 ; fi
 echo Step 13: Verifying evidence1
 if ! affverify evidence1.aff ; then exit 1 ; fi
 
@@ -63,18 +73,18 @@ echo
 echo Making the second generation copy
 echo "This copy was made by the analyst" | affcopy -z -k $ANALYST_PEM -n evidence1.aff $EVIDENCE2
 if ! affinfo -a $EVIDENCE2 ; then exit 1 ; fi
-if ! affcompare rawevidence.iso $EVIDENCE2 ; then exit 1 ; fi
+if ! affcompare rawevidence.raw $EVIDENCE2 ; then exit 1 ; fi
 if ! affverify $EVIDENCE2 ; then exit 1 ; fi
 echo
 echo Making the third generation copy
 echo "This copy was made by the archives" | affcopy -z -k $ARCHIVES_PEM -n $EVIDENCE2 $EVIDENCE3
 if ! affinfo -a $EVIDENCE3 ; then exit 1 ; fi
-if ! affcompare rawevidence.iso $EVIDENCE3 ; then exit 1 ; fi
+if ! affcompare rawevidence.raw $EVIDENCE3 ; then exit 1 ; fi
 if ! affverify $EVIDENCE3 ; then exit 1 ; fi
 
 
 echo All tests passed successfully
 echo Erasing temporary files.
-rm -f $AGENT_PEM $ARCHIVES_PEM $ANALYST_PEM $EVIDENCE evidence.afm rawevidence.iso cevidence.iso $EVIDENCE2 $EVIDENCE3 $EVIDENCE
+rm -f $AGENT_PEM $ARCHIVES_PEM $ANALYST_PEM $EVIDENCE evidence.afm rawevidence.raw cevidence.raw $EVIDENCE2 $EVIDENCE3 $EVIDENCE
 exit 0
 

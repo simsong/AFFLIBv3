@@ -3,6 +3,8 @@ TESTS = aftest
 
 CLEANFILES = aftest
 
+AUTOMAKE_OPTIONS = subdir-objects
+
 aftest_SOURCES = aftest.cpp
 aftest_LDADD = libafflib.la  
 aftest_LDFLAGS = $(PTHREAD_CFLAGS) -static # easier debugging
@@ -81,7 +83,7 @@ install-exec-hook:
 
 EXTRA_DIST = 
 
-INCLUDES =  \
+AM_CPPFLAGS =  \
 	-I@top_srcdir@/lzma443/C  \
 	-I@top_srcdir@/lzma443/C/7zip/Compress/LZMA_Alone  
 
