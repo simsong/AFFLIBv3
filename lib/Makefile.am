@@ -3,6 +3,8 @@ TESTS = aftest
 
 CLEANFILES = aftest
 
+AUTOMAKE_OPTIONS = subdir-objects
+
 aftest_SOURCES = aftest.cpp
 aftest_LDADD = libafflib.la  
 aftest_LDFLAGS = $(PTHREAD_CFLAGS) -static # easier debugging

@@ -101,3 +101,7 @@ lib/version.h
 makefile
 encrypted.aff
 affconfig.h
+*.trs
+*.dirstamp
+lib/aftest
+afflib-?.?.?

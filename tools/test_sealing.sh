@@ -8,7 +8,7 @@
 BASE=`mktemp -t testfileXXXX`
 SEALING_KEY=$BASE.sealing.key
 SEALING_PEM=$BASE.sealing.pem
-EVIDENCE_ISO=$BASE.evidence.iso
+EVIDENCE_ISO=$BASE.evidence.raw
 EVIDENCE_AFF=$BASE.evidence.aff
 
 /bin/rm -f $SEALING_KEY $SEALING_PEM $EVIDENCE_ISO $EVIDENCE_AFF

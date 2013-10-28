@@ -20,9 +20,12 @@ void af_read_sizes(AFFILE *af)
 	af_get_seg(af,AF_SEGSIZE_D,&af->image_pagesize,0,0); // try old name
     }
 
-    /* Read the badflag if it is present */
+    /* Read the badflag if it is present.
+     * Be sure to adjust badflag size to current sector size (which may have changed).
+     */
+    if(af->badflag!=0) free(af->badflag);
+    af->badflag = (unsigned char *)malloc(af->image_sectorsize);
     size_t sectorsize = af->image_sectorsize;
-    if(af->badflag==0) af->badflag = (unsigned char *)malloc(sectorsize);
     if(af_get_seg(af,AF_BADFLAG,0,af->badflag,(size_t *)&sectorsize)==0){
 	af->badflag_set = 1;
     }

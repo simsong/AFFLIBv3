@@ -238,7 +238,6 @@ AFFILE *af_open_with(const char *url,int flags,int mode, struct af_vnode *v)
     af->openmode  = mode;
     af->image_sectorsize = 512;		// default size
     af->error_reporter = warnx;
-    af->badflag   = (unsigned char *)malloc(af->image_sectorsize);
 
     /* Decode URL */
     af_parse_url(url,&af->protocol,&af->hostname,&af->username,&af->password,
@@ -593,6 +592,9 @@ int64_t af_get_imagesize(AFFILE *af)
  */
 int af_make_badflag(AFFILE *af)
 {
+    if(af->badflag!=0) free(af->badflag);
+    af->badflag = (unsigned char *)malloc(af->image_sectorsize); // current sector size
+
 #ifdef HAVE_RAND_pseudo_bytes
     /* Use a good random number generator if we have it */
     RAND_pseudo_bytes(af->badflag,af->image_sectorsize);

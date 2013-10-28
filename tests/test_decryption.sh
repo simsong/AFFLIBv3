@@ -10,7 +10,7 @@ if test "x$srcdir" = x; then
   srcdir=.
 fi
 
-if ( ../tools/affcompare file://:password@/$srcdir/encrypted.aff $srcdir/encrypted.iso ) ; then
+if ( ../tools/affcompare file://:password@/$srcdir/encrypted.aff $srcdir/encrypted.raw ) ; then
   echo Verifies with correct decryption passphrase.
 else
   echo Does not verify with correct decryption passphrase.
@@ -19,7 +19,7 @@ fi
 
 
 echo This next affcompare should generate an error:
-if ( ../tools/affcompare file://:wrongphrase@/$srcdir/encrypted.aff $srcdir/encrypted.iso ) ; then
+if ( ../tools/affcompare file://:wrongphrase@/$srcdir/encrypted.aff $srcdir/encrypted.raw ) ; then
   echo Does not verify with correct decryption passphrase.
   exit 1
 else
