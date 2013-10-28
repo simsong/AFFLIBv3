@@ -81,7 +81,7 @@ install-exec-hook:
 
 EXTRA_DIST = 
 
-INCLUDES =  \
+AM_CPPFLAGS =  \
 	-I@top_srcdir@/lzma443/C  \
 	-I@top_srcdir@/lzma443/C/7zip/Compress/LZMA_Alone  
 
