@@ -1,3 +1,7 @@
+2013-10-29  Man Page  <simsong@mncrnpsedu.local>
+
+	* configure.ac: updated for OSX Mavericks (10.9)
+
 2012-05-21  Simson Garfinkel  <simsong@mncrnpsedu.local>
 
 	* configure.ac: version bumped to 3.7.1

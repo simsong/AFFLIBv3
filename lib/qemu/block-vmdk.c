@@ -120,9 +120,9 @@ static uint32_t vmdk_read_cid(BlockDriverState *bs, int parent)
 {
     BDRVVmdkState *s = bs->opaque;
     char desc[DESC_SIZE];
-    uint32_t cid;
-    char *p_name, *cid_str;
-    size_t cid_str_size;
+    uint32_t cid=0;
+    char *p_name=0, *cid_str=0;
+    size_t cid_str_size=0;
 
     /* the descriptor offset = 0x200 */
     if (bdrv_pread(s->hd, 0x200, desc, DESC_SIZE) != DESC_SIZE)
@@ -187,8 +187,8 @@ static int vmdk_is_cid_valid(BlockDriverState *bs)
 
 static int vmdk_snapshot_create(const char *filename, const char *backing_file)
 {
-    int snp_fd, p_fd;
-    uint32_t p_cid;
+    int snp_fd=0, p_fd=0;
+    uint32_t p_cid=0;
     char *p_name, *gd_buf, *rgd_buf;
     const char *real_filename, *temp_str;
     VMDK4Header header;
