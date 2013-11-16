@@ -1,3 +1,7 @@
+2013-11-16  Basic  <simsong@Mucha.local>
+
+	* configure.ac: version bumped to 3.7.4
+
 2013-10-29  Man Page  <simsong@mncrnpsedu.local>
 
 	* configure.ac: updated for OSX Mavericks (10.9)
