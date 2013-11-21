@@ -657,11 +657,15 @@ void      af_parse_url(const char *url,char **protocol,char **hostname,
 		       char **username,char **password,int *port,char **path);
 
 #ifndef HAVE_STRLCPY
+#ifndef HAVE_STRING_H
 size_t strlcpy(char *dest,const char *src,size_t dest_size);
+#endif
 #endif
 
 #ifndef HAVE_STRLCAT
+#ifndef HAVE_STRING_H
 size_t strlcat(char *dest,const char *src,size_t dest_size);
+#endif
 #endif
 
 
