@@ -12,8 +12,8 @@ pkginclude_HEADERS = lib/afflib.h lib/afflib_i.h lib/aftimer.h lib/utils.h
 ACLOCAL_AMFLAGS = -I m4
 
 RELEASE_USER = simsong@
-RELEASE_HOST = www.afflib.org
-RELEASE_DIR  = afflib.org/
+RELEASE_HOST = www.digitalcorpora.org
+RELEASE_DIR  = /var/www/digitalcorpora.org/downloads/afflib/
 
 RELEASE_LOC  = $(RELEASE_DIR)/downloads/
 CHANGES_LOC  = $(RELEASE_DIR)/ChangeLog.txt

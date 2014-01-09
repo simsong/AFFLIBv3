@@ -80,10 +80,7 @@ and Windows. We have also created a Windows zipfile that contains:
    and produces a histogram of the contents.
 
 
-The AFF library can be downloaded from http://afflib.org/.
-
-The pre-compiled AFF for Windows can be downloaded from
-   http://afflib.org/windows.
+The AFF library can be downloaded from https://github.com/simsong/AFFLIBv3
 
 ====
 AFFLIB with SleuthKit:

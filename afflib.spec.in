@@ -5,7 +5,7 @@ Summary: Library to support the Advanced Forensic Format
 Group: System Environment/Libraries
 License: BSD with advertising
 Source: %{name}-%{version}.tar.gz
-URL: http://www.afflib.org/
+URL: https://github.com/simsong/AFFLIBv3
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires: curl-devel expat-devel ncurses-devel openssl-devel zlib-devel
 

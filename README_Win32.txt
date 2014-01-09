@@ -10,7 +10,7 @@ Downloading and Installing
 ==========================
 You can download the current version of AFF Tools from:
 
-    http://afflib.org/downloads/afflib_windows.zip
+    https://github.com/simsong/AFFLIBv3
 
 The ZIP file contains:
     * pre-compiled executables for AFF Tools
@@ -158,25 +158,3 @@ To verify a diskprint
 
 
 Verifying the AFFLIB Digital Signature
-===============================
-Some organizations require that dgital signatures be verified on programs that are downloaded.
-
-Some AFF distributions are now signed with the AFFLIB privat key. You
-can verify the distribution by downloading a copy of the public key
-from the AFFLIB website or the GPG key server. 
-
-The public key can be downloaded from the website:
-
-    http://afflib.org/pubkey.asc
-
-You can also download the key directly from the GPG keyserver with
-this command:
-
-  $ gpg --keyserver subkeys.pgp.net --recv-keys 805B3DB0
-  gpg: requesting key 805B3DB0 from hkp server subkeys.pgp.net
-  gpg: /home/simsong/.gnupg/trustdb.gpg: trustdb created
-  gpg: key 805B3DB0: public key "AFFLIB Distribution (Simson L. Garfinkel)" imported
-  gpg: Total number processed: 1
-  gpg:               imported: 1
-  $
-
