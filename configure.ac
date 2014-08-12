@@ -220,16 +220,17 @@ AM_CONDITIONAL(HAVE_PYTHON, test "$enable_python" = yes)
 ## Note: -lssl is needed on Linux
 ##       -lcrypto is needed on MacOS
 ##       -lmd is needed on some older systems
+##       -lssl and -lcrypto are needed if using libressl
 ## Always check for headers, then libs, then functions
 ###
 
 AC_CHECK_HEADERS([openssl/aes.h openssl/bio.h openssl/evp.h openssl/hmac.h openssl/md5.h openssl/rand.h openssl/rsa.h openssl/sha.h openssl/pem.h openssl/x509.h])
 
+AC_CHECK_LIB([crypto],[EVP_get_digestbyname])
 
 AC_CHECK_LIB([ssl],[SSL_library_init],,
 	AC_MSG_ERROR([OpenSSL developer library 'libssl-dev' or 'openssl-devel' not installed; cannot continue.]))
 
-AC_CHECK_LIB([crypto],[EVP_get_digestbyname])
 AC_CHECK_LIB([md],[MD5])		# if libmd is available, get it
 
 AC_CHECK_FUNCS([MD5 SHA1 AES_encrypt RAND_pseudo_bytes des_read_pw_string EVP_read_pw_string EVP_MD_size])
