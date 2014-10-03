@@ -3,7 +3,7 @@
  * (c) 2007 Olivier Castan castan.o@free.fr
  * Modified by Simson Garfinkel, to fit into the AFFLIB build system.
  *
- * License: LGP
+ * License: LGPL or BSD-4
  *
  * KISS: based on fuse hello.c example
  *
