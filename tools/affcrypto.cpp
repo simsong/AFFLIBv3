@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <vector>
 
-const char *progname = "afcrypto";
+const char *progname = "affcrypto";
 #define DEFAULT_PASSPHRASE_FILE ".affpassphrase"
 int opt_debug = 0;
 int opt_verbose = 0;

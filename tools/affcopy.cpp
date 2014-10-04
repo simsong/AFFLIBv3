@@ -51,7 +51,7 @@ using namespace aff;
 #include "unix4win32.h"
 #endif
 
-const char *progname = "afcopy";
+const char *progname = "affcopy";
 
 int opt_verbose = 0;
 int opt_debug = 0;

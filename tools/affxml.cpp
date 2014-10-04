@@ -72,7 +72,7 @@ using namespace std;
 #define isalphanum(c) (isalpha(c)||isdigit(c))
 #endif
 
-const char *progname = "afxml";
+const char *progname = "affxml";
 
 int opt_x = 0;
 char **opt_j = 0;

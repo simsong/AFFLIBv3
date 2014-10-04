@@ -22,7 +22,7 @@ using namespace std;
 
 vector <int64_t> pages;
 
-const char *progname = "afcat";
+const char *progname = "affcat";
 int  opt_info     = 0;
 char *opt_segname=0;
 int64_t  opt_pagenum = -1;

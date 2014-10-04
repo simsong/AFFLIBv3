@@ -32,7 +32,7 @@ const char *opt_sign_cert_file = 0;
 using namespace std;
 using namespace aff;
 
-const char *progname = "afsign";
+const char *progname = "affsign";
 
 void usage()
 {

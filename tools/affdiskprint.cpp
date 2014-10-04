@@ -69,7 +69,7 @@ using namespace std;
 #define O_BINARY 0
 #endif
 
-const char *progname = "afdiskprint";
+const char *progname = "affdiskprint";
 const char *xml_special_chars = "<>\r\n&'\"";
 
 void usage()

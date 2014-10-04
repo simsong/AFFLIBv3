@@ -66,7 +66,7 @@ extern "C" {
 using namespace std;
 
 
-const char *progname = "afsegment";
+const char *progname = "affsegment";
 
 int opt_create = 0;
 int opt_quad = 0;

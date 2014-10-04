@@ -30,7 +30,7 @@
 using namespace std;
 using namespace aff;
 
-const char *progname = "afcrypto";
+const char *progname = "affverify";
 int opt_change = 0;
 int opt_verbose = 0;
 int opt_all = 0;

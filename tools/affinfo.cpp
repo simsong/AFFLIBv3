@@ -49,7 +49,7 @@ using namespace std;
 #include "unix4win32.h"
 #endif
 
-const char *progname = "afinfo";
+const char *progname = "affinfo";
 
 #define VALIDATE_MD5  0x01
 #define VALIDATE_SHA1 0x02

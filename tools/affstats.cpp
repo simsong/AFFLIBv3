@@ -82,7 +82,7 @@
 #include <malloc.h>
 #endif
 
-const char *progname = "afstats";
+const char *progname = "affstats";
 int  opt_m = 0;
 
 void usage()
