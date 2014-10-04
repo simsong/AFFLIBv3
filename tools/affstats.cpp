@@ -1,5 +1,5 @@
 /*
- * afstats.cpp:
+ * affstats.cpp:
  *
  * print specific statistics about one or more AFF files.
  * Ideally, we can get the stats from the metadata, but this program will
@@ -109,12 +109,12 @@ void print_size(uint64_t s)
     printf("%"I64u,s);    
 }
 
-void afstats_title()
+void affstats_title()
 {
     printf("Name\tAF_IMAGESIZE\tCompressed\tUncompressed\tBlank\tBad\n");
 }
 
-void afstats(const char *fname)
+void affstats(const char *fname)
 {
     AFFILE *af = af_open(fname,O_RDONLY,0);
     if(!af) af_err(1,"af_open(%s)",fname);
@@ -193,9 +193,9 @@ int main(int argc,char **argv)
     }
 
     /* Each argument is now a file. Process each one */
-    afstats_title();
+    affstats_title();
     while(*argv){
-	afstats(*argv++);
+	affstats(*argv++);
 	argc--;
     }
     exit(0);

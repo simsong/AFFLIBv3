@@ -1,5 +1,5 @@
 /*
- * afrecover.cpp
+ * affrecover.cpp
  *
  * Recover broken pages of an AFF file using the party bits
  * This file is a work of a US government employee and as such is in the Public domain.
@@ -39,7 +39,7 @@
 using namespace std;
 using namespace aff;
 
-const char *progname = "affix";
+const char *progname = "affrecover";
 
 
 int opt_b = 0;

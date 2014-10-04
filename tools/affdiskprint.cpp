@@ -1,5 +1,5 @@
 /*
- * afdiskprint.cpp:
+ * affdiskprint.cpp:
  *
  * Creates a diskprint AFF structure
  */

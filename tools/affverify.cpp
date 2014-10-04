@@ -1,5 +1,5 @@
 /*
- * afverify.cpp:
+ * affverify.cpp:
  *
  * Verify the digital signature on a signed file
  * This file is a work of a US government employee and as such is in the Public domain.
@@ -37,8 +37,8 @@ int opt_all = 0;
 
 void usage()
 {
-    printf("afverify version %s\n",PACKAGE_VERSION);
-    printf("usage: afverify [options] filename.aff\n");
+    printf("affverify version %s\n",PACKAGE_VERSION);
+    printf("usage: affverify [options] filename.aff\n");
     printf("Verifies the digital signatures on a file\n");
     printf("options:\n");
     printf("    -a      --- print all segments\n");

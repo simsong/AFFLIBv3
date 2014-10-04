@@ -1,5 +1,5 @@
 /*
- * afcat.cpp:
+ * affcat.cpp:
  *
  * cat the contents of an AFF file...
  * Distributed under the Berkeley 4-part license
@@ -37,8 +37,8 @@ vector<string> opt_r;
 
 void usage()
 {
-    printf("afcat version %s\n",PACKAGE_VERSION);
-    printf("usage: afcat [options] infile [... more infiles]\n");
+    printf("affcat version %s\n",PACKAGE_VERSION);
+    printf("usage: affcat [options] infile [... more infiles]\n");
     printf("options:\n");
     printf("    -s name --- Just output segment name\n");
     printf("    -p ###  --- just output data page number ###\n");
@@ -59,7 +59,7 @@ const char *current_fname = 0;
 int64_t current_page = -1;
 void sig_info(int arg)
 {
-    fprintf(stderr,"afcat ");
+    fprintf(stderr,"affcat ");
     if(current_fname) fprintf(stderr,"%s: ",current_fname);
     if(current_page>=0) fprintf(stderr,"[%"PRId64"] ",current_page);
     fflush(stderr);
@@ -99,12 +99,12 @@ int output_page(AFFILE *af,FILE *outfile,int64_t pagenum)
     int bytes = af_read(af,buf,af->image_pagesize); // read what we can
 
     if(bytes<0){
-	if(opt_debug) fprintf(stderr,"afcat: cannot read page %"I64d"\n",pagenum);
+	if(opt_debug) fprintf(stderr,"affcat: cannot read page %"I64d"\n",pagenum);
 	return -1;
     }
 
     if(opt_debug){
-	fprintf(stderr,"afcat: page:%"I64d" bytes: %d offset:%"I64d"\n",
+	fprintf(stderr,"affcat: page:%"I64d" bytes: %d offset:%"I64d"\n",
 		pagenum, bytes,offset);
     }
 
@@ -125,7 +125,7 @@ int output_page(AFFILE *af,FILE *outfile,int64_t pagenum)
 }
 
 
-int afcat(AFFILE *af)
+int affcat(AFFILE *af)
 {
     int64_t total_bytes_written = 0;
 
@@ -136,7 +136,7 @@ int afcat(AFFILE *af)
 #ifdef WIN32
     _setmode(fileno(stdout),_O_BINARY);
 #endif
-    if(opt_debug) fprintf(stderr,"afcat(%s)\n",af_filename(af));
+    if(opt_debug) fprintf(stderr,"affcat(%s)\n",af_filename(af));
 
     if(opt_segname){
 	/* First figure out how big the segment is */
@@ -244,8 +244,8 @@ int afcat(AFFILE *af)
     sort(pages.begin(),pages.end());
 
     if(pages.size()==0 && encrypted_segments){
-	fprintf(stderr,"afcat: This file has %d encrypted segments.\n",encrypted_segments);
-	fprintf(stderr,"afcat: No unencrypted pages could be found.\n");
+	fprintf(stderr,"affcat: This file has %d encrypted segments.\n",encrypted_segments);
+	fprintf(stderr,"affcat: No unencrypted pages could be found.\n");
     }
 	
     /* Now I have a list of pages; cat each one */
@@ -256,10 +256,10 @@ int afcat(AFFILE *af)
 	int page = *i;
 	if(page != next_page && opt_quiet==0){
 	    if(page == next_page+1 ){
-		fprintf(stderr,"afcat: page %d not in file\n",next_page);
+		fprintf(stderr,"affcat: page %d not in file\n",next_page);
 	    }
 	    else{
-		fprintf(stderr,"afcat: pages %d through %d not in file\n",
+		fprintf(stderr,"affcat: pages %d through %d not in file\n",
 			next_page,page-1);
 	    }
 	}
@@ -270,7 +270,7 @@ int afcat(AFFILE *af)
 
 	//fprintf(stderr,"bytes written=%qd imagesize=%qd\n",total_bytes_written,imagesize);
 	if((total_bytes_written > imagesize) && (imagesize>0)){
-	    err(1,"afcat internal error. bytes written=%"I64d" imagesize=%" I64d,
+	    err(1,"affcat internal error. bytes written=%"I64d" imagesize=%" I64d,
 		(int64_t)total_bytes_written,
 		(int64_t)imagesize);
 	    return -1;
@@ -350,8 +350,8 @@ int main(int argc,char **argv)
 
     while(*argv){
 	AFFILE *af = af_open(*argv,O_RDONLY,0);
-	if(!af) af_err(1,"afcat(%s)",*argv);
-	if(afcat(af)) err(1,"afcat");
+	if(!af) af_err(1,"affcat(%s)",*argv);
+	if(affcat(af)) err(1,"affcat");
 	af_close(af);
 	argv++;
 	argc--;

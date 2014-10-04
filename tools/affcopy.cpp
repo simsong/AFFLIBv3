@@ -1,5 +1,5 @@
 /*
- * afcopy.cpp:
+ * affcopy.cpp:
  *
  * Copy one AFF file to another. 
  * Resulting file is re-ordered and possibly re-compressed.
@@ -297,7 +297,7 @@ int	isatty(int fd)
 }
 #endif
 
-int afcopy(char *infile,vector<string> &outfiles)
+int affcopy(char *infile,vector<string> &outfiles)
 {
 #ifdef SIGINFO
     signal(SIGINFO,sig_info);
@@ -643,7 +643,7 @@ int main(int argc,char **argv)
 	
 	vector<string> outfiles;
 	outfiles.push_back(argv[1]);
-	return afcopy(argv[0],outfiles);
+	return affcopy(argv[0],outfiles);
     }
 
     /* Loop for each file and each directory */
@@ -664,7 +664,7 @@ int main(int argc,char **argv)
 	    outfilename.append(name);
 	    outfiles.push_back(outfilename);
 	}
-	afcopy(argv[0],outfiles);	   // old outfiles will get GCed
+	affcopy(argv[0],outfiles);	   // old outfiles will get GCed
 	argv++;
     }
     exit(0);

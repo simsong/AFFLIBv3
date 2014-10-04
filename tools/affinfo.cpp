@@ -1,5 +1,5 @@
 /*
- * afinfo.cpp:
+ * affinfo.cpp:
  *
  * print information about an aff file
  * Distributed under the Berkeley 4-part license
