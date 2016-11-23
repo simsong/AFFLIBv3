@@ -22,7 +22,7 @@ struct raw_private {
 /* Return 1 if a file is a raw file... */
 static int raw_identify_file(const char *filename,int /*exists*/)
 {
-    return af_ext_is(filename, "raw");
+    return af_ext_is(filename, "raw") || af_ext_is(filename, "iso");
 }
 
 

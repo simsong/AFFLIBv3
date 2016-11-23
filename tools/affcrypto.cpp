@@ -1,5 +1,5 @@
 /*
- * afcrypto.cpp:
+ * affcrypto.cpp:
  *
  * command for dealing with encryption issues
  */
@@ -31,7 +31,7 @@
 #include <algorithm>
 #include <vector>
 
-const char *progname = "afcrypto";
+const char *progname = "affcrypto";
 #define DEFAULT_PASSPHRASE_FILE ".affpassphrase"
 int opt_debug = 0;
 int opt_verbose = 0;
@@ -83,8 +83,8 @@ void get_and_change_passphrase(const char *fn)
 
 void usage()
 {
-    printf("afcrypto version %s\n",PACKAGE_VERSION);
-    printf("usage: afcrypto [options] filename.aff [filename2.aff ... ]\n");
+    printf("affcrypto version %s\n",PACKAGE_VERSION);
+    printf("usage: affcrypto [options] filename.aff [filename2.aff ... ]\n");
     printf("   prints if each file is encrypted or not.\n");
     printf("options:\n");
     printf("    -x      --- output in XML\n");

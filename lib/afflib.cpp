@@ -376,7 +376,7 @@ AFFILE *af_open(const char *filename,int flags,int mode)
 	}
     }
     errno = EINVAL;
-    if(exists) errno = ENOENT;
+    if(exists && access(filename, R_OK) != 0) errno = ENOENT;
     return 0;				// can't figure it out; must be an invalid extension
 }
 

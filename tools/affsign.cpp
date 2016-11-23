@@ -1,5 +1,5 @@
 /*
- * afsign.cpp:
+ * affsign.cpp:
  *
  * Sign an existing AFF file.
  * This file is a work of a US government employee and as such is in the Public domain.
@@ -32,7 +32,7 @@ const char *opt_sign_cert_file = 0;
 using namespace std;
 using namespace aff;
 
-const char *progname = "afsign";
+const char *progname = "affsign";
 
 void usage()
 {
@@ -54,7 +54,7 @@ void usage()
 }
 
 
-int afsign(const char *fn)
+int affsign(const char *fn)
 {
     AFFILE *af = af_open(fn,O_RDWR,0);
     if(!af) af_err(1,"%s",fn);
@@ -302,12 +302,12 @@ int main(int argc,char **argv)
     }
 
 
-    return afsign(argv[0]);
+    return affsign(argv[0]);
 }
 #else
 int main(int argc,char **argv)
 {
-    fprintf(stderr,"afflib compiled without USE_AFFSIGS.  afsign cannot run.\n");
+    fprintf(stderr,"afflib compiled without USE_AFFSIGS.  affsign cannot run.\n");
     exit(-1);
 }
 
